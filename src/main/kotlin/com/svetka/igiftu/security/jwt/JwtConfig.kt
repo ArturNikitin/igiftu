@@ -1,13 +1,13 @@
 package com.svetka.igiftu.security.jwt
 
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 
 @Component
-@ConfigurationProperties(prefix = "application.jwt")
-class JwtConfig{
-    val key: String = ""
+class JwtConfig {
+	var key: String = "SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKey" +
+			"SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKey" +
+			"SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKey"
 
-    fun getAuthorizationHeader() = HttpHeaders.AUTHORIZATION
+	fun getAuthorizationHeader() = HttpHeaders.AUTHORIZATION
 }
