@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      validCheckSum: ANY
+      id: 202102231316
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+  - changeSet:
+      validCheckSum: ANY
+      id: 202102231330
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20210223_1316_CREATE_WISHLIST_FILES_TABLE.sql
