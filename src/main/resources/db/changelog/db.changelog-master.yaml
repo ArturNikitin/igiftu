@@ -16,3 +16,13 @@ databaseChangeLog:
         - sqlFile:
             encoding: utf8
             path: db/sql/20210223_1316_CREATE_WISHLIST_FILES_TABLE.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202102231359
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20210223_1358_CREATE_USERS_TABLE.sql
