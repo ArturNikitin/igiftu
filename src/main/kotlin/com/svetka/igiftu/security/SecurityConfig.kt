@@ -6,6 +6,7 @@ import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
 import com.svetka.igiftu.security.service.UserDetailsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -14,83 +15,94 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
 import javax.crypto.SecretKey
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-class SecurityConfig(
-	private val userDetailsService: UserDetailsServiceImpl,
-	private val secretKey: SecretKey,
-	private val jwtConfig: JwtConfig
-) : WebSecurityConfigurerAdapter() {
+class SecurityConfig {
 
-	override fun configure(auth: AuthenticationManagerBuilder?) {
-		auth?.userDetailsService(userDetailsService)
-	}
+    @Configuration
+    @Order(2)
+    class JwtSecurityConfig(
+        private val userDetailsService: UserDetailsServiceImpl,
+        private val secretKey: SecretKey,
+        private val jwtConfig: JwtConfig
+    ) : WebSecurityConfigurerAdapter() {
+        override fun configure(auth: AuthenticationManagerBuilder?) {
+            auth?.userDetailsService(userDetailsService)
+        }
 
-	override fun configure(http: HttpSecurity) {
-		http
-			.csrf()
-			.disable()
-			.addFilter(
-			getJwtFilter()
-		)
-			.addFilterAfter(
-				JwtTokenVerifier(jwtConfig, secretKey),
-				JwtUsernameAndPasswordAuthenticationFilter::class.java
-			)
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and().authorizeRequests()
-			.antMatchers("/swagger-ui/**").permitAll()
-			.antMatchers("/swagger-resources/**").permitAll()
-			.antMatchers("/v2/api-docs**").permitAll()
-			.antMatchers("/basic/login").permitAll()
-			.antMatchers("/registration").permitAll()
-			.antMatchers("/user/**").permitAll()
-			.antMatchers("/api/**").hasRole("ADMIN")
-			.and()
-	}
+        override fun configure(http: HttpSecurity) {
+            http.csrf()
+                .disable()
+                .addFilter(
+                    getJwtFilter()
+                )
+                .addFilterAfter(
+                    JwtTokenVerifier(jwtConfig, secretKey),
+                    JwtUsernameAndPasswordAuthenticationFilter::class.java
+                )
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().authorizeRequests()
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/v2/api-docs**").permitAll()
+                .antMatchers("/basic/login").permitAll()
+                .antMatchers("/registration").permitAll()
+                .antMatchers("/user/**").permitAll()
+                .antMatchers("/api/**").hasRole("ADMIN")
+        }
 
-	fun getJwtFilter(): JwtUsernameAndPasswordAuthenticationFilter {
-		return JwtUsernameAndPasswordAuthenticationFilter(
-			authenticationManager(),
-			secretKey,
-			jwtConfig
-		).apply { setFilterProcessesUrl("/basic/login") }
-	}
+        fun getJwtFilter(): JwtUsernameAndPasswordAuthenticationFilter {
+            return JwtUsernameAndPasswordAuthenticationFilter(
+                authenticationManager(),
+                secretKey,
+                jwtConfig
+            ).apply { setFilterProcessesUrl("/basic/login") }
+        }
+    }
 
-	@Bean
-	fun passwordEncoderBean(): PasswordEncoder {
-		return BCryptPasswordEncoder(8) // оптимальная сила по скорости вычисления и уровню шифрования
-	}
+    /**
+     * Дополнительная концигурация для аутентификации через facebook
+     * @url для переадресации на фб - {HOST}/oauth2/authorization/facebook
+     * */
+    @Configuration
+    @Order(1)
+    class AuthSecurityConfig : WebSecurityConfigurerAdapter() {
+
+        override fun configure(http: HttpSecurity) {
+            http.csrf()
+                .disable()
+//			.addFilter(
+//			JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
+//		)
+//			.addFilterAfter(
+//				JwtTokenVerifier(jwtConfig, secretKey),
+//				JwtUsernameAndPasswordAuthenticationFilter::class.java
+//			)
+				.antMatcher("/oauth2/**")
+                .authorizeRequests()
+                .and()
+                .oauth2Login()
+
+        }
+
+        @Bean
+        fun authorizationRequestRepository(): AuthorizationRequestRepository<OAuth2AuthorizationRequest?>? {
+            return HttpSessionOAuth2AuthorizationRequestRepository()
+        }
+    }
+
+
+    @Bean
+    fun passwordEncoderBean(): PasswordEncoder {
+        return BCryptPasswordEncoder(8) // оптимальная сила по скорости вычисления и уровню шифрования
+    }
 }
 
-//@Configuration
-//@Order(1)
-//class AuthSecurityConfig(
-//	private val oauthService: OAuth2UserServiceImpl,
-//	private val secretKey: SecretKey,
-//	private val jwtConfig: JwtConfig
-//) : WebSecurityConfigurerAdapter() {
-//
-//
-//	override fun configure(http: HttpSecurity) {
-//		http.csrf()
-//			.disable()
-////			.addFilter(
-////			JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
-////		)
-////			.addFilterAfter(
-////				JwtTokenVerifier(jwtConfig, secretKey),
-////				JwtUsernameAndPasswordAuthenticationFilter::class.java
-////			)
-//			.authorizeRequests()
-//			.antMatchers("/oauth_login")
-//			.permitAll()
-//			.anyRequest().authenticated()
-//			.and()
-//			.oauth2Login()
-//			.loginPage("/oauth_login")
-//	}
-//}
+
