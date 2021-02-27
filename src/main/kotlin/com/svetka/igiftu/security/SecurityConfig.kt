@@ -15,9 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository
-import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
 import javax.crypto.SecretKey
 
 
@@ -87,21 +84,22 @@ class SecurityConfig {
 //			)
 				.antMatcher("/oauth2/**")
                 .authorizeRequests()
+                .anyRequest().authenticated()
                 .and()
                 .oauth2Login()
-
         }
+
+//        @Bean
+//        fun authorizationRequestRepository(): AuthorizationRequestRepository<OAuth2AuthorizationRequest?>? {
+//            return HttpSessionOAuth2AuthorizationRequestRepository()
+//        }
+//    }
+
 
         @Bean
-        fun authorizationRequestRepository(): AuthorizationRequestRepository<OAuth2AuthorizationRequest?>? {
-            return HttpSessionOAuth2AuthorizationRequestRepository()
+        fun passwordEncoderBean(): PasswordEncoder {
+            return BCryptPasswordEncoder(8) // оптимальная сила по скорости вычисления и уровню шифрования
         }
-    }
-
-
-    @Bean
-    fun passwordEncoderBean(): PasswordEncoder {
-        return BCryptPasswordEncoder(8) // оптимальная сила по скорости вычисления и уровню шифрования
     }
 }
 
