@@ -8,6 +8,6 @@ interface UserService {
 data class UserDto(
 	val email: String,
 	val password: String,
-	val login: String?,
-	val id: Long?
+	val login: String? = null,
+	val id: Long? = null
 )
