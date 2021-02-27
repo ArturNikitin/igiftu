@@ -36,6 +36,9 @@ class UserServiceImpl(
 		user.password = encoder.encode(userDto.password)
 		user.login = user.email
 			.replaceAfterLast("@", "")
+			.removeSuffix("@")
+
+		user.login = "@" + user.login
 
 		val user1 = userRepository.save(user)
 		val userDto1 = getUserDto(user1)

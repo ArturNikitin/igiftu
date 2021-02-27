@@ -45,7 +45,7 @@ internal class UserServiceImplTest {
 		null,
 		"super secret",
 		"artur@gmail.com",
-		"artur@",
+		"@artur",
 		UserRoles.ROLE_USER,
 		isEnabled = true,
 		isAccountNonLocked = true
@@ -54,7 +54,7 @@ internal class UserServiceImplTest {
 	private fun getSavedUserDto() = UserDto(
 		email = "artur@gmail.com",
 		password = "super secret",
-		"artur@",
+		"@artur",
 		1L
 	)
 
