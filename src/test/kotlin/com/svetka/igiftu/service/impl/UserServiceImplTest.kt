@@ -40,6 +40,17 @@ internal class UserServiceImplTest {
 		isEnabled = true
 	)
 
+	private fun getUserToSave() = User(
+		null,
+		null,
+		"super secret",
+		"artur@gmail.com",
+		"@artur",
+		UserRoles.ROLE_USER,
+		isEnabled = true,
+		isAccountNonLocked = true
+	)
+
 	private fun getSavedUser() = User(
 		1L,
 		null,
@@ -64,7 +75,7 @@ internal class UserServiceImplTest {
 //        given
 		every { mapper.map(getUserDto(), User::class.java) } returns getUserUnsaved()
 		every { encoder.encode("1234") } returns "super secret"
-		every { userRepo.save(any()) } returns getSavedUser()
+		every { userRepo.save(getUserToSave()) } returns getSavedUser()
 		every { mapper.map(getSavedUser(), UserDto::class.java) } returns getSavedUserDto()
 //        when
 		val createUser = service.createUser(getUserDto())
