@@ -37,7 +37,9 @@ class UserServiceImpl(
 		user.login = user.email
 			.replaceAfterLast("@", "")
 
-		return getUserDto(userRepository.save(user))
+		val user1 = userRepository.save(user)
+		val userDto1 = getUserDto(user1)
+		return userDto1
 	}
 
 	private fun getUserDto(user: User) = mapper.map(user, UserDto::class.java)
