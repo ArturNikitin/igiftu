@@ -33,7 +33,7 @@ class JwtUsernameAndPasswordAuthenticationFilter(
 				credentials.email,
 				credentials.password
 			)
-			authenticationManager.authenticate(authentication)
+			manager.authenticate(authentication)
 		} catch (e: IOException) {
 			e.printStackTrace()
 			throw RuntimeException(e)
@@ -62,7 +62,13 @@ class JwtUsernameAndPasswordAuthenticationFilter(
 }
 
 data class UserCredentials(
-	val email: String,
-	val password: String,
-	val role: String
-)
+	var email: String?,
+	var password: String?,
+	var role: String?
+) {
+	constructor() : this(
+		email = null,
+		password = null,
+		role = null
+	)
+}
