@@ -2,6 +2,7 @@ package com.svetka.igiftu.security.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
+import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -18,8 +19,7 @@ const val EXPIRATION_TIME = 864000000 // 1 day
 
 class JwtUsernameAndPasswordAuthenticationFilter(
 	private val manager: AuthenticationManager,
-	private val secretKey: SecretKey,
-	private val jwtConfig: JwtConfig
+	private val tokenProvider: TokenProvider
 ) : UsernamePasswordAuthenticationFilter() {
 
 	override fun attemptAuthentication(
@@ -43,18 +43,12 @@ class JwtUsernameAndPasswordAuthenticationFilter(
 	override fun successfulAuthentication(
 		request: HttpServletRequest?,
 		response: HttpServletResponse?,
-		chain: FilterChain?, authResult: Authentication?
+		chain: FilterChain?, authResult: Authentication
 	) {
-		val token = Jwts.builder()
-			.setSubject(authResult!!.name)
-			.claim("authorities", authResult.authorities)
-			.setIssuedAt(Date())
-			.setExpiration(Date(System.currentTimeMillis() + EXPIRATION_TIME))
-			.signWith(secretKey)
-			.compact()
+		val token = tokenProvider.createToken(authResult)
 
 		response!!.addHeader(
-			jwtConfig.getAuthorizationHeader(),
+			HttpHeaders.AUTHORIZATION,
 			"$PREFIX $token"
 		)
 		response.addHeader("Access-Control-Expose-Headers", "Authorization")

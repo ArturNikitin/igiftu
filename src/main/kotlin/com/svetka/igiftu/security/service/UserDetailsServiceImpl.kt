@@ -15,6 +15,8 @@ class UserDetailsServiceImpl(
 		val user = userRepository.getUserByEmail(email)
 			?: throw UsernameNotFoundException("User with email $email not found")
 
-		return MyUserDetails(user.email, user.password, user.role.toString())
+		user.password ?: throw UsernameNotFoundException("User with email $email doesn't have password")
+
+		return MyUserDetails(user.email, user.password!!, listOf(user.role.toString()))
 	}
 }

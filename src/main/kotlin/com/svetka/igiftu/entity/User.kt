@@ -1,7 +1,9 @@
 package com.svetka.igiftu.entity
 
+import com.svetka.igiftu.entity.enums.AuthProvider
 import com.svetka.igiftu.entity.enums.UserRoles
 import org.springframework.data.annotation.CreatedDate
+
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -24,13 +26,17 @@ class User(
 	var createdDate: LocalDateTime?,
 
 	@Column
-	var password: String,
+	var password: String?,
 
 	@Column
 	var email: String,
 
 	@Column
 	var login: String?,
+
+	@Column
+	@Enumerated(value = EnumType.STRING)
+	var provider: AuthProvider,
 
 	@Column
 	@Enumerated(value = EnumType.STRING)

@@ -11,5 +11,5 @@ class JwtSecretKey(
 ) {
 
 	@Bean
-	fun secretKey(): SecretKey = Keys.hmacShaKeyFor(jwtConfig.key.toByteArray())
+	fun secretKey(): SecretKey = Keys.hmacShaKeyFor(jwtConfig.key?.toByteArray())
 }

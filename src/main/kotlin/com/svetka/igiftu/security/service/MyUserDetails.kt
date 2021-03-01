@@ -3,16 +3,17 @@ package com.svetka.igiftu.security.service
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import java.util.stream.Collectors
 
 class MyUserDetails(
 	private val email: String,
 	private val password: String,
-	private val authority: String
+	private val authority: List<String>
 ) : UserDetails {
 
 
-	override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-		return mutableListOf(SimpleGrantedAuthority(authority))
+	override fun getAuthorities(): List<SimpleGrantedAuthority> {
+		return authority.map { SimpleGrantedAuthority(it) }
 	}
 
 	override fun isEnabled(): Boolean {
