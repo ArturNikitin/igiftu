@@ -2,6 +2,8 @@ package com.svetka.igiftu.config
 
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
+import com.svetka.igiftu.entity.enums.UserRoles
+import java.time.LocalDateTime
 import ma.glasnost.orika.MapperFactory
 import ma.glasnost.orika.MappingContext
 import ma.glasnost.orika.converter.BidirectionalConverter
@@ -35,17 +37,24 @@ class MapperConfig(
                 source.id ?: 0L,
                 source.email,
                 login = source.login,
-                createdDate = source.createdDate?.format(format) ?: "",
-               role = source.role?.name ?: ""
             )
         }
 
         override fun convertFrom(
-            source: UserDto?,
-            destinationType: Type<User>?,
+            source: UserDto,
+            destinationType: Type<User>,
             mappingContext: MappingContext?
         ): User {
-            TODO("Not yet implemented")
+            return User(
+                source.id,
+                email = source.email,
+                login = source.login,
+                role = null,
+                createdDate = null,
+                password = "",
+                isEnabled = true,
+                isAccountNonLocked = true
+            )
         }
     }
 }

@@ -15,4 +15,7 @@ class UserController(
     fun getUser(@PathVariable id: Long) : UserDto {
         return userService.getUserById(id)
     }
+    
+    @PostMapping
+    fun createUser(@RequestBody user: UserDto) = userService.createUser(user)
 }
