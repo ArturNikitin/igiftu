@@ -8,11 +8,13 @@ import java.time.LocalDateTime
 import ma.glasnost.orika.MapperFacade
 import org.springframework.stereotype.Service
 import javax.persistence.EntityNotFoundException
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @Service
 class UserServiceImpl(
     val userRepo: UserRepository,
-    val mapper: MapperFacade
+    val mapper: MapperFacade,
+    val encoder: PasswordEncoder
 ) : UserService {
     override fun getUserById(id: Long): UserDto {
         val userById = userRepo.getUserById(id) ?: throw EntityNotFoundException()
@@ -23,8 +25,8 @@ class UserServiceImpl(
     override fun createUser(userDto: UserDto): UserDto {
         val mappedUser = mapper.map(userDto, User::class.java).apply {
             createdDate = LocalDateTime.now()
-            password = "1234"
-            login = "login"
+            password = userDto.password.let { encoder.encode(this.password) }
+            login = email
             role = UserRoles.ROLE_USER
         }
         

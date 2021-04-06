@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.security.crypto.password.PasswordEncoder
 
 internal class UserServiceImplTest : UserTest() {
 	
@@ -25,6 +26,9 @@ internal class UserServiceImplTest : UserTest() {
 	
 	@MockK
 	private lateinit var mapper: MapperFacade
+	
+	@MockK
+	private lateinit var encoder: PasswordEncoder
 	
 	@InjectMockKs
 	private lateinit var userService: UserServiceImpl
@@ -71,6 +75,7 @@ internal class UserServiceImplTest : UserTest() {
 		every { mapper.map(getUserDtoToSave(), User::class.java) } returns getUserToSaveFirst()
 		every { userRepository.save(getUserToSave()) } returns getUser()
         every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto2()
+		every { encoder.encode("1234") } returns "XXXXXXXXXXXX"
 		
 		val createUser = userService.createUser(getUserDtoToSave())
 		
@@ -78,5 +83,6 @@ internal class UserServiceImplTest : UserTest() {
 		println(createUser)
 		
 		verify { userRepository.save(getUserToSave()) }
+		verify { encoder.encode("1234") }
 	}
 }

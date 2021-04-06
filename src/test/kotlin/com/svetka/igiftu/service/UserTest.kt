@@ -64,5 +64,6 @@ abstract class UserTest {
 	
 	fun getUserDtoToSave() = UserDto(
 		email =  "email2@gmail.com",
+		password = "1234"
 	)
 }
