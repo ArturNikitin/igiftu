@@ -31,23 +31,23 @@ class SecurityConfig(
 		auth?.userDetailsService(userDetailsService)
 	}
 
-	override fun configure(http: HttpSecurity?) {
-		http?.csrf()?.disable()?.addFilter(
+	override fun configure(http: HttpSecurity) {
+		http.csrf().disable().addFilter(
 			JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
 		)
-			?.addFilterAfter(
+			.addFilterAfter(
 				JwtTokenVerifier(jwtConfig, secretKey),
 				JwtUsernameAndPasswordAuthenticationFilter::class.java
 			)
-			?.sessionManagement()?.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			?.and()?.authorizeRequests()
-			?.antMatchers("/swagger-ui/**")?.permitAll()
-			?.antMatchers("/swagger-resources/**")?.permitAll()
-			?.antMatchers("/v2/api-docs**")?.permitAll()
-			?.antMatchers("/login")?.permitAll()
-			?.antMatchers("/registration")?.permitAll()
-			?.antMatchers("/user/**")?.permitAll()
-			?.antMatchers("/api/**")?.hasRole("ADMIN")
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and().authorizeRequests()
+			.antMatchers("/swagger-ui/**").permitAll()
+			.antMatchers("/swagger-resources/**").permitAll()
+			.antMatchers("/v2/api-docs**").permitAll()
+			.antMatchers("/login").permitAll()
+			.antMatchers("/registration").permitAll()
+			.antMatchers("/user/**").permitAll()
+			.antMatchers("/api/**").hasRole("ADMIN")
 	}
 
 	@Bean
