@@ -89,12 +89,16 @@ internal class UserServiceImplTest {
     )
 
     private fun getUserDto1() = UserDto(
-        "email@gmail.com",
-        "login"
+        1L,
+        email =  "email@gmail.com",
+        login =  "login",
+        role = UserRoles.ROLE_USER.name,
     )
 
     private fun getUserDto2() = UserDto(
-        "email2@gmail.com",
-        "login2"
+        1L,
+        email =  "email2@gmail.com",
+        login =  "login2",
+        role = UserRoles.ROLE_USER.name,
     )
 }
