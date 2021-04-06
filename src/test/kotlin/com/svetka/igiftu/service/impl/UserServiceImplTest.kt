@@ -88,23 +88,4 @@ internal class UserServiceImplTest : UserTest() {
 		verify { encoder.encode("1234") }
 		verify { mapper.map(getUser(), UserDto::class.java) }
 	}
-	
-	@Test
-	fun createOrUpdateUserChangeLoginTest() {
-		every { mapper.map(getUserDto2(), User::class.java) } returns getUserToUpdateFirst()
-		every { userRepository.save(getUserToUpdate()) } returns getUser()
-		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto2()
-		every { encoder.encode("1234") } returns "XXXXXXXXXXXX"
-		
-		val createdUser = userService.createUser(getUserDtoToSave())
-		
-		assertNotNull(createdUser)
-		assertNotNull(createdUser.email)
-		assertNotNull(createdUser.id)
-		assertNotNull(createdUser.login)
-		
-		verify { userRepository.save(getUserToSave()) }
-		verify { encoder.encode("1234") }
-		verify { mapper.map(getUser(), UserDto::class.java) }
-	}
 }

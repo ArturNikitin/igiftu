@@ -8,7 +8,8 @@ object MappingUtils {
     private val mapperFactory: MapperFactory
         get() = DefaultMapperFactory.Builder().build()
 
-    fun getMapperFactory(debugMode: Boolean = false): MapperFactory {
+    @JvmName("getMapperFactory1")
+    fun getMapperFactory(): MapperFactory {
         val mapperFactory = mapperFactory
         mapperFactory.converterFactory.apply {
             registerConverter(MapperConfig.UserConverter())

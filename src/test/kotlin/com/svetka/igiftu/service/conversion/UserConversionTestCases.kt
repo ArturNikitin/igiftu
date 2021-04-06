@@ -20,7 +20,7 @@ class UserConversionTestCases {
 		@BeforeAll
 		@JvmStatic
 		internal fun beforeAll() {
-			factory = MappingUtils.getMapperFactory(false)
+			factory = MappingUtils.getMapperFactory()
 			mapper = factory.mapperFacade
 		}
 	}
