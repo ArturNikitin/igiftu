@@ -49,10 +49,10 @@ internal class UserServiceImplTest : UserTest() {
 		val userById1 = userService.getUserById(1L)
 		val userById2 = userService.getUserById(2L)
 		
-		assertEquals("email@gmail.com", userById1.email)
-		assertEquals("login", userById1.login)
-		assertEquals("email2@gmail.com", userById2.email)
-		assertEquals("login2", userById2.login)
+		assertEquals(email1, userById1.email)
+		assertEquals(login1, userById1.login)
+		assertEquals(email2, userById2.email)
+		assertEquals(login2, userById2.login)
 		
 		
 		verify {
@@ -71,18 +71,40 @@ internal class UserServiceImplTest : UserTest() {
 	}
 	
 	@Test
-	fun createUserSuccessTest() {
+	fun createOrUpdateUserSuccessTest() {
 		every { mapper.map(getUserDtoToSave(), User::class.java) } returns getUserToSaveFirst()
 		every { userRepository.save(getUserToSave()) } returns getUser()
         every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto2()
 		every { encoder.encode("1234") } returns "XXXXXXXXXXXX"
 		
-		val createUser = userService.createUser(getUserDtoToSave())
+		val createdUser = userService.createUser(getUserDtoToSave())
 		
-		assertNotNull(createUser)
-		println(createUser)
+		assertNotNull(createdUser)
+		assertNotNull(createdUser.email)
+		assertNotNull(createdUser.id)
+		assertNotNull(createdUser.login)
 		
 		verify { userRepository.save(getUserToSave()) }
 		verify { encoder.encode("1234") }
+		verify { mapper.map(getUser(), UserDto::class.java) }
+	}
+	
+	@Test
+	fun createOrUpdateUserChangeLoginTest() {
+		every { mapper.map(getUserDto2(), User::class.java) } returns getUserToUpdateFirst()
+		every { userRepository.save(getUserToUpdate()) } returns getUser()
+		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto2()
+		every { encoder.encode("1234") } returns "XXXXXXXXXXXX"
+		
+		val createdUser = userService.createUser(getUserDtoToSave())
+		
+		assertNotNull(createdUser)
+		assertNotNull(createdUser.email)
+		assertNotNull(createdUser.id)
+		assertNotNull(createdUser.login)
+		
+		verify { userRepository.save(getUserToSave()) }
+		verify { encoder.encode("1234") }
+		verify { mapper.map(getUser(), UserDto::class.java) }
 	}
 }
