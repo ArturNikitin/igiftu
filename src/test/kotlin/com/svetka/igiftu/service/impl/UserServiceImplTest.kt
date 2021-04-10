@@ -10,6 +10,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
+import java.util.Optional
+import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -18,8 +20,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.*
-import javax.persistence.EntityExistsException
 
 internal class UserServiceImplTest : UserTest() {
 	
@@ -132,7 +132,7 @@ internal class UserServiceImplTest : UserTest() {
 		
 		assertThrows(
 			EntityExistsException::class.java
-		) {userService.registerUser(getUserCreds())}
+		) { userService.registerUser(getUserCreds()) }
 	}
 	
 }
