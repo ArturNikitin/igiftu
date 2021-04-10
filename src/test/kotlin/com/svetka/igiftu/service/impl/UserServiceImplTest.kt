@@ -1,86 +1,120 @@
 package com.svetka.igiftu.service.impl
 
+import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
-import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.UserRepository
-import com.svetka.igiftu.service.UserDto
-import com.svetka.igiftu.service.UserService
+import com.svetka.igiftu.service.UserServiceImpl
+import com.svetka.igiftu.service.UserTest
+import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
+import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
-
-internal class UserServiceImplTest {
-
-
-	private var userRepo: UserRepository = mockk()
-
-	private var mapper: MapperFacade = mockk()
-
-	private var encoder: PasswordEncoder = mockk()
-
-	var service: UserService = UserServiceImpl(userRepo, mapper, encoder)
-
+internal class UserServiceImplTest : UserTest() {
+	
+	@MockK
+	private lateinit var userRepository: UserRepository
+	
+	@MockK
+	private lateinit var mapper: MapperFacade
+	
+	@MockK
+	private lateinit var encoder: PasswordEncoder
+	
+	@InjectMockKs
+	private lateinit var userService: UserServiceImpl
+	
 	@BeforeEach
 	fun setUp() {
+		MockKAnnotations.init(this)
+		every { encoder.encode(password1) } returns "XXXXXXXXXXXXXX"
 	}
-
-	private fun getUserDto() = UserDto(email = "artur@gmail.com", password = "1234")
-
-	private fun getUserUnsaved() = User(
-		email = "artur@gmail.com",
-		password = "1234",
-		isAccountNonLocked = true,
-		isEnabled = true
-	)
-
-	private fun getUserToSave() = User(
-		null,
-		null,
-		"super secret",
-		"artur@gmail.com",
-		"@artur",
-		UserRoles.ROLE_USER,
-		isEnabled = true,
-		isAccountNonLocked = true
-	)
-
-	private fun getSavedUser() = User(
-		1L,
-		null,
-		"super secret",
-		"artur@gmail.com",
-		"@artur",
-		UserRoles.ROLE_USER,
-		isEnabled = true,
-		isAccountNonLocked = true
-	)
-
-	private fun getSavedUserDto() = UserDto(
-		email = "artur@gmail.com",
-		password = "super secret",
-		"@artur",
-		1L
-	)
-
-
+	
+	
 	@Test
-	fun createUserSuccess() {
-//        given
-		every { mapper.map(getUserDto(), User::class.java) } returns getUserUnsaved()
-		every { encoder.encode("1234") } returns "super secret"
-		every { userRepo.save(getUserToSave()) } returns getSavedUser()
-		every { mapper.map(getSavedUser(), UserDto::class.java) } returns getSavedUserDto()
-//        when
-		val createUser = service.createUser(getUserDto())
-//        then
-		assertNotNull(createUser)
-		assertEquals(getSavedUser().password, "super secret")
+	fun getUserByIdSuccessTest() {
+		every { userRepository.getUserById(1L) } returns getUser()
+		every { userRepository.getUserById(2L) } returns getUser2()
+		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
+		every { mapper.map(getUser2(), UserDto::class.java) } returns getUserDto2()
+		
+		val userById1 = userService.getUserById(1L)
+		val userById2 = userService.getUserById(2L)
+		
+		assertEquals(email1, userById1.email)
+		assertEquals(login1, userById1.login)
+		assertEquals(email2, userById2.email)
+		assertEquals(login2, userById2.login)
+		
+		
+		verify {
+			userRepository.getUserById(1L)
+			userRepository.getUserById(2L)
+			mapper.map(getUser(), UserDto::class.java)
+			mapper.map(getUser2(), UserDto::class.java)
+		}
+	}
+	
+	@Test
+	fun getUserByIdUserNotFoundTest() {
+		every { userRepository.getUserById(1L) } returns null
+		
+		assertThrows(EntityNotFoundException::class.java) { userService.getUserById(1L) }
+	}
+	
+	@Test
+	fun updateUserExistsTest() {
+		every { userRepository.existsById(1L) } returns true
+		every { mapper.map(getUserDtoToUpdate(), User::class.java) } returns getUserBeforeUpdate()
+		every { userRepository.save(getUserBeforeUpdate()) } returns getUserAfterUpdate()
+		every { mapper.map(getUserAfterUpdate(), UserDto::class.java) } returns getUserDtoToUpdate()
+		
+		val updateUser = userService.updateUser(getUserDtoToUpdate())
+		
+		assertNotNull(updateUser)
+		assertEquals(email1, updateUser.email)
+		assertEquals(login2, updateUser.login)
+		
+		verify {
+			userRepository.existsById(1L)
+			mapper.map(getUserDtoToUpdate(), User::class.java)
+			userRepository.save(getUserBeforeUpdate())
+			mapper.map(getUserAfterUpdate(), UserDto::class.java)
+		}
+		
+	}
+	
+	@Test
+	fun updateUserDoesNotExist() {
+		every { userRepository.existsById(1L) } returns false
+		
+		assertThrows(EntityNotFoundException::class.java) { userService.updateUser(getUserDtoToUpdate())}
+	}
+	
+	@Test
+	fun registerUser() {
+		every { mapper.map(getUserCreds(), User::class.java) } returns (getUserToSave())
+		every { userRepository.save(getUserToSave()) } returns getUser()
+		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
+		
+		val registeredUser = userService.registerUser(getUserCreds())
+		
+		assertNotNull(registeredUser)
+		assertEquals(email1, registeredUser.email)
+		assertEquals(login1, registeredUser.login)
+		
+		verify { mapper.map(getUserCreds(), User::class.java) }
+		verify { mapper.map(getUser(), UserDto::class.java) }
+		verify { userRepository.save(getUserToSave()) }
+		verify { encoder.encode(password1) }
 	}
 }

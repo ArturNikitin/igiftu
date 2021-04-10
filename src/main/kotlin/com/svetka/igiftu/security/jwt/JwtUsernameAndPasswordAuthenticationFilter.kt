@@ -29,11 +29,11 @@ class JwtUsernameAndPasswordAuthenticationFilter(
 		return try {
 			val credentials = ObjectMapper()
 				.readValue(request!!.inputStream, UserCredentials::class.java)
-			val authentication: Authentication = UsernamePasswordAuthenticationToken(
+			val authentication = UsernamePasswordAuthenticationToken(
 				credentials.email,
 				credentials.password
 			)
-			authenticationManager.authenticate(authentication)
+			manager.authenticate(authentication)
 		} catch (e: IOException) {
 			e.printStackTrace()
 			throw RuntimeException(e)
@@ -65,4 +65,6 @@ data class UserCredentials(
 	val email: String,
 	val password: String,
 	val role: String
-)
+) {
+	constructor() : this("", "", "")
+}
