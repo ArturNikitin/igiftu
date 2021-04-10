@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.util.*
+import javax.persistence.EntityExistsException
 
 internal class UserServiceImplTest : UserTest() {
 	
@@ -42,8 +44,8 @@ internal class UserServiceImplTest : UserTest() {
 	
 	@Test
 	fun getUserByIdSuccessTest() {
-		every { userRepository.getUserById(1L) } returns getUser()
-		every { userRepository.getUserById(2L) } returns getUser2()
+		every { userRepository.findById(1L) } returns Optional.of(getUser())
+		every { userRepository.findById(2L) } returns Optional.of(getUser2())
 		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
 		every { mapper.map(getUser2(), UserDto::class.java) } returns getUserDto2()
 		
@@ -57,8 +59,8 @@ internal class UserServiceImplTest : UserTest() {
 		
 		
 		verify {
-			userRepository.getUserById(1L)
-			userRepository.getUserById(2L)
+			userRepository.findById(1L)
+			userRepository.findById(2L)
 			mapper.map(getUser(), UserDto::class.java)
 			mapper.map(getUser2(), UserDto::class.java)
 		}
@@ -66,16 +68,19 @@ internal class UserServiceImplTest : UserTest() {
 	
 	@Test
 	fun getUserByIdUserNotFoundTest() {
-		every { userRepository.getUserById(1L) } returns null
+		every { userRepository.findById(1L) } returns Optional.empty()
 		
 		assertThrows(EntityNotFoundException::class.java) { userService.getUserById(1L) }
 	}
 	
 	@Test
 	fun updateUserExistsTest() {
-		every { userRepository.existsById(1L) } returns true
-		every { mapper.map(getUserDtoToUpdate(), User::class.java) } returns getUserBeforeUpdate()
-		every { userRepository.save(getUserBeforeUpdate()) } returns getUserAfterUpdate()
+		every { userRepository.findById(1L) } returns Optional.of(getUser())
+		every {
+			userRepository.save(getUser().apply {
+				login = login2
+			})
+		} returns getUserAfterUpdate()
 		every { mapper.map(getUserAfterUpdate(), UserDto::class.java) } returns getUserDtoToUpdate()
 		
 		val updateUser = userService.updateUser(getUserDtoToUpdate())
@@ -85,19 +90,18 @@ internal class UserServiceImplTest : UserTest() {
 		assertEquals(login2, updateUser.login)
 		
 		verify {
-			userRepository.existsById(1L)
-			mapper.map(getUserDtoToUpdate(), User::class.java)
-			userRepository.save(getUserBeforeUpdate())
+			userRepository.findById(1L)
 			mapper.map(getUserAfterUpdate(), UserDto::class.java)
+			userRepository.save(getUserAfterUpdate())
 		}
 		
 	}
 	
 	@Test
 	fun updateUserDoesNotExist() {
-		every { userRepository.existsById(1L) } returns false
+		every { userRepository.findById(1L) } returns Optional.empty()
 		
-		assertThrows(EntityNotFoundException::class.java) { userService.updateUser(getUserDtoToUpdate())}
+		assertThrows(EntityNotFoundException::class.java) { userService.updateUser(getUserDtoToUpdate()) }
 	}
 	
 	@Test
@@ -105,6 +109,7 @@ internal class UserServiceImplTest : UserTest() {
 		every { mapper.map(getUserCreds(), User::class.java) } returns (getUserToSave())
 		every { userRepository.save(getUserToSave()) } returns getUser()
 		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
+		every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.empty()
 		
 		val registeredUser = userService.registerUser(getUserCreds())
 		
@@ -112,9 +117,22 @@ internal class UserServiceImplTest : UserTest() {
 		assertEquals(email1, registeredUser.email)
 		assertEquals(login1, registeredUser.login)
 		
-		verify { mapper.map(getUserCreds(), User::class.java) }
-		verify { mapper.map(getUser(), UserDto::class.java) }
-		verify { userRepository.save(getUserToSave()) }
-		verify { encoder.encode(password1) }
+		verify {
+			mapper.map(getUserCreds(), User::class.java)
+			mapper.map(getUser(), UserDto::class.java)
+			userRepository.save(getUserToSave())
+			encoder.encode(password1)
+			userRepository.getUserByEmail(email1)
+		}
 	}
+	
+	@Test
+	fun registerDuplicatedUser() {
+		every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.of(getUser())
+		
+		assertThrows(
+			EntityExistsException::class.java
+		) {userService.registerUser(getUserCreds())}
+	}
+	
 }
