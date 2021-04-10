@@ -21,26 +21,26 @@ class User(
 
 	@Column(name = "created_date")
 	@CreatedDate
-	var createdDate: LocalDateTime?,
+	var createdDate: LocalDateTime? = null,
 
 	@Column
-	var password: String,
+	var password: String = "",
 
 	@Column
 	var email: String,
 
 	@Column
-	var login: String?,
+	var login: String? = null,
 
 	@Column
 	@Enumerated(value = EnumType.STRING)
-	var role: UserRoles?,
+	var role: UserRoles? = null,
 
 	@Column(name = "isenabled")
-	var isEnabled: Boolean,
+	var isEnabled: Boolean = false,
 
 	@Column(name = "isaccountnonlocked")
-	var isAccountNonLocked: Boolean
+	var isAccountNonLocked: Boolean = false
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

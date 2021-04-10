@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserServiceImpl(
-	val userRepo: UserRepository,
-	val mapper: MapperFacade,
-	val encoder: PasswordEncoder
+	private val userRepo: UserRepository,
+	private val mapper: MapperFacade,
+	private val encoder: PasswordEncoder
 ) : UserService {
 	
 	@Transactional
@@ -27,19 +27,15 @@ class UserServiceImpl(
 	}
 	
 	@Transactional
-	override fun createUser(userDto: UserDto): UserDto {
-		val mappedUser = mapper.map(userDto, User::class.java).apply {
-			createdDate = LocalDateTime.now()
-			password = userDto.password.let { encoder.encode(this.password) }
-			login = login ?: getLoginFromEmail()
-			role = UserRoles.ROLE_USER
-		}
-		
-		val savedUser = userRepo.save(mappedUser)
-		
-		return getUserDto(savedUser)
+	override fun updateUser(userDto: UserDto): UserDto {
+		if (userExists(userDto.id)) {
+			val mappedUser = mapper.map(userDto, User::class.java)
+			return saveOrUpdateUser(mappedUser)
+		} else
+			throw EntityNotFoundException()
 	}
 	
+	@Transactional
 	override fun registerUser(userCredentials: UserCredentials): UserDto {
 		val mappedUser = mapper.map(userCredentials, User::class.java).apply {
 			createdDate = LocalDateTime.now()
@@ -48,8 +44,12 @@ class UserServiceImpl(
 			role = UserRoles.ROLE_USER
 		}
 		
-		return getUserDto(userRepo.save(mappedUser))
+		return saveOrUpdateUser(mappedUser)
 	}
+	
+	private fun userExists(userId: Long) = userRepo.existsById(userId)
+	
+	private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))
 	
 	private fun getUserDto(user: User) = mapper.map(user, UserDto::class.java)
  

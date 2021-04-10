@@ -2,8 +2,6 @@ package com.svetka.igiftu.config
 
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
-import com.svetka.igiftu.entity.enums.UserRoles
-import java.time.LocalDateTime
 import ma.glasnost.orika.MapperFactory
 import ma.glasnost.orika.MappingContext
 import ma.glasnost.orika.converter.BidirectionalConverter
@@ -34,9 +32,9 @@ class MapperConfig(
             mappingContext: MappingContext
         ): UserDto {
            return UserDto(
-                source.id ?: 0L,
-                source.email,
-                login = source.login,
+	           source.id ?: 0L,
+	           source.email,
+	           login = source.login,
             )
         }
 

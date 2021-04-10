@@ -72,21 +72,32 @@ internal class UserServiceImplTest : UserTest() {
 	}
 	
 	@Test
-	fun createOrUpdateUserSuccessTest() {
-		every { mapper.map(getUserDtoToSave(), User::class.java) } returns getUserToSaveFirst()
-		every { userRepository.save(getUserToSave()) } returns getUser()
-        every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto2()
+	fun updateUserExistsTest() {
+		every { userRepository.existsById(1L) } returns true
+		every { mapper.map(getUserDtoToUpdate(), User::class.java) } returns getUserBeforeUpdate()
+		every { userRepository.save(getUserBeforeUpdate()) } returns getUserAfterUpdate()
+		every { mapper.map(getUserAfterUpdate(), UserDto::class.java) } returns getUserDtoToUpdate()
 		
-		val createdUser = userService.createUser(getUserDtoToSave())
+		val updateUser = userService.updateUser(getUserDtoToUpdate())
 		
-		assertNotNull(createdUser)
-		assertNotNull(createdUser.email)
-		assertNotNull(createdUser.id)
-		assertNotNull(createdUser.login)
+		assertNotNull(updateUser)
+		assertEquals(email1, updateUser.email)
+		assertEquals(login2, updateUser.login)
 		
-		verify { userRepository.save(getUserToSave()) }
-		verify { encoder.encode("1234") }
-		verify { mapper.map(getUser(), UserDto::class.java) }
+		verify {
+			userRepository.existsById(1L)
+			mapper.map(getUserDtoToUpdate(), User::class.java)
+			userRepository.save(getUserBeforeUpdate())
+			mapper.map(getUserAfterUpdate(), UserDto::class.java)
+		}
+		
+	}
+	
+	@Test
+	fun updateUserDoesNotExist() {
+		every { userRepository.existsById(1L) } returns false
+		
+		assertThrows(EntityNotFoundException::class.java) { userService.updateUser(getUserDtoToUpdate())}
 	}
 	
 	@Test

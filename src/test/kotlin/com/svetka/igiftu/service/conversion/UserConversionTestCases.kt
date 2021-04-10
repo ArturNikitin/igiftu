@@ -62,6 +62,6 @@ class UserConversionTestCases {
 	)
     
     private fun createUserDto() = UserDto(
-        email = "email@gmail.com"
+	    email = "email@gmail.com"
     )
 }

@@ -76,18 +76,19 @@ abstract class UserTest {
 		login =  login2
 	)
 	
-	fun getUserToUpdateFirst() = User(
+	fun getUserDtoToUpdate() = UserDto(
 		id = 1L,
-		createdDate = null,
-		password = "0",
 		email = email1,
 		login =  login2,
-		role = null,
-		isEnabled = true,
-		isAccountNonLocked = true
 	)
 	
-	fun getUserToUpdate() = User(
+	fun getUserBeforeUpdate() = User(
+		id = 1L,
+		email = email1,
+		login =  login2
+	)
+	
+	fun getUserAfterUpdate() = User(
 		id = 1L,
 		createdDate = LocalDateTime.now(),
 		password = "0",
@@ -99,7 +100,6 @@ abstract class UserTest {
 	)
 	
 	fun getUserDtoToSave() = UserDto(
-		email =  email2,
-		password = "1234"
+		email =  email2
 	)
 }

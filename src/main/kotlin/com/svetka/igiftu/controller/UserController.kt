@@ -24,8 +24,8 @@ class UserController(
 	}
 	
 	@PostMapping
-	fun createUser(@RequestBody user: UserDto) = userService.createUser(user)
+	fun createUser(@RequestBody user: UserDto) = userService.updateUser(user)
 	
-	@PostMapping
+	@PostMapping("/registration")
 	fun registerUser(@RequestBody user: UserCredentials) = userService.registerUser(user)
 }

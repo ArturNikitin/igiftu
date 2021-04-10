@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service
 @Service
 interface UserService {
     fun getUserById(id: Long) : UserDto
-    fun createUser(userDto: UserDto) : UserDto
+    fun updateUser(userDto: UserDto) : UserDto
     fun registerUser(userCredentials: UserCredentials) : UserDto
 }
