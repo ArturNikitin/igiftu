@@ -1,5 +1,6 @@
 package com.svetka.igiftu.service
 
+import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.enums.UserRoles
@@ -37,6 +38,17 @@ class UserServiceImpl(
 		val savedUser = userRepo.save(mappedUser)
 		
 		return getUserDto(savedUser)
+	}
+	
+	override fun registerUser(userCredentials: UserCredentials): UserDto {
+		val mappedUser = mapper.map(userCredentials, User::class.java).apply {
+			createdDate = LocalDateTime.now()
+			password = encoder.encode(this.password)
+			login = login ?: getLoginFromEmail()
+			role = UserRoles.ROLE_USER
+		}
+		
+		return getUserDto(userRepo.save(mappedUser))
 	}
 	
 	private fun getUserDto(user: User) = mapper.map(user, UserDto::class.java)

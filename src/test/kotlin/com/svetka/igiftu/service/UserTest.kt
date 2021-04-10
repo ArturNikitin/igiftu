@@ -1,5 +1,6 @@
 package com.svetka.igiftu.service
 
+import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.enums.UserRoles
@@ -11,7 +12,13 @@ abstract class UserTest {
 		const val email2 = "email2@gmail.com"
 		const val login1 = "@email"
 		const val login2 = "@email2"
+		const val password1 = "1234"
 	}
+	
+	fun getUserCreds() = UserCredentials(
+		email1,
+		password1
+	)
 	
 	fun getUserToSaveFirst() = User(
 		id = null,
@@ -26,7 +33,7 @@ abstract class UserTest {
 	fun getUserToSave() = User(
 		id = null,
 		createdDate = null,
-		password = "1234",
+		password = password1,
 		email = email1,
 		login =  login1,
 		role = UserRoles.ROLE_USER,
@@ -38,7 +45,7 @@ abstract class UserTest {
 	fun getUser() = User(
 		1L,
 		LocalDateTime.now(),
-		"1234",
+		password1,
 		email1,
 		login1,
 		UserRoles.ROLE_USER,
@@ -49,7 +56,7 @@ abstract class UserTest {
 	fun getUser2() = User(
 		2L,
 		LocalDateTime.now(),
-		"1234",
+		password1,
 		email1,
 		login1,
 		UserRoles.ROLE_USER,

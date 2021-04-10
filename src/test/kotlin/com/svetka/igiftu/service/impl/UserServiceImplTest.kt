@@ -36,6 +36,7 @@ internal class UserServiceImplTest : UserTest() {
 	@BeforeEach
 	fun setUp() {
 		MockKAnnotations.init(this)
+		every { encoder.encode(password1) } returns "XXXXXXXXXXXXXX"
 	}
 	
 	
@@ -75,7 +76,6 @@ internal class UserServiceImplTest : UserTest() {
 		every { mapper.map(getUserDtoToSave(), User::class.java) } returns getUserToSaveFirst()
 		every { userRepository.save(getUserToSave()) } returns getUser()
         every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto2()
-		every { encoder.encode("1234") } returns "XXXXXXXXXXXX"
 		
 		val createdUser = userService.createUser(getUserDtoToSave())
 		
@@ -87,5 +87,23 @@ internal class UserServiceImplTest : UserTest() {
 		verify { userRepository.save(getUserToSave()) }
 		verify { encoder.encode("1234") }
 		verify { mapper.map(getUser(), UserDto::class.java) }
+	}
+	
+	@Test
+	fun registerUser() {
+		every { mapper.map(getUserCreds(), User::class.java) } returns (getUserToSave())
+		every { userRepository.save(getUserToSave()) } returns getUser()
+		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
+		
+		val registeredUser = userService.registerUser(getUserCreds())
+		
+		assertNotNull(registeredUser)
+		assertEquals(email1, registeredUser.email)
+		assertEquals(login1, registeredUser.login)
+		
+		verify { mapper.map(getUserCreds(), User::class.java) }
+		verify { mapper.map(getUser(), UserDto::class.java) }
+		verify { userRepository.save(getUserToSave()) }
+		verify { encoder.encode(password1) }
 	}
 }
