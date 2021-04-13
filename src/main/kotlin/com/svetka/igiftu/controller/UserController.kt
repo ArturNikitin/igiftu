@@ -38,18 +38,4 @@ class UserController(
 	@PostMapping("/registration")
 	@ResponseStatus(HttpStatus.CREATED)
 	fun registerUser(@Valid @RequestBody user: UserCredentials) = userService.registerUser(user)
-	
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(MethodArgumentNotValidException::class)
-	fun handleValidationExceptions(
-		ex: MethodArgumentNotValidException
-	): Map<String, String?> {
-		val errors: MutableMap<String, String?> = HashMap()
-		ex.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
-			val fieldName = (error as FieldError).field
-			val errorMessage = error.getDefaultMessage()
-			errors[fieldName] = errorMessage
-		})
-		return errors
-	}
 }

@@ -2,23 +2,27 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
+import com.svetka.igiftu.security.service.UserDetailsServiceImpl
 import com.svetka.igiftu.service.UserService
+import java.nio.charset.StandardCharsets
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
-@ExtendWith(SpringExtension::class)
 @SpringBootTest
 @AutoConfigureMockMvc
 internal class UserControllerTest {
@@ -46,6 +50,21 @@ internal class UserControllerTest {
 				login = "@bob"
 			)
 		}
+		
+		Mockito.`when`(
+			userService.registerUser(
+				UserCredentials(
+					email = "bobdomain.com",
+					password = "151516"
+				)
+			)
+		).then {
+			UserDto(
+				id = 1L,
+				email = "bobdomain.com",
+				login = "@bob"
+			)
+		}
 	}
 	
 	@Test
@@ -64,10 +83,30 @@ internal class UserControllerTest {
 				.content(user)
 				.contentType(MediaType.APPLICATION_JSON)
 		)
-			.andExpect(MockMvcResultMatchers.status().isCreated)
+			.andExpect(status().isCreated)
 			.andExpect(
-				MockMvcResultMatchers.content()
+				content()
 					.contentType(MediaType.APPLICATION_JSON)
 			)
+	}
+	
+	@Test
+	fun registerUserFailTestIncorrectEmail() {
+		val user = "{\"email\" : \"bobdomain.com\", \"password\": \"151516\" }"
+		val contentAsString = mockMvc.perform(
+			MockMvcRequestBuilders.post("/user/registration")
+				.content(user)
+				.contentType(MediaType.APPLICATION_JSON)
+		)
+			.andExpect(status().isBadRequest)
+			.andExpect(
+				content()
+					.contentType(MediaType.APPLICATION_JSON)
+			)
+			.andReturn()
+			.response.getContentAsString(StandardCharsets.UTF_8)
+		
+		assertEquals("{\"email\":\"Неккоректный имейл\"}", contentAsString)
+		
 	}
 }
