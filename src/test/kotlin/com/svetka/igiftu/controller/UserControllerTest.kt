@@ -3,14 +3,12 @@ package com.svetka.igiftu.controller
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.service.UserService
-import java.nio.charset.Charset
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
@@ -27,9 +25,6 @@ internal class UserControllerTest {
 	
 	@MockBean
 	private lateinit var userService: UserService
-	
-	@Autowired
-	private lateinit var userController: UserController
 	
 	@Autowired
 	private lateinit var mockMvc: MockMvc
@@ -62,8 +57,7 @@ internal class UserControllerTest {
 	}
 	
 	@Test
-	fun registerUser() {
-//		val textPlainUtf8 = MediaType(MediaType.TEXT_PLAIN, Charset.forName("UTF-8"))
+	fun registerUserSuccessTest() {
 		val user = "{\"email\" : \"bob@domain.com\", \"password\": \"151516\" }"
 		mockMvc.perform(
 			MockMvcRequestBuilders.post("/user/registration")
