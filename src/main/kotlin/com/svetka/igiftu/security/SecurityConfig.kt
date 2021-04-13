@@ -4,7 +4,6 @@ import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.JwtTokenVerifier
 import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
 import com.svetka.igiftu.security.service.UserDetailsServiceImpl
-import lombok.RequiredArgsConstructor
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -20,7 +19,6 @@ import javax.crypto.SecretKey
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@RequiredArgsConstructor
 class SecurityConfig(
 	private val userDetailsService: UserDetailsServiceImpl,
 	private val secretKey: SecretKey,
