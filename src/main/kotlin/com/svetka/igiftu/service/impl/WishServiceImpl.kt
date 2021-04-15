@@ -4,6 +4,7 @@ import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.repository.WishRepository
 import com.svetka.igiftu.service.WishService
+import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,13 +16,19 @@ class WishServiceImpl(
 ) : WishService {
 	
 	@Transactional
-	override fun getWishesByUserId(id: Long): List<WishDto> {
-		val allByUserId = wishRepository.getAllByUserId(id)
+	override fun getWishesByUserId(userId: Long): List<WishDto> {
+		val allByUserId = wishRepository.getAllByUserId(userId)
 		return allByUserId.map { mapWishToDto(it) }
 	}
 	
+	override fun getWishById(wishId: Long): WishDto = mapWishToDto(
+		wishRepository.findById(wishId).orElseThrow {
+			EntityNotFoundException("Wish with ID $wishId not found")
+		}
+	)
+	
 	@Transactional
-	override fun getWishesCountByUser(id: Long): Long = wishRepository.countByUserId(id)
+	override fun getWishesCountByUserId(userId: Long): Long = wishRepository.countByUserId(userId)
 	
 	private fun mapWishToDto(wish: Wish) = mapper.map(wish, WishDto::class.java)
 }

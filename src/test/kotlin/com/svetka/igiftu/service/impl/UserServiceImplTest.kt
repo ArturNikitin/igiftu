@@ -3,7 +3,6 @@ package com.svetka.igiftu.service.impl
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.UserRepository
-import com.svetka.igiftu.service.UserServiceImpl
 import com.svetka.igiftu.service.UserTest
 import io.mockk.MockKAnnotations
 import io.mockk.every

@@ -1,7 +1,11 @@
 package com.svetka.igiftu.entity
 
+import com.svetka.igiftu.entity.enums.Access
 import javax.persistence.CascadeType
+import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -17,7 +21,15 @@ class Wish(
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	var id: Long? = null,
 	
-	val name: String,
+	@Column
+	var name: String,
+	
+	@Column
+	var price: Double? = null,
+	
+	@Column
+	@Enumerated(value = EnumType.STRING)
+	var access: Access = Access.PUBLIC,
 	
 	@ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")

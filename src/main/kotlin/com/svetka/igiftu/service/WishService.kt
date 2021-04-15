@@ -3,6 +3,7 @@ package com.svetka.igiftu.service
 import com.svetka.igiftu.dto.WishDto
 
 interface WishService {
-	fun getWishesByUserId(id: Long): List<WishDto>
-	fun getWishesCountByUser(id: Long): Long
+	fun getWishesByUserId(userId: Long): List<WishDto>
+	fun getWishesCountByUserId(userId: Long): Long
+	fun getWishById(wishId: Long) : WishDto
 }
