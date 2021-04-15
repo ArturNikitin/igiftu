@@ -3,13 +3,16 @@ package com.svetka.igiftu.entity
 import com.svetka.igiftu.entity.enums.UserRoles
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
@@ -40,7 +43,10 @@ class User(
 	var isEnabled: Boolean = false,
 
 	@Column(name = "isaccountnonlocked")
-	var isAccountNonLocked: Boolean = false
+	var isAccountNonLocked: Boolean = false,
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
+	val wishes: List<Wish> = emptyList()
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

@@ -1,10 +1,11 @@
-package com.svetka.igiftu.service
+package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.UserRepository
+import com.svetka.igiftu.service.UserService
 import ma.glasnost.orika.MapperFacade
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
