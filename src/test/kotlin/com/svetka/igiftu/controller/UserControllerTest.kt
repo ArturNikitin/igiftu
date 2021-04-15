@@ -4,12 +4,15 @@ import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.security.service.UserDetailsServiceImpl
 import com.svetka.igiftu.service.UserService
+import io.mockk.verify
 import java.nio.charset.StandardCharsets
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
+import org.mockito.Mockito.times
+import org.mockito.verification.VerificationMode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -19,6 +22,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -26,6 +30,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest
 @AutoConfigureMockMvc
 internal class UserControllerTest {
+	
+	companion object {
+		const val id: Long = 1L
+	}
 	
 	@MockBean
 	private lateinit var userService: UserService
@@ -65,10 +73,25 @@ internal class UserControllerTest {
 				login = "@bob"
 			)
 		}
+		
+		Mockito.`when`(
+			userService.getUserById(id)
+		).then {
+			UserDto(
+				id = 1L,
+				email = "bob@domain.com",
+				login = "@bob"
+			)
+		}
 	}
 	
 	@Test
 	fun getUser() {
+		mockMvc.perform(
+			get("/user/$id")
+		).andExpect(status().isOk)
+		
+		Mockito.verify(userService, times(1)).getUserById(id)
 	}
 	
 	@Test
@@ -79,7 +102,7 @@ internal class UserControllerTest {
 	fun registerUserSuccessTest() {
 		val user = "{\"email\" : \"bob@domain.com\", \"password\": \"151516\" }"
 		mockMvc.perform(
-			MockMvcRequestBuilders.post("/user/registration")
+			post("/user/registration")
 				.content(user)
 				.contentType(MediaType.APPLICATION_JSON)
 		)
@@ -94,7 +117,7 @@ internal class UserControllerTest {
 	fun registerUserFailTestIncorrectEmail() {
 		val user = "{\"email\" : \"bobdomain.com\", \"password\": \"151516\" }"
 		val contentAsString = mockMvc.perform(
-			MockMvcRequestBuilders.post("/user/registration")
+			post("/user/registration")
 				.content(user)
 				.contentType(MediaType.APPLICATION_JSON)
 		)
