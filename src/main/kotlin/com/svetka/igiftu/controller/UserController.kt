@@ -3,15 +3,9 @@ package com.svetka.igiftu.controller
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.service.UserService
-import java.util.HashMap
-import java.util.function.Consumer
 import javax.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.validation.FieldError
-import org.springframework.validation.ObjectError
-import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping

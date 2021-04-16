@@ -1,15 +1,19 @@
 package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.dto.WishDto
+import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
+import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.WishRepository
+import com.svetka.igiftu.service.UserTest
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
-import java.util.*
+import java.time.LocalDateTime
+import java.util.Optional
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -109,8 +113,36 @@ internal class WishServiceImplTest {
 	}
 	
 	
-	private fun getSecondWish() = Wish(name = "My second Wish")
+	private fun getSecondWish() = Wish(
+		name = "My second Wish",
+		createdDate = LocalDateTime.now(),
+		lastModifiedDate = LocalDateTime.now(),
+		user = User(
+			1L,
+			LocalDateTime.now(),
+			UserTest.password1,
+			UserTest.email1,
+			UserTest.login1,
+			UserRoles.ROLE_USER,
+			isEnabled = true,
+			isAccountNonLocked = true
+		)
+	)
 	
-	private fun getWish() = Wish(name = "My wish")
+	private fun getWish() = Wish(
+		name = "My wish",
+		createdDate = LocalDateTime.now(),
+		lastModifiedDate = LocalDateTime.now(),
+		user = User(
+			1L,
+			LocalDateTime.now(),
+			UserTest.password1,
+			UserTest.email1,
+			UserTest.login1,
+			UserRoles.ROLE_USER,
+			isEnabled = true,
+			isAccountNonLocked = true
+		)
+	)
 	
 }

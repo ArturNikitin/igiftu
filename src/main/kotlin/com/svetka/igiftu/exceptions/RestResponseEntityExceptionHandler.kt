@@ -43,7 +43,7 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 		request: WebRequest
 	): ResponseEntity<Any> = handleExceptionInternal(
 		ex, ex.message,
-		HttpHeaders.EMPTY, HttpStatus.BAD_REQUEST, request
+		HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
 	)
 	
 }

@@ -124,6 +124,5 @@ internal class UserControllerTest {
 			.response.getContentAsString(StandardCharsets.UTF_8)
 		
 		assertEquals("{\"email\":\"Неккоректный имейл\"}", contentAsString)
-		
 	}
 }

@@ -21,11 +21,22 @@ class WishServiceImpl(
 		return allByUserId.map { mapWishToDto(it) }
 	}
 	
+	@Transactional
 	override fun getWishById(wishId: Long): WishDto = mapWishToDto(
 		wishRepository.findById(wishId).orElseThrow {
 			EntityNotFoundException("Wish with ID $wishId not found")
 		}
 	)
+	
+//	пока просто заглушка
+	override fun createWish(wishDto: WishDto): WishDto {
+		return WishDto(
+			id = 1L,
+			name = "M",
+			price = 10.0,
+			access = "PRIVATE"
+		)
+	}
 	
 	@Transactional
 	override fun getWishesCountByUserId(userId: Long): Long = wishRepository.countByUserId(userId)
