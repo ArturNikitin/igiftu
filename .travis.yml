@@ -6,4 +6,4 @@ branches:
     - develop
     - master
 sudo: false
-script: mvn clean install
+script: mvn clean package
