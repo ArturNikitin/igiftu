@@ -15,12 +15,13 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import javax.crypto.SecretKey
+import org.springframework.security.core.userdetails.UserDetailsService
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class SecurityConfig(
-	private val userDetailsService: UserDetailsServiceImpl,
+	private val userDetailsService: UserDetailsService,
 	private val secretKey: SecretKey,
 	private val jwtConfig: JwtConfig
 ) : WebSecurityConfigurerAdapter() {

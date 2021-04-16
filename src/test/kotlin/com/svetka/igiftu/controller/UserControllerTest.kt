@@ -2,34 +2,26 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
-import com.svetka.igiftu.security.service.UserDetailsServiceImpl
 import com.svetka.igiftu.service.UserService
-import io.mockk.verify
 import java.nio.charset.StandardCharsets
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.Mockito.times
-import org.mockito.verification.VerificationMode
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
-@SpringBootTest
-@AutoConfigureMockMvc
-internal class UserControllerTest {
+@WebMvcTest(UserController::class)
+internal class UserControllerTest : AbstractControllerTest() {
 	
 	companion object {
 		const val id: Long = 1L
@@ -87,8 +79,10 @@ internal class UserControllerTest {
 	
 	@Test
 	fun getUser() {
+		val token = getToken("user@gmail.com")
+		
 		mockMvc.perform(
-			get("/user/$id")
+			get("/user/$id").header("authorization", token)
 		).andExpect(status().isOk)
 		
 		Mockito.verify(userService, times(1)).getUserById(id)

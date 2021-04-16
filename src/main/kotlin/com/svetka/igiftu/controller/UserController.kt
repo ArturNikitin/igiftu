@@ -7,6 +7,7 @@ import java.util.HashMap
 import java.util.function.Consumer
 import javax.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -28,6 +29,7 @@ class UserController(
 ) {
 	
 	@GetMapping("{id}")
+	@PreAuthorize("hasRole('ROLE_USER')")
 	fun getUser(@PathVariable id: Long): UserDto {
 		return userService.getUserById(id)
 	}
