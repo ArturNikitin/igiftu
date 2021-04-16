@@ -13,7 +13,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/igiftu_test
     username: postgres
-    password: root
+    password: 1488
   jpa:
     show-sql: true
     hibernate:
@@ -24,5 +24,4 @@ spring:
   data:
     rest:
       base-path: /api
-
 

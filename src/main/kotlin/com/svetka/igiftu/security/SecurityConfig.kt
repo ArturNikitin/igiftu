@@ -4,7 +4,6 @@ import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.JwtTokenVerifier
 import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
 import com.svetka.igiftu.security.service.UserDetailsServiceImpl
-import lombok.RequiredArgsConstructor
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -16,13 +15,13 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import javax.crypto.SecretKey
+import org.springframework.security.core.userdetails.UserDetailsService
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@RequiredArgsConstructor
 class SecurityConfig(
-	private val userDetailsService: UserDetailsServiceImpl,
+	private val userDetailsService: UserDetailsService,
 	private val secretKey: SecretKey,
 	private val jwtConfig: JwtConfig
 ) : WebSecurityConfigurerAdapter() {
@@ -31,23 +30,23 @@ class SecurityConfig(
 		auth?.userDetailsService(userDetailsService)
 	}
 
-	override fun configure(http: HttpSecurity?) {
-		http?.csrf()?.disable()?.addFilter(
+	override fun configure(http: HttpSecurity) {
+		http.csrf().disable().addFilter(
 			JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
 		)
-			?.addFilterAfter(
+			.addFilterAfter(
 				JwtTokenVerifier(jwtConfig, secretKey),
 				JwtUsernameAndPasswordAuthenticationFilter::class.java
 			)
-			?.sessionManagement()?.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			?.and()?.authorizeRequests()
-			?.antMatchers("/swagger-ui/**")?.permitAll()
-			?.antMatchers("/swagger-resources/**")?.permitAll()
-			?.antMatchers("/v2/api-docs**")?.permitAll()
-			?.antMatchers("/login")?.permitAll()
-			?.antMatchers("/registration")?.permitAll()
-			?.antMatchers("/user/**")?.permitAll()
-			?.antMatchers("/api/**")?.hasRole("ADMIN")
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and().authorizeRequests()
+			.antMatchers("/swagger-ui/**").permitAll()
+			.antMatchers("/swagger-resources/**").permitAll()
+			.antMatchers("/v2/api-docs**").permitAll()
+			.antMatchers("/login").permitAll()
+			.antMatchers("/registration").permitAll()
+			.antMatchers("/user/**").permitAll()
+			.antMatchers("/api/**").hasRole("ADMIN")
 	}
 
 	@Bean

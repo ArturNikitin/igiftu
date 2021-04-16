@@ -1,13 +1,12 @@
 package com.svetka.igiftu.service
 
-interface UserService {
-	fun getUserByEmail(email: String): UserDto
-	fun createUser(userDto: UserDto): UserDto
-}
+import com.svetka.igiftu.dto.UserCredentials
+import com.svetka.igiftu.dto.UserDto
+import org.springframework.stereotype.Service
 
-data class UserDto(
-	val email: String,
-	val password: String,
-	val login: String? = null,
-	val id: Long? = null
-)
+@Service
+interface UserService {
+    fun getUserById(id: Long) : UserDto
+    fun updateUser(userDto: UserDto) : UserDto
+    fun registerUser(userCredentials: UserCredentials) : UserDto
+}

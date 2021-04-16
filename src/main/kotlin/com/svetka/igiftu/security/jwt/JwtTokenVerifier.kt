@@ -21,7 +21,8 @@ class JwtTokenVerifier(
 	private val jwtConfig: JwtConfig,
 	private val secretKey: SecretKey
 ) : OncePerRequestFilter() {
-
+	
+	@Suppress("UNCHECKED_CAST")
 	override fun doFilterInternal(
 		request: HttpServletRequest,
 		response: HttpServletResponse,
