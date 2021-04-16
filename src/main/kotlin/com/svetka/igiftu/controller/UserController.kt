@@ -5,6 +5,10 @@ import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.service.UserService
 import javax.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,6 +26,7 @@ class UserController(
 ) {
 	
 	@GetMapping("{id}")
+	@PreAuthorize("hasRole('ROLE_USER')")
 	fun getUser(@PathVariable id: Long): UserDto {
 		return userService.getUserById(id)
 	}
