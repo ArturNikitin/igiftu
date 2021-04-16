@@ -5,3 +5,5 @@ jdk:
     only:
       - develop
       - master
+sudo: false
+script: mvn clean install
