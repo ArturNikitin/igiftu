@@ -5,14 +5,17 @@ import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.UserRepository
+import com.svetka.igiftu.service.EmailService
 import com.svetka.igiftu.service.UserService
 import ma.glasnost.orika.MapperFacade
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
+import org.springframework.beans.factory.annotation.Autowired
 
 @Service
 class UserServiceImpl(
@@ -20,6 +23,9 @@ class UserServiceImpl(
 	private val mapper: MapperFacade,
 	private val encoder: PasswordEncoder
 ) : UserService {
+	
+	@Autowired
+	private lateinit var emailService: EmailService
 	
 	@Transactional
 	override fun getUserById(id: Long): UserDto =
@@ -46,7 +52,7 @@ class UserServiceImpl(
 				login = login ?: getLoginFromEmail()
 				role = UserRoles.ROLE_USER
 			}
-			
+			CompletableFuture.supplyAsync { emailService.sendEmail(mappedUser.email) }
 			return saveOrUpdateUser(mappedUser)
 		} else {
 			throw EntityExistsException()

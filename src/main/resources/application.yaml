@@ -24,4 +24,15 @@ spring:
   data:
     rest:
       base-path: /api
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: igiftuwishlist@gmail.com
+    password: ykexycqvzteijlom
+    protocol: smtp
+    tls: true
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
+      ssl.trust: smtp.gmail.com
 
