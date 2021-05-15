@@ -3,6 +3,7 @@ package com.svetka.igiftu.service.impl
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.UserRepository
+import com.svetka.igiftu.service.EmailService
 import com.svetka.igiftu.service.UserTest
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -30,6 +31,9 @@ internal class UserServiceImplTest : UserTest() {
 	
 	@MockK
 	private lateinit var encoder: PasswordEncoder
+	
+	@MockK
+	private lateinit var emailService: EmailService
 	
 	@InjectMockKs
 	private lateinit var userService: UserServiceImpl
@@ -109,6 +113,7 @@ internal class UserServiceImplTest : UserTest() {
 		every { userRepository.save(getUserToSave()) } returns getUser()
 		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
 		every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.empty()
+		every { emailService.sendEmail(getUserCreds().email) }
 		
 		val registeredUser = userService.registerUser(getUserCreds())
 		
@@ -122,6 +127,7 @@ internal class UserServiceImplTest : UserTest() {
 			userRepository.save(getUserToSave())
 			encoder.encode(password1)
 			userRepository.getUserByEmail(email1)
+			emailService.sendEmail(getUserCreds().email)
 		}
 	}
 	

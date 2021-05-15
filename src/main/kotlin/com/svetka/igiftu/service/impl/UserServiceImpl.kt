@@ -21,11 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired
 class UserServiceImpl(
 	private val userRepo: UserRepository,
 	private val mapper: MapperFacade,
-	private val encoder: PasswordEncoder
+	private val encoder: PasswordEncoder,
+	private val emailService: EmailService
 ) : UserService {
-	
-	@Autowired
-	private lateinit var emailService: EmailService
 	
 	@Transactional
 	override fun getUserById(id: Long): UserDto =
