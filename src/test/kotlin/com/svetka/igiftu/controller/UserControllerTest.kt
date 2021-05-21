@@ -79,7 +79,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 	
 	@Test
 	fun getUser() {
-		val token = getToken("user@gmail.com")
+		val token = getToken("admin@gmail.com")
 		
 		mockMvc.perform(
 			get("/user/$id").header("authorization", token)

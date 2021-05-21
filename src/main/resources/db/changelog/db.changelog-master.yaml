@@ -36,3 +36,13 @@ databaseChangeLog:
         - sqlFile:
             encoding: utf8
             path: db/sql/20210415_1511_CREATE_WISHES_TABLE.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202104211143
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20210421_1143_INSERT_INTO_USERS_AND_WHISHES.sql
