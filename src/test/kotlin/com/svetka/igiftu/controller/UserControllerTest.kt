@@ -1,14 +1,18 @@
 package com.svetka.igiftu.controller
 
+import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.service.UserService
+import com.svetka.igiftu.service.impl.WishServiceImplTest
 import java.nio.charset.StandardCharsets
+import javax.persistence.EntityNotFoundException
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.times
+import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -24,7 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 internal class UserControllerTest : AbstractControllerTest() {
 	
 	companion object {
-		const val id: Long = 1L
+		const val userId: Long = 1L
 	}
 	
 	@MockBean
@@ -36,7 +40,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 	
 	@BeforeEach
 	fun setUp() {
-		Mockito.`when`(
+		`when`(
 			userService.registerUser(
 				UserCredentials(
 					email = "bob@domain.com",
@@ -51,7 +55,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 			)
 		}
 		
-		Mockito.`when`(
+		`when`(
 			userService.registerUser(
 				UserCredentials(
 					email = "bobdomain.com",
@@ -66,8 +70,8 @@ internal class UserControllerTest : AbstractControllerTest() {
 			)
 		}
 		
-		Mockito.`when`(
-			userService.getUserById(id)
+		`when`(
+			userService.getUserById(userId)
 		).then {
 			UserDto(
 				id = 1L,
@@ -75,17 +79,54 @@ internal class UserControllerTest : AbstractControllerTest() {
 				login = "@bob"
 			)
 		}
+		
+		`when`(
+			userService.getAllWishesByUserId(userId)
+		).then {
+			PayloadDto(true, listOf(WishServiceImplTest.getWishDto()))
+		}
+		
+		`when`(
+		userService.getAllWishesByUserId(2L)
+		).thenThrow(EntityNotFoundException::class.java)
+	}
+	
+	@Test
+	fun getWishesByUserIdUserFound() {
+		val response = mockMvc.perform(
+			get("/user/$userId/wish")
+		).andExpect(status().isOk).andReturn().response.contentAsString
+		
+		assertNotNull(response)
+		println(response)
+		
+		verify(userService, times(1)).getAllWishesByUserId(userId)
+	}
+	
+	@Test
+	fun getWishesByUserIdUserNotFound() {
+		val response = mockMvc.perform(
+			get("/user/2/wish")
+		).andExpect(status().isNotFound).andReturn().response.contentAsString
+		
+		assertNotNull(response)
+		println(response)
+		
+		verify(userService, times(1)).getAllWishesByUserId(2L)
 	}
 	
 	@Test
 	fun getUser() {
 		val token = getToken("admin@gmail.com")
 		
-		mockMvc.perform(
-			get("/user/$id").header("authorization", token)
+		val response = mockMvc.perform(
+			get("/user/$userId").header("authorization", token)
 		).andExpect(status().isOk)
+			.andReturn().response.contentAsString
 		
-		Mockito.verify(userService, times(1)).getUserById(id)
+		assertNotNull(response)
+		println(response)
+		verify(userService, times(1)).getUserById(userId)
 	}
 	
 	@Test

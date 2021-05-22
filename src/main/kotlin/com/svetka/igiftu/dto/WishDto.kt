@@ -8,4 +8,4 @@ data class WishDto (
 	val name: String,
 	val price: Double?,
 	val access: String
-)
+) : Payload()

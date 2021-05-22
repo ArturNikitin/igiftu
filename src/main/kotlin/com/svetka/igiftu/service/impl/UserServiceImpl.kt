@@ -1,5 +1,6 @@
 package com.svetka.igiftu.service.impl
 
+import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
@@ -55,6 +56,10 @@ class UserServiceImpl(
 		} else {
 			throw EntityExistsException()
 		}
+	}
+	
+	override fun getAllWishesByUserId(userId: Long): PayloadDto {
+		return PayloadDto(true)
 	}
 	
 	private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))

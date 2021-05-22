@@ -26,7 +26,7 @@ class UserController(
 	private val userService: UserService
 ) {
 	
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	fun getUser(@PathVariable id: Long): UserDto {
 		return userService.getUserById(id)
@@ -38,4 +38,7 @@ class UserController(
 	@PostMapping("/registration")
 	@ResponseStatus(HttpStatus.CREATED)
 	fun registerUser(@Valid @RequestBody user: UserCredentials) = userService.registerUser(user)
+	
+	@GetMapping("/{userId}/wish")
+	fun getAllWishesByUserId(@PathVariable userId: Long) = userService.getAllWishesByUserId(userId)
 }
