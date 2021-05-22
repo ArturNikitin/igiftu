@@ -3,6 +3,7 @@ package com.svetka.igiftu.service.impl
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
+import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.UserRepository
@@ -17,7 +18,6 @@ import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
-import org.springframework.beans.factory.annotation.Autowired
 
 @Service
 class UserServiceImpl(
@@ -60,9 +60,16 @@ class UserServiceImpl(
 		}
 	}
 	
+	@Transactional
 	override fun getAllWishesByUserId(userId: Long): PayloadDto {
 		checkConditions(userId)
 		return PayloadDto(isOwner(userId), wishService.getWishesByUserId(userId))
+	}
+	
+	@Transactional
+	override fun createWish(userId: Long, createWishDto: WishDto): WishDto {
+		checkConditions(userId)
+		return WishDto(name = "test")
 	}
 	
 	private fun checkConditions(userId: Long) {

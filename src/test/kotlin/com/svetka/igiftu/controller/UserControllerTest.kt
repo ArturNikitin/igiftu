@@ -11,7 +11,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -89,6 +88,43 @@ internal class UserControllerTest : AbstractControllerTest() {
 		`when`(
 		userService.getAllWishesByUserId(2L)
 		).thenThrow(EntityNotFoundException::class.java)
+		
+		`when`(
+			userService.createWish(1L, WishServiceImplTest.createWishDto())
+		).then {
+			WishServiceImplTest.createWishDto()
+		}
+		
+		`when`(
+			userService.createWish(2L, WishServiceImplTest.createWishDto())
+		).thenThrow(EntityNotFoundException::class.java)
+	}
+	
+	@Test
+	fun createWish() {
+		val wish = "{\n\"name\": \"Create wish\"\n}"
+		val response = mockMvc.perform(
+			post("/user/$userId/wish")
+				.content(wish)
+				.contentType(MediaType.APPLICATION_JSON)
+		).andExpect(status().isCreated)
+			.andReturn().response.contentAsString
+		
+		assertNotNull(response)
+		
+		verify(userService, times(1)).createWish(userId, WishServiceImplTest.createWishDto())
+	}
+	
+	@Test
+	fun createWishUserNotFound() {
+		val wish = "{\n\"name\": \"Create wish\"\n}"
+		mockMvc.perform(
+			post("/user/2/wish")
+				.content(wish)
+				.contentType(MediaType.APPLICATION_JSON)
+		).andExpect(status().isNotFound)
+		
+		verify(userService, times(1)).createWish(2L, WishServiceImplTest.createWishDto())
 	}
 	
 	@Test
