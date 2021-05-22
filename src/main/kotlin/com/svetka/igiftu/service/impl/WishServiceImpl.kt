@@ -28,7 +28,7 @@ class WishServiceImpl(
 		}
 	)
 	
-//	пока просто заглушка
+//	TODO пока просто заглушка
 	override fun createWish(wishDto: WishDto): WishDto {
 		return WishDto(
 			id = 1L,

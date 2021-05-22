@@ -8,6 +8,7 @@ import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.EmailService
 import com.svetka.igiftu.service.UserService
+import com.svetka.igiftu.service.WishService
 import ma.glasnost.orika.MapperFacade
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -23,7 +24,8 @@ class UserServiceImpl(
 	private val userRepo: UserRepository,
 	private val mapper: MapperFacade,
 	private val encoder: PasswordEncoder,
-	private val emailService: EmailService
+	private val emailService: EmailService,
+	private val wishService: WishService
 ) : UserService {
 	
 	@Transactional
@@ -59,8 +61,15 @@ class UserServiceImpl(
 	}
 	
 	override fun getAllWishesByUserId(userId: Long): PayloadDto {
-		return PayloadDto(true)
+		checkConditions(userId)
+		return PayloadDto(isOwner(userId), wishService.getWishesByUserId(userId))
 	}
+	
+	private fun checkConditions(userId: Long) {
+		if (!userRepo.existsById(userId)) throw EntityNotFoundException("User with id $userId not found")
+	}
+	//TODO add logic to this method
+	private fun isOwner(userId: Long) = userId > 0 
 	
 	private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))
 	

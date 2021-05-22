@@ -1,10 +1,12 @@
 package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.dto.UserDto
+import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.EmailService
 import com.svetka.igiftu.service.UserTest
+import com.svetka.igiftu.service.WishService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -19,7 +21,9 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.function.Executable
 import org.springframework.security.crypto.password.PasswordEncoder
+import com.svetka.igiftu.service.impl.WishServiceImplTest.Companion as WishServiceImplTest1
 
 internal class UserServiceImplTest : UserTest() {
 	
@@ -35,6 +39,9 @@ internal class UserServiceImplTest : UserTest() {
 	@MockK
 	private lateinit var emailService: EmailService
 	
+	@MockK
+	private lateinit var wishService: WishService
+	
 	@InjectMockKs
 	private lateinit var userService: UserServiceImpl
 	
@@ -42,8 +49,48 @@ internal class UserServiceImplTest : UserTest() {
 	fun setUp() {
 		MockKAnnotations.init(this)
 		every { encoder.encode(password1) } returns "XXXXXXXXXXXXXX"
+		
+		every { userRepository.existsById(1L) } returns true
+		
+		every { userRepository.existsById(2L) } returns false
 	}
 	
+	@Test
+	fun getAllWishesByUserIdSuccessIsOwnerWithWishes() {
+		every { wishService.getWishesByUserId(1L) } returns
+			listOf(WishServiceImplTest1.getWishDto(),WishServiceImplTest1.getSecondWishDto())
+		
+		val payloadDto = userService.getAllWishesByUserId(1L)
+		
+		assertNotNull(payloadDto)
+		assertEquals(true, payloadDto.isOwner)
+		assertEquals(2, payloadDto.payload.size)
+		
+		verify {
+			userRepository.existsById(1L)
+		}
+	}
+	
+	@Test
+	fun getAllWishesByUserIdSuccessIsOwnerNoWishes() {
+		every { wishService.getWishesByUserId(1L) } returns emptyList()
+		
+		val payloadDto = userService.getAllWishesByUserId(1L)
+		
+		assertNotNull(payloadDto)
+		assertEquals(true, payloadDto.isOwner)
+		assertEquals(emptyList<WishDto>(), payloadDto.payload)
+		
+		verify {
+			userRepository.existsById(1L)
+			wishService.getWishesByUserId(1L)
+		}
+	}
+	
+	@Test
+	fun getAllWishesByUserIdUserNotFound() {
+		assertThrows(EntityNotFoundException::class.java) { userService.getAllWishesByUserId(2L) }
+	}
 	
 	@Test
 	fun getUserByIdSuccessTest() {
