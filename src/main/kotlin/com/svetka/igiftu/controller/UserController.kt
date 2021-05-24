@@ -1,10 +1,12 @@
 package com.svetka.igiftu.controller
 
+import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.UserService
 import javax.validation.Valid
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
 	private val userService: UserService
 ) {
+	private val logger = KotlinLogging.logger { }
 	
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -37,7 +40,10 @@ class UserController(
 	fun registerUser(@Valid @RequestBody user: UserCredentials) = userService.registerUser(user)
 	
 	@GetMapping("/{userId}/wish")
-	fun getAllWishesByUserId(@PathVariable userId: Long) = userService.getAllWishesByUserId(userId)
+	fun getAllWishesByUserId(@PathVariable userId: Long): PayloadDto {
+		logger.info { "Request to get all wishes for user with id $userId" }
+		return userService.getAllWishesByUserId(userId)
+	}
 	
 	@PostMapping("/{userId}/wish")
 	@ResponseStatus(CREATED)

@@ -56,7 +56,7 @@ class UserServiceImpl(
 			CompletableFuture.supplyAsync { emailService.sendEmail(mappedUser.email) }
 			return saveOrUpdateUser(mappedUser)
 		} else {
-			throw EntityExistsException()
+			throw EntityNotFoundException("Пользователь с имейлом ${userCredentials.email} уже существует")
 		}
 	}
 	
