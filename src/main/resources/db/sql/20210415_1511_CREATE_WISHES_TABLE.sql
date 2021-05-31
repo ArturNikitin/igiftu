@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS Wishes
 (
-    id                 SERIAL PRIMARY KEY,
+    id                 BIGSERIAL PRIMARY KEY,
     created_date       TIMESTAMP   NOT NULL,
     last_modified_date TIMESTAMP   NOT NULL,
     name               VARCHAR(50) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS Wishes
     is_completed       BOOLEAN     NOT NULL,
     is_analog_possible BOOLEAN     NOT NULL,
     access             VARCHAR(20) NOT NULL,
-    price              MONEY,
+    price              DOUBLE PRECISION,
     location           VARCHAR,
     details            VARCHAR(2048),
     link               VARCHAR(2048),

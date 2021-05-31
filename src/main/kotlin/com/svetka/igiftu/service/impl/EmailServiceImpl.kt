@@ -11,7 +11,11 @@ class EmailServiceImpl(
 ) : EmailService {
 	private val subjectOnRegistration = "Добро пожаловать от I GIFT YOU!"
 	private val textOnRegistration = "Рады приветствовать вас на нашем сайте! Всегда получайте только желанные подарки!"
-	
+
+	override fun sendResetPasswordEmail(email: String, token: String) {
+		TODO("Not yet implemented")
+	}
+
 	override fun sendEmail(email: String) {
 		SimpleMailMessage()
 			.apply {

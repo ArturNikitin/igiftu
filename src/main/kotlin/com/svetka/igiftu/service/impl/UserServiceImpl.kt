@@ -8,81 +8,96 @@ import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.EmailService
+import com.svetka.igiftu.service.TokenService
 import com.svetka.igiftu.service.UserService
 import com.svetka.igiftu.service.WishService
-import ma.glasnost.orika.MapperFacade
-import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
+import ma.glasnost.orika.MapperFacade
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserServiceImpl(
-	private val userRepo: UserRepository,
-	private val mapper: MapperFacade,
-	private val encoder: PasswordEncoder,
-	private val emailService: EmailService,
-	private val wishService: WishService
+    private val userRepo: UserRepository,
+    private val mapper: MapperFacade,
+    private val encoder: PasswordEncoder,
+    private val emailService: EmailService,
+    private val wishService: WishService,
+    private val tokenService: TokenService
 ) : UserService {
-	
-	@Transactional
-	override fun getUserById(id: Long): UserDto =
-		userRepo.findById(id).map {
-			getUserDto(it)
-		}.orElseThrow { EntityNotFoundException("User with id $id not found ") }
-	
-	@Transactional
-	override fun updateUser(userDto: UserDto): UserDto =
-		userRepo.findById(userDto.id).map {
-			saveOrUpdateUser(it.apply {
-				login = userDto.login
-			})
-		}.orElseThrow { EntityNotFoundException("User with id ${userDto.id} not found ") }
-	
-	
-	@Transactional
-	override fun registerUser(userCredentials: UserCredentials): UserDto {
-		if (userRepo.getUserByEmail(userCredentials.email).isEmpty) {
-			
-			val mappedUser = mapper.map(userCredentials, User::class.java).apply {
-				createdDate = LocalDateTime.now()
-				password = encoder.encode(this.password)
-				login = login ?: getLoginFromEmail()
-				role = UserRoles.ROLE_USER
-			}
-			CompletableFuture.supplyAsync { emailService.sendEmail(mappedUser.email) }
-			return saveOrUpdateUser(mappedUser)
-		} else {
-			throw EntityNotFoundException("Пользователь с имейлом ${userCredentials.email} уже существует")
-		}
-	}
-	
-	@Transactional
-	override fun getAllWishesByUserId(userId: Long): PayloadDto {
-		checkConditions(userId)
-		return PayloadDto(isOwner(userId), wishService.getWishesByUserId(userId))
-	}
-	
-	@Transactional
-	override fun createWish(userId: Long, createWishDto: WishDto): WishDto {
-		checkConditions(userId)
-		return WishDto(name = "test")
-	}
-	
-	private fun checkConditions(userId: Long) {
-		if (!userRepo.existsById(userId)) throw EntityNotFoundException("User with id $userId not found")
-	}
-	//TODO add logic to this method
-	private fun isOwner(userId: Long) = userId > 0 
-	
-	private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))
-	
-	private fun getUserDto(user: User) = mapper.map(user, UserDto::class.java)
-	
-	private fun User.getLoginFromEmail() = "@" + email
-		.replaceAfter("@", "")
-		.removeSuffix("@")
+
+    @Transactional
+    override fun getUserById(id: Long): UserDto =
+        userRepo.findById(id).map {
+            getUserDto(it)
+        }.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
+
+    override fun resetPassword(email: String) {
+        val user = userRepo.getUserByEmail(email)
+            .orElseThrow { EntityNotFoundException("User with email $email was not found ") }
+
+        CompletableFuture.supplyAsync { tokenService.addPasswordTokenForUser(user) }
+            .thenApply { emailService.sendResetPasswordEmail(email, it) }
+    }
+
+    @Transactional
+    override fun updateUser(userDto: UserDto): UserDto =
+        userRepo.findById(userDto.id).map {
+            saveOrUpdateUser(it.apply {
+                login = userDto.login
+            })
+        }.orElseThrow { EntityNotFoundException("User with id ${userDto.id} not found ") }
+
+
+    @Transactional
+    override fun registerUser(userCredentials: UserCredentials): UserDto {
+        if (userRepo.getUserByEmail(userCredentials.email).isEmpty) {
+
+            val mappedUser = mapper.map(userCredentials, User::class.java).apply {
+                createdDate = LocalDateTime.now()
+                password = encoder.encode(this.password)
+                login = login ?: getLoginFromEmail()
+                role = UserRoles.ROLE_USER
+            }
+            CompletableFuture.supplyAsync { emailService.sendEmail(mappedUser.email) }
+            return saveOrUpdateUser(mappedUser)
+        } else {
+            throw EntityExistsException("Пользователь с имейлом ${userCredentials.email} уже существует")
+        }
+    }
+
+    @Transactional
+    override fun getAllWishesByUserId(userId: Long): PayloadDto {
+        checkConditions(userId)
+        return PayloadDto(isOwner(userId), wishService.getWishesByUserId(userId))
+    }
+
+    @Transactional
+    override fun createWish(userId: Long, createWishDto: WishDto): WishDto {
+        checkConditions(userId)
+        return WishDto(name = "test")
+    }
+
+    private fun checkConditions(userId: Long) = doesUserExist(userId)
+
+
+    private fun doesUserExist(userId: Long = 0, email: String = "") =
+        if (userRepo.existsByIdOrEmail(userId, email)) true
+        else throw EntityNotFoundException("User with id $userId not found")
+
+
+    //TODO add logic to this method
+    private fun isOwner(userId: Long) = userId > 0
+
+    private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))
+
+    private fun getUserDto(user: User) = mapper.map(user, UserDto::class.java)
+
+    private fun User.getLoginFromEmail() = "@" + email
+        .replaceAfter("@", "")
+        .removeSuffix("@")
 }

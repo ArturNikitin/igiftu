@@ -99,7 +99,22 @@ internal class UserControllerTest : AbstractControllerTest() {
 			userService.createWish(2L, WishServiceImplTest.createWishDto())
 		).thenThrow(EntityNotFoundException::class.java)
 	}
-	
+
+	@Test
+	fun restorePassword() {
+		val email = "{\n\"email\": \"artur@mail.com\"\n}"
+
+		val response = mockMvc.perform(
+			post("/user/password")
+				.content(email)
+				.contentType(MediaType.APPLICATION_JSON)
+		).andExpect(status().isOk).andReturn().response.contentAsString
+
+		assertNotNull(response)
+
+		verify(userService, times(1)).resetPassword("artur@mail.com")
+	}
+
 	@Test
 	fun createWish() {
 		val wish = "{\n\"name\": \"Create wish\"\n}"
