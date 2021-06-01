@@ -7,6 +7,7 @@ import com.svetka.igiftu.service.TokenService
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
+import javax.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,6 +22,14 @@ class TokenServiceImpl(
             .orElseGet { getToken(user) }
 
         return tokenRepo.save(token).passwordToken
+    }
+
+//    TODO сделать нормальное исключение для просроченного токена
+    override fun verifyToken(token: String): User {
+        val token = tokenRepo.getTokenByPasswordToken(token)
+            .orElseThrow { EntityNotFoundException("Token not found") }
+        if (token.expirationDate.isAfter(LocalDateTime.now())) return token.user
+        else throw EntityNotFoundException("YOUR TOKEN IS EXPIRED")
     }
 
     private fun updateToken(token: Optional<Token>) {

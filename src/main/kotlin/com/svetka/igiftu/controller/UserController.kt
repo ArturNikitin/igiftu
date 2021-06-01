@@ -1,6 +1,7 @@
 package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.EmailDto
+import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
@@ -56,11 +57,17 @@ class UserController(
     }
 
     @PostMapping("/password")
-    fun resetPassword(
-        @RequestBody email: EmailDto
-    ): String {
+    fun resetPassword(@RequestBody email: EmailDto): String {
         userService.resetPassword(email.email)
 
        return "На ваш имейл отправлены ссылка для перехода обновление пароля"
+    }
+
+    @PostMapping("/password/update")
+    fun updatePassword(
+        @RequestBody passwordDto: PasswordDto) : String {
+        userService.updatePassword(passwordDto)
+
+        return "Ваш пароль был успешно изменен"
     }
 }
