@@ -70,7 +70,6 @@ internal class UserServiceImplTest : UserTest() {
 
         verify {
             userRepository.getUserByEmail(email1)
-            tokenService.addPasswordTokenForUser(getUser())
         }
     }
 
