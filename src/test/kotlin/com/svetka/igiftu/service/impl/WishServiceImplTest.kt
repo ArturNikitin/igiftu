@@ -24,6 +24,10 @@ import org.junit.jupiter.api.Test
 internal class WishServiceImplTest {
 	
 	companion object {
+		fun createWishDto() = WishDto(
+			name = "Create wish"
+		)
+		
 		fun getWishDto() = WishDto(
 			name = "My wish",
 			price = 17.00,

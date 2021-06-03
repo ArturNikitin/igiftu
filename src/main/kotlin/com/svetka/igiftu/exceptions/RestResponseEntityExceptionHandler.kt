@@ -2,6 +2,7 @@ package com.svetka.igiftu.exceptions
 
 import java.util.*
 import java.util.function.Consumer
+import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -45,5 +46,16 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 		ex, ex.message,
 		HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
 	)
-	
+
+	@ExceptionHandler(
+		value = [EntityExistsException::class]
+	)
+	fun handleEntityExists(
+		ex: EntityNotFoundException,
+		request: WebRequest
+	): ResponseEntity<Any> = handleExceptionInternal(
+		ex, ex.message,
+		HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
+	)
+
 }

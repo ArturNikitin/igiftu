@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS Users
 (
-    id                 SERIAL PRIMARY KEY,
+    id                 BIGSERIAL PRIMARY KEY,
     created_date       TIMESTAMP   NOT NULL,
     email              VARCHAR     UNIQUE,
     password           VARCHAR     NOT NULL,

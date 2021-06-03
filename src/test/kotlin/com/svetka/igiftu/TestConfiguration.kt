@@ -18,7 +18,7 @@ class TestConfiguration {
 	fun userDetailsService() = UserDetailsService {
 		when(it) {
 			"user@gmail.com" -> MyUserDetails("user@gmail.com", "\$2a\$08\$NsQrzwudraY79SzZB0jpVe/1YZpan5EZPJ4WXGmv.bPjtDVsXrZ.q", UserRoles.ROLE_USER.toString())
-			"admin@gmail.com" -> MyUserDetails("admin@gmail.com", "1234", "ROLE_USER")
+			"admin@gmail.com" -> MyUserDetails("admin@gmail.com", "\$2a\$08\$NsQrzwudraY79SzZB0jpVe/1YZpan5EZPJ4WXGmv.bPjtDVsXrZ.q", "ROLE_ADMIN")
 			else -> throw UsernameNotFoundException("User with email $it not found")
 		}
 	}
