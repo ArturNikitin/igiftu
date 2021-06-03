@@ -31,7 +31,8 @@ class SecurityConfig(
 	}
 
 	override fun configure(http: HttpSecurity) {
-		http.csrf().disable().addFilter(
+		http.cors().and()
+			.csrf().disable().addFilter(
 			JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
 		)
 			.addFilterAfter(

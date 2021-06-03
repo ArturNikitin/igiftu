@@ -3,6 +3,7 @@ package com.svetka.igiftu.controller
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.WishService
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/wish")
+@CrossOrigin
 class WishController(
 	private val wishService: WishService
 ) {
