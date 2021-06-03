@@ -1,10 +1,5 @@
-# Active profile
-spring:
-  profiles:
-    active: DEV
----
 
-#DEV
+#Default
 server:
   port: 8081
 
