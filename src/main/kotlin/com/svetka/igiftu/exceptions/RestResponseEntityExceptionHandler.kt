@@ -51,7 +51,7 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 		value = [EntityExistsException::class]
 	)
 	fun handleEntityExists(
-		ex: EntityNotFoundException,
+		ex: EntityExistsException,
 		request: WebRequest
 	): ResponseEntity<Any> = handleExceptionInternal(
 		ex, ex.message,
