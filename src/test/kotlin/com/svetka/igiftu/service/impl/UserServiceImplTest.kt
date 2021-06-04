@@ -199,7 +199,7 @@ internal class UserServiceImplTest : UserTest() {
             userRepository.save(getUserToSave())
             encoder.encode(password1)
             userRepository.getUserByEmail(email1)
-            emailService.sendEmail(getUserCreds().email)
+            emailService.sendEmail(email1)
         }
     }
 
