@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
+import mu.KotlinLogging
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,6 +31,7 @@ class UserServiceImpl(
     private val wishService: WishService,
     private val tokenService: TokenService
 ) : UserService {
+    private val logger = KotlinLogging.logger { }
 
     override fun updatePassword(password: PasswordDto) {
         val user = tokenService.verifyToken(password.token)
@@ -62,6 +64,7 @@ class UserServiceImpl(
 
     @Transactional
     override fun registerUser(userCredentials: UserCredentials): UserDto {
+        logger.info { "Trying to register user with email ${userCredentials.email}" }
         if (userRepo.getUserByEmail(userCredentials.email).isEmpty) {
 
             val mappedUser = mapper.map(userCredentials, User::class.java).apply {
@@ -71,8 +74,10 @@ class UserServiceImpl(
                 role = UserRoles.ROLE_USER
             }
             CompletableFuture.supplyAsync { emailService.sendEmail(mappedUser.email) }
+            logger.info { "Saving new user with email ${userCredentials.email}" }
             return saveOrUpdateUser(mappedUser)
         } else {
+            logger.info {"User with email ${userCredentials.email} already exists"}
             throw EntityExistsException("Пользователь с имейлом ${userCredentials.email} уже существует")
         }
     }

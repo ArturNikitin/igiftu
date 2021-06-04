@@ -1,9 +1,10 @@
 package com.svetka.igiftu.exceptions
 
-import java.util.*
+import java.util.HashMap
 import java.util.function.Consumer
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
+import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,45 +18,46 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
-	
-	override fun handleMethodArgumentNotValid(
-		ex: MethodArgumentNotValidException,
-		headers: HttpHeaders,
-		status: HttpStatus,
-		request: WebRequest
-	): ResponseEntity<Any> {
-		val errors: MutableMap<String, String?> = HashMap()
-		ex.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
-			val fieldName = (error as FieldError).field
-			val errorMessage = error.getDefaultMessage()
-			errors[fieldName] = errorMessage
-		})
-		return handleExceptionInternal(
-			ex, errors, HttpHeaders.EMPTY,
-			HttpStatus.BAD_REQUEST, request
-		)
-	}
-	
-	@ExceptionHandler(
-		value = [EntityNotFoundException::class]
-	)
-	fun handleEntityNotFound(
-		ex: EntityNotFoundException,
-		request: WebRequest
-	): ResponseEntity<Any> = handleExceptionInternal(
-		ex, ex.message,
-		HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
-	)
+    private val logger = KotlinLogging.logger { }
 
-	@ExceptionHandler(
-		value = [EntityExistsException::class]
-	)
-	fun handleEntityExists(
-		ex: EntityExistsException,
-		request: WebRequest
-	): ResponseEntity<Any> = handleExceptionInternal(
-		ex, ex.message,
-		HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
-	)
+    override fun handleMethodArgumentNotValid(
+        ex: MethodArgumentNotValidException,
+        headers: HttpHeaders,
+        status: HttpStatus,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+        val errors: MutableMap<String, String?> = HashMap()
+        ex.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
+            val fieldName = (error as FieldError).field
+            val errorMessage = error.getDefaultMessage()
+            errors[fieldName] = errorMessage
+        })
+        return handleExceptionInternal(
+            ex, errors, HttpHeaders.EMPTY,
+            HttpStatus.BAD_REQUEST, request
+        )
+    }
+
+    @ExceptionHandler(
+        value = [EntityNotFoundException::class]
+    )
+    fun handleEntityNotFound(
+        ex: EntityNotFoundException,
+        request: WebRequest
+    ): ResponseEntity<Any> = handleExceptionInternal(
+        ex, ex.message,
+        HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
+    )
+
+    @ExceptionHandler(
+        value = [EntityExistsException::class]
+    )
+    fun handleEntityExists(
+        ex: EntityExistsException,
+        request: WebRequest
+    ): ResponseEntity<Any> = handleExceptionInternal(
+        ex, ex.message,
+        HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
+    )
 
 }
