@@ -1,0 +1,18 @@
+{
+  "headerRequest": {
+    "creationDateTime": "2020-12-03T06:07:13.166Z",
+    "messageID": "123456789",
+    "systemFrom": "lgc",
+    "systemTo": "CustomerHub"
+  },
+  "messageRequest": {
+
+    "mode": "active",
+    "cifcontactReference": [
+      {
+        "externalId": "327374",
+        "systemNumber": "SBL_FR"
+      }
+    ]
+  }
+}
