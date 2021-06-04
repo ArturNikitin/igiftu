@@ -185,7 +185,7 @@ internal class UserServiceImplTest : UserTest() {
         every { userRepository.save(getUserToSave()) } returns getUser()
         every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
         every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.empty()
-        every { emailService.sendEmail(getUserCreds().email) }
+        every { emailService.sendEmail(getUserCreds().email) } returns Unit
 
         val registeredUser = userService.registerUser(getUserCreds())
 
