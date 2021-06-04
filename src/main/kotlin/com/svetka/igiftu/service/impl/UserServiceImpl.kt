@@ -1,5 +1,6 @@
 package com.svetka.igiftu.service.impl
 
+import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
@@ -29,6 +30,12 @@ class UserServiceImpl(
     private val wishService: WishService,
     private val tokenService: TokenService
 ) : UserService {
+
+    override fun updatePassword(password: PasswordDto) {
+        val user = tokenService.verifyToken(password.token)
+        user.password = encoder.encode(password.password)
+        userRepo.save(user)
+    }
 
     @Transactional
     override fun getUserById(id: Long): UserDto =

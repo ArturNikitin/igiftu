@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface TokenRepository : JpaRepository<Token, Long> {
     fun getByUserId(userId: Long) : Optional<Token>
+    fun getTokenByPasswordToken(string: String) : Optional<Token>
 }
