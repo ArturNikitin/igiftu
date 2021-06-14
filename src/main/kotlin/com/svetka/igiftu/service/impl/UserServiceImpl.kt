@@ -73,7 +73,7 @@ class UserServiceImpl(
                 login = login ?: getLoginFromEmail()
                 role = UserRoles.ROLE_USER
             }
-            CompletableFuture.supplyAsync { emailService.sendEmail(mappedUser.email) }
+            CompletableFuture.supplyAsync { emailService.sendWelcomingEmail(mappedUser.email) }
             logger.info { "Saving new user with email ${userCredentials.email}" }
             return saveOrUpdateUser(mappedUser)
         } else {

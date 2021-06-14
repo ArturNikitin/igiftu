@@ -16,7 +16,7 @@ class EmailServiceImpl(
 		TODO("Not yet implemented")
 	}
 
-	override fun sendEmail(email: String) {
+	override fun sendWelcomingEmail(email: String) {
 		SimpleMailMessage()
 			.apply {
 				setFrom("igiftuwishlist@gmail.com")
