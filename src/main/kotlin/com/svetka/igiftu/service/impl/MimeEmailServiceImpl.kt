@@ -17,28 +17,38 @@ import org.springframework.stereotype.Service
 @Service
 @Primary
 class MimeEmailServiceImpl(
-    private val mailSender: JavaMailSender
+        private val mailSender: JavaMailSender
 ) : EmailService {
     private val logger = KotlinLogging.logger { }
     private val subjectOnRegistration = "Привет и добро пожаловать в I GIFT YOU!"
 
-//    TODO REFACTORING
+    //    TODO REFACTORING
     override fun sendResetPasswordEmail(email: String, token: String) {
+        logger.info { "Preparing data to send email to $email" }
         val multipart = MimeMultipart()
         val bodyPart = MimeBodyPart()
+        val linkToResetPassword = "http://localhost:8081/user/password/update?token=$token"
 
-        bodyPart.setText("перейдите по ссылке с http://localhost:8081/user/password/update?token=$token")
+        try {
+            val content = Files.readString(Paths.get("src/main/resources/static/reset-password-email.html"))
+            val updatedContent = content.replace("url/resetpassword", linkToResetPassword)
+            bodyPart.setContent(updatedContent, "text/html; charset=UTF-8")
+        } catch (ex: Exception) {
+            logger.error { "${ex.message}" }
+        }
+
         multipart.addBodyPart(bodyPart)
 
         sendEmail(email, multipart, "Сбросить пароль I GIFT YOU")
     }
 
-    override fun sendEmail(email: String) {
+    override fun sendWelcomingEmail(email: String) {
+        logger.info { "Preparing data to send email to $email" }
         val multipart = MimeMultipart("related")
         val bodyPart = MimeBodyPart()
         val imagePart = MimeBodyPart()
         try {
-            val content = Files.readString(Paths.get("src/main/resources/static/email-inlined.html"))
+            val content = Files.readString(Paths.get("src/main/resources/static/welcoming-email.html"))
             bodyPart.setContent(content, "text/html; charset=UTF-8")
             val dataSource = FileDataSource("src/main/resources/static/pictures/img.png")
             imagePart.dataHandler = DataHandler(dataSource)

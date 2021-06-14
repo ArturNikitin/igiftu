@@ -36,7 +36,7 @@ class EmailServiceTest {
 	
 	@Test
 	fun sendEmailTest() {
-		emailService.sendEmail(email)
+		emailService.sendWelcomingEmail(email)
 		
 		verify(exactly = 1) { emailSender.send(SimpleMailMessage().apply {
 			setFrom("igiftuwishlist@gmail.com")
