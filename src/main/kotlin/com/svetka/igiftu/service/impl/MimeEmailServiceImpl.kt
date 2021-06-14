@@ -38,7 +38,7 @@ class MimeEmailServiceImpl(
         val bodyPart = MimeBodyPart()
         val imagePart = MimeBodyPart()
         try {
-            val content = Files.readString(Paths.get("src/main/resources/static/email-inlined.html"))
+            val content = Files.readString(Paths.get("src/main/resources/static/email-inlined-new.html"))
             bodyPart.setContent(content, "text/html; charset=UTF-8")
             val dataSource = FileDataSource("src/main/resources/static/pictures/img.png")
             imagePart.dataHandler = DataHandler(dataSource)
