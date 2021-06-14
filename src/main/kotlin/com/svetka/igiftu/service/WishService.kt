@@ -7,4 +7,5 @@ interface WishService {
 	fun getWishesCountByUserId(userId: Long): Long
 	fun getWishById(wishId: Long) : WishDto
 	fun createWish(wishDto: WishDto): WishDto
+	fun deleteWish(wishId: Long)
 }
