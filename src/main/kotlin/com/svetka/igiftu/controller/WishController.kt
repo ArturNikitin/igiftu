@@ -4,7 +4,9 @@ import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.WishService
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @RestController
 @RequestMapping("/wish")
@@ -23,7 +25,10 @@ class WishController(
     fun createOrUpdate(@RequestBody wishDto: WishDto) = wishService.createWish(wishDto)
 
     @DeleteMapping("/{wishId}")
-    fun deleteWish(@PathVariable wishId: Long) {
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    fun deleteWish(@PathVariable wishId: Long, principal: Principal) {
+        logger.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
         wishService.deleteWish(wishId)
+        logger.info { "Completed request to delete wish with id with id {$wishId} and user ${principal.name}" }
     }
 }

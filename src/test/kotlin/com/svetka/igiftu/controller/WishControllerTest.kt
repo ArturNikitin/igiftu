@@ -59,8 +59,11 @@ internal class WishControllerTest : AbstractControllerTest() {
 
 	@Test
 	fun deleteWish() {
+		val token = getToken("user@gmail.com")
+
 		mockMvc.perform(
 				delete("/wish/$id")
+						.header("authorization", token)
 		).andExpect(status().isOk)
 
 		Mockito.verify(wishService, times(1)).deleteWish(id)
