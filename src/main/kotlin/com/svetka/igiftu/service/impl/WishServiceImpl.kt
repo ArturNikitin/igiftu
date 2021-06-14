@@ -27,7 +27,7 @@ class WishServiceImpl(
 			EntityNotFoundException("Wish with ID $wishId not found")
 		}
 	)
-	
+
 //	TODO пока просто заглушка
 	@Transactional
 	override fun createWish(wishDto: WishDto): WishDto {
@@ -38,7 +38,11 @@ class WishServiceImpl(
 			access = "PRIVATE"
 		)
 	}
-	
+
+	override fun deleteWish(wishId: Long) {
+
+	}
+
 	@Transactional
 	override fun getWishesCountByUserId(userId: Long): Long = wishRepository.countByUserId(userId)
 	
