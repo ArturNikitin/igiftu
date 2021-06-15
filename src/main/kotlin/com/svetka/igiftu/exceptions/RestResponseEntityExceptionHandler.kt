@@ -18,7 +18,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
-    private val logger = KotlinLogging.logger { }
 
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,
@@ -58,6 +57,17 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any> = handleExceptionInternal(
         ex, ex.message,
         HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
+    )
+
+    @ExceptionHandler(
+            value = [ItemDoesNotBelongToUser::class]
+    )
+    fun handleEntityExists(
+            ex: ItemDoesNotBelongToUser,
+            request: WebRequest
+    ): ResponseEntity<Any> = handleExceptionInternal(
+            ex, ex.message,
+            HttpHeaders.EMPTY, HttpStatus.UNAUTHORIZED, request
     )
 
 }

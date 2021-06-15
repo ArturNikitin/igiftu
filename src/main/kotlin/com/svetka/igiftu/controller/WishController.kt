@@ -28,7 +28,7 @@ class WishController(
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     fun deleteWish(@PathVariable wishId: Long, principal: Principal) {
         logger.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
-        wishService.deleteWish(wishId)
+        wishService.deleteWish(wishId, principal)
         logger.info { "Completed request to delete wish with id with id {$wishId} and user ${principal.name}" }
     }
 }
