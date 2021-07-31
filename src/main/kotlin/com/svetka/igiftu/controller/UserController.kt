@@ -35,25 +35,16 @@ class UserController(
     }
 
     @PostMapping
-    fun createUser(@RequestBody user: UserDto) = userService.updateUser(user)
+    fun createUser(@RequestBody user: UserDto) = userService.update(user)
 
     @PostMapping("/registration")
     @ResponseStatus(CREATED)
-    fun registerUser(@Valid @RequestBody user: UserCredentials) = userService.registerUser(user)
+    fun registerUser(@Valid @RequestBody user: UserCredentials) = userService.register(user)
 
     @GetMapping("/{userId}/wish")
     fun getAllWishesByUserId(@PathVariable userId: Long): PayloadDto {
         logger.info { "Request to get all wishes for user with id $userId" }
-        return userService.getAllWishesByUserId(userId)
-    }
-
-    @PostMapping("/{userId}/wish")
-    @ResponseStatus(CREATED)
-    fun createWishConnectedToUser(
-        @PathVariable userId: Long,
-        @RequestBody wishDto: WishDto
-    ): WishDto {
-        return userService.createWish(userId, wishDto)
+        return userService.getAllWishes(userId)
     }
 
     @PostMapping("/password")

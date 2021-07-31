@@ -77,49 +77,6 @@ internal class WishServiceImplTest {
     }
 
     @Test
-    fun deleteWishByIdWronguser() {
-        every { wishRepository.findById(1L) } returns Optional.of(getWish())
-        every { wishRepository.deleteById(1L) } returns Unit
-
-        assertThrows(ItemDoesNotBelongToUser("")::class.java) {
-            wishService.deleteWish(1L, Principal { "email2@gmail.com" })
-        }
-    }
-
-    @Test
-    fun deleteWishByIdSNotFound() {
-        every { wishRepository.findById(1L) } returns Optional.empty()
-
-        assertThrows(EntityNotFoundException()::class.java) {
-            wishService.deleteWish(1L, Principal { "email@gmail.com" })
-        }
-
-        verify { wishRepository.findById(1L) }
-    }
-
-    @Test
-    fun deleteWishByIdSuccessEmail() {
-        every { wishRepository.findById(1L) } returns Optional.of(getWish())
-        every { wishRepository.deleteById(1L) } returns Unit
-
-        wishService.deleteWish(1L, Principal { "email@gmail.com" })
-
-        verify { wishRepository.deleteById(1L) }
-        verify { wishRepository.findById(1L) }
-    }
-
-    @Test
-    fun deleteWishByIdSuccessLogin() {
-        every { wishRepository.findById(1L) } returns Optional.of(getWish())
-        every { wishRepository.deleteById(1L) } returns Unit
-
-        wishService.deleteWish(1L, Principal { "@email" })
-
-        verify { wishRepository.deleteById(1L) }
-        verify { wishRepository.findById(1L) }
-    }
-
-    @Test
     fun getWishByIdEntityNotFoundException() {
         every { wishRepository.findById(1L) } returns Optional.empty()
 

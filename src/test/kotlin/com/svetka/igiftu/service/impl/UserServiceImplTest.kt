@@ -85,7 +85,7 @@ internal class UserServiceImplTest : UserTest() {
         every { wishService.getWishesByUserId(1L) } returns
             listOf(WishServiceImplTest1.getWishDto(), WishServiceImplTest1.getSecondWishDto())
 
-        val payloadDto = userService.getAllWishesByUserId(1L)
+        val payloadDto = userService.getAllWishes(1L)
 
         assertNotNull(payloadDto)
         assertEquals(true, payloadDto.isOwner)
@@ -100,7 +100,7 @@ internal class UserServiceImplTest : UserTest() {
     fun getAllWishesByUserIdSuccessIsOwnerNoWishes() {
         every { wishService.getWishesByUserId(1L) } returns emptyList()
 
-        val payloadDto = userService.getAllWishesByUserId(1L)
+        val payloadDto = userService.getAllWishes(1L)
 
         assertNotNull(payloadDto)
         assertEquals(true, payloadDto.isOwner)
@@ -114,7 +114,7 @@ internal class UserServiceImplTest : UserTest() {
 
     @Test
     fun getAllWishesByUserIdUserNotFound() {
-        assertThrows(EntityNotFoundException::class.java) { userService.getAllWishesByUserId(2L) }
+        assertThrows(EntityNotFoundException::class.java) { userService.getAllWishes(2L) }
     }
 
     @Test
@@ -158,7 +158,7 @@ internal class UserServiceImplTest : UserTest() {
         } returns getUserAfterUpdate()
         every { mapper.map(getUserAfterUpdate(), UserDto::class.java) } returns getUserDtoToUpdate()
 
-        val updateUser = userService.updateUser(getUserDtoToUpdate())
+        val updateUser = userService.update(getUserDtoToUpdate())
 
         assertNotNull(updateUser)
         assertEquals(email1, updateUser.email)
@@ -176,7 +176,7 @@ internal class UserServiceImplTest : UserTest() {
     fun updateUserDoesNotExist() {
         every { userRepository.findById(1L) } returns Optional.empty()
 
-        assertThrows(EntityNotFoundException::class.java) { userService.updateUser(getUserDtoToUpdate()) }
+        assertThrows(EntityNotFoundException::class.java) { userService.update(getUserDtoToUpdate()) }
     }
 
     @Test
@@ -187,7 +187,7 @@ internal class UserServiceImplTest : UserTest() {
         every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.empty()
         every { emailService.sendEmail(getUserCreds().email) } returns Unit
 
-        val registeredUser = userService.registerUser(getUserCreds())
+        val registeredUser = userService.register(getUserCreds())
 
         assertNotNull(registeredUser)
         assertEquals(email1, registeredUser.email)
@@ -209,7 +209,7 @@ internal class UserServiceImplTest : UserTest() {
 
         assertThrows(
             EntityExistsException::class.java
-        ) { userService.registerUser(getUserCreds()) }
+        ) { userService.register(getUserCreds()) }
     }
 
 }

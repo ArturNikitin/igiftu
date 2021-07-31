@@ -5,8 +5,13 @@ import com.svetka.igiftu.entity.enums.Access
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class WishDto (
-	val id: Long? = null,
-	val name: String,
-	val price: Double? = null,
-	val access: String = Access.PUBLIC.name
+	var id: Long? = null,
+	var name: String,
+	var price: Double? = null,
+	var access: String = Access.PUBLIC.name,
+	var createdDate: String? = null,
+	var lastModifiedDate: String? = null,
+	var isBooked: Boolean = false,
+	var isCompleted: Boolean = false,
+	val isAnalogPossible: Boolean = true
 ) : Payload()

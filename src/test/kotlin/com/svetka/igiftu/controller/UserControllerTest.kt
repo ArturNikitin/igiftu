@@ -40,7 +40,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 	@BeforeEach
 	fun setUp() {
 		`when`(
-			userService.registerUser(
+			userService.register(
 				UserCredentials(
 					email = "bob@domain.com",
 					password = "151516"
@@ -55,7 +55,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 		}
 		
 		`when`(
-			userService.registerUser(
+			userService.register(
 				UserCredentials(
 					email = "bobdomain.com",
 					password = "151516"
@@ -80,23 +80,13 @@ internal class UserControllerTest : AbstractControllerTest() {
 		}
 		
 		`when`(
-			userService.getAllWishesByUserId(userId)
+			userService.getAllWishes(userId)
 		).then {
 			PayloadDto(true, listOf(WishServiceImplTest.getWishDto()))
 		}
 		
 		`when`(
-		userService.getAllWishesByUserId(2L)
-		).thenThrow(EntityNotFoundException::class.java)
-		
-		`when`(
-			userService.createWish(1L, WishServiceImplTest.createWishDto())
-		).then {
-			WishServiceImplTest.createWishDto()
-		}
-		
-		`when`(
-			userService.createWish(2L, WishServiceImplTest.createWishDto())
+		userService.getAllWishes(2L)
 		).thenThrow(EntityNotFoundException::class.java)
 	}
 
@@ -114,33 +104,6 @@ internal class UserControllerTest : AbstractControllerTest() {
 
 		verify(userService, times(1)).resetPassword("artur@mail.com")
 	}
-
-	@Test
-	fun createWish() {
-		val wish = "{\n\"name\": \"Create wish\"\n}"
-		val response = mockMvc.perform(
-			post("/user/$userId/wish")
-				.content(wish)
-				.contentType(MediaType.APPLICATION_JSON)
-		).andExpect(status().isCreated)
-			.andReturn().response.contentAsString
-		
-		assertNotNull(response)
-		
-		verify(userService, times(1)).createWish(userId, WishServiceImplTest.createWishDto())
-	}
-	
-	@Test
-	fun createWishUserNotFound() {
-		val wish = "{\n\"name\": \"Create wish\"\n}"
-		mockMvc.perform(
-			post("/user/2/wish")
-				.content(wish)
-				.contentType(MediaType.APPLICATION_JSON)
-		).andExpect(status().isNotFound)
-		
-		verify(userService, times(1)).createWish(2L, WishServiceImplTest.createWishDto())
-	}
 	
 	@Test
 	fun getWishesByUserIdUserFound() {
@@ -151,7 +114,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 		assertNotNull(response)
 		println(response)
 		
-		verify(userService, times(1)).getAllWishesByUserId(userId)
+		verify(userService, times(1)).getAllWishes(userId)
 	}
 	
 	@Test
@@ -163,7 +126,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 		assertNotNull(response)
 		println(response)
 		
-		verify(userService, times(1)).getAllWishesByUserId(2L)
+		verify(userService, times(1)).getAllWishes(2L)
 	}
 	
 	@Test
