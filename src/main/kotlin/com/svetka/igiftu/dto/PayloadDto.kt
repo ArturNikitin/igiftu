@@ -2,7 +2,7 @@ package com.svetka.igiftu.dto
 
 data class PayloadDto(
 	val isOwner: Boolean,
-	val payload: List<Payload> = emptyList()
+	val content: List<Content> = emptyList()
 )
 
-open class Payload
+open class Content()

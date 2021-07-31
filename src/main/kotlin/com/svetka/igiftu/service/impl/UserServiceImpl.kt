@@ -84,12 +84,14 @@ class UserServiceImpl(
 	}
 
 	@Transactional
+//	TODO remove method
 	override fun getAllWishes(userId: Long): PayloadDto {
 		checkConditions(userId)
 		return PayloadDto(isOwner(userId), wishService.getWishesByUserId(userId))
 	}
 
 	@Transactional
+//	TODO refactoring
 	override fun addWish(userId: Long, wishDto: WishDto): WishDto {
 		val user = userRepo.getOne(userId)
 		val wish = mapper.map(wishDto, Wish::class.java)

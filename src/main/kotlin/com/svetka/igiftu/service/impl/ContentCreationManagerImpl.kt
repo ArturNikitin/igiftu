@@ -1,7 +1,8 @@
 package com.svetka.igiftu.service.impl
 
+import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.service.ContentManager
+import com.svetka.igiftu.service.ContentCreationManager
 import com.svetka.igiftu.service.SecurityManager
 import com.svetka.igiftu.service.UserService
 import com.svetka.igiftu.service.WishService
@@ -10,13 +11,13 @@ import java.security.Principal
 import javax.persistence.EntityNotFoundException
 
 @Service
-class ContentManagerImpl(
+class ContentCreationManagerImpl(
 	private val securityManager: SecurityManager,
 	private val wishService: WishService,
 	private val userService: UserService
-) : ContentManager {
+) : ContentCreationManager {
 	//	TODO
-	override fun create(userId: Long, content: Any, principal: Principal): Any {
+	override fun create(userId: Long, content: Content, principal: Principal): Content {
 		checkCreationPermission(userId, principal)
 		return when (content) {
 			is WishDto -> userService.addWish(userId, wishService.create(content))
@@ -25,7 +26,7 @@ class ContentManagerImpl(
 	}
 
 	//	TODO
-	override fun update(userId: Long, contentId: Long, content: Any, principal: Principal): Any {
+	override fun update(userId: Long, contentId: Long, content: Content, principal: Principal): Content {
 		checkModificationPermission(userId, contentId, principal)
 		return when (content) {
 			is WishDto -> wishService.update(contentId, content)

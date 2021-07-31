@@ -89,7 +89,7 @@ internal class UserServiceImplTest : UserTest() {
 
         assertNotNull(payloadDto)
         assertEquals(true, payloadDto.isOwner)
-        assertEquals(2, payloadDto.payload.size)
+        assertEquals(2, payloadDto.content.size)
 
         verify {
             userRepository.existsByIdOrEmail(1L, "")
@@ -104,7 +104,7 @@ internal class UserServiceImplTest : UserTest() {
 
         assertNotNull(payloadDto)
         assertEquals(true, payloadDto.isOwner)
-        assertEquals(emptyList<WishDto>(), payloadDto.payload)
+        assertEquals(emptyList<WishDto>(), payloadDto.content)
 
         verify {
             userRepository.existsByIdOrEmail(id = 1L, email = "")

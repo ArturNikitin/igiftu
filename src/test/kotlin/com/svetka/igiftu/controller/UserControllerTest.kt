@@ -5,22 +5,20 @@ import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.service.UserService
 import com.svetka.igiftu.service.impl.WishServiceImplTest
-import java.nio.charset.StandardCharsets
-import javax.persistence.EntityNotFoundException
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.nio.charset.StandardCharsets
+import javax.persistence.EntityNotFoundException
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 
 @WebMvcTest(UserController::class)
@@ -32,11 +30,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 	
 	@MockBean
 	private lateinit var userService: UserService
-	
-	@Autowired
-	private lateinit var mockMvc: MockMvc
-	
-	
+
 	@BeforeEach
 	fun setUp() {
 		`when`(
