@@ -1,10 +1,10 @@
 package com.svetka.igiftu.service
 
 import com.svetka.igiftu.dto.Content
-import java.security.Principal
+import com.svetka.igiftu.service.impl.ContentType
 
 interface ContentCreationManager {
-	fun create(userId: Long, content: Content, principal: Principal) : Content
-	fun update(userId: Long, contentId: Long, content: Content, principal: Principal) : Content
-	fun delete(userId: Long, contentId: Long, content: String, principal: Principal)
+	fun create(userId: Long, content: Content, username: String) : Content
+	fun update(userId: Long, contentId: Long, content: Content, username: String) : Content
+	fun delete(userId: Long, contentId: Long, content: ContentType, username: String)
 }

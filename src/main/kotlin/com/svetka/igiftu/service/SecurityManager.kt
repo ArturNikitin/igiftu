@@ -5,6 +5,6 @@ import java.security.Principal
 
 @Service
 interface SecurityManager {
-	fun isModificationAllowed(userId: Long, contentId: Long, principal: Principal) : Boolean
-	fun isCreationAllowed(userId: Long, principal: Principal): Boolean
+	fun isModificationAllowed(userId: Long, contentId: Long, username: String) : Boolean
+	fun isCreationAllowed(userId: Long, username: String): Boolean
 }

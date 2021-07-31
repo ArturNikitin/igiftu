@@ -5,7 +5,11 @@ import com.svetka.igiftu.service.ContentCreationManager
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.any
+import org.mockito.Mockito.anyLong
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
@@ -14,16 +18,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(WishController::class)
 internal class WishControllerTest : AbstractControllerTest() {
-
-	object MockitoHelper {
-		fun <T> anyObject(): T {
-			any<T>()
-			return uninitialized()
-		}
-
-		@Suppress("UNCHECKED_CAST")
-		fun <T> uninitialized(): T = null as T
-	}
 
 	companion object {
 		const val id: Long = 1L
@@ -45,14 +39,15 @@ internal class WishControllerTest : AbstractControllerTest() {
 
 	@BeforeEach
 	fun setUp() {
+
 		`when`(
-			creationManager.create(anyLong(), MockitoHelper.anyObject(), MockitoHelper.anyObject())
+			creationManager.create(userId, wishDtoNoId(), username)
 		).thenReturn(
 			wishDtoWithId()
 		)
 
 		`when`(
-			creationManager.update(anyLong(), anyLong(), MockitoHelper.anyObject(), MockitoHelper.anyObject())
+			creationManager.update(userId, 1L, wishDtoWithId(), username)
 		).thenReturn(
 			wishDtoWithId()
 		)
@@ -74,10 +69,12 @@ internal class WishControllerTest : AbstractControllerTest() {
 			.andExpect(status().isCreated)
 			.andReturn()
 			.response
-			.also { Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString()) }
+			.also {
+				Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString())
+			}
 
 		verify(creationManager, times(1))
-			.create(anyLong(), MockitoHelper.anyObject(), MockitoHelper.anyObject())
+			.create(userId, wishDtoNoId(), "user@gmail.com")
 	}
 
 //	PUT TODO
@@ -98,10 +95,16 @@ internal class WishControllerTest : AbstractControllerTest() {
 			.also { Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString()) }
 
 		verify(creationManager, times(1))
-			.update(anyLong(), anyLong(), MockitoHelper.anyObject(), MockitoHelper.anyObject())
+			.update(userId, 1L, wishDtoWithId(), username)
 	}
 
 //	PATCH TODO
+
+	private fun wishDtoNoId() = WishDto(
+		name = "My test wish",
+		price = 10.15,
+		access = "PUBLIC"
+	)
 
 	private fun wishDtoWithId() = WishDto(
 		id = 1L,

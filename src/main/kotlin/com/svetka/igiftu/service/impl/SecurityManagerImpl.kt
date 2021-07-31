@@ -7,12 +7,12 @@ import java.security.Principal
 @Service
 class SecurityManagerImpl : SecurityManager {
 	//	todo
-	override fun isModificationAllowed(userId: Long, contentId: Long, principal: Principal): Boolean {
+	override fun isModificationAllowed(userId: Long, contentId: Long, username: String): Boolean {
 		return true
 	}
 
 	//  todo
-	override fun isCreationAllowed(userId: Long, principal: Principal): Boolean {
+	override fun isCreationAllowed(userId: Long, username: String): Boolean {
 		return true
 	}
 }

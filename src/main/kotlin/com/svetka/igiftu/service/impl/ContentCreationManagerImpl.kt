@@ -6,9 +6,8 @@ import com.svetka.igiftu.service.ContentCreationManager
 import com.svetka.igiftu.service.SecurityManager
 import com.svetka.igiftu.service.UserService
 import com.svetka.igiftu.service.WishService
-import org.springframework.stereotype.Service
-import java.security.Principal
 import javax.persistence.EntityNotFoundException
+import org.springframework.stereotype.Service
 
 @Service
 class ContentCreationManagerImpl(
@@ -17,8 +16,8 @@ class ContentCreationManagerImpl(
 	private val userService: UserService
 ) : ContentCreationManager {
 	//	TODO
-	override fun create(userId: Long, content: Content, principal: Principal): Content {
-		checkCreationPermission(userId, principal)
+	override fun create(userId: Long, content: Content, username: String): Content {
+		checkCreationPermission(userId, username)
 		return when (content) {
 			is WishDto -> userService.addWish(userId, wishService.create(content))
 			else -> throw EntityNotFoundException("") //TODO create exception
@@ -26,8 +25,8 @@ class ContentCreationManagerImpl(
 	}
 
 	//	TODO
-	override fun update(userId: Long, contentId: Long, content: Content, principal: Principal): Content {
-		checkModificationPermission(userId, contentId, principal)
+	override fun update(userId: Long, contentId: Long, content: Content, username: String): Content {
+		checkModificationPermission(userId, contentId, username)
 		return when (content) {
 			is WishDto -> wishService.update(contentId, content)
 			else -> throw EntityNotFoundException("") //TODO create exception
@@ -35,18 +34,19 @@ class ContentCreationManagerImpl(
 	}
 
 	//	TODO ad enum
-	override fun delete(userId: Long, contentId: Long, content: String, principal: Principal) {
-		checkModificationPermission(userId, contentId, principal)
+	override fun delete(userId: Long, contentId: Long, content: ContentType, username: String) {
+		checkModificationPermission(userId, contentId, username)
 		when (content) {
-			"wish" -> wishService.delete(contentId)
+			ContentType.WISH -> wishService.delete(contentId)
+			ContentType.BOARD -> TODO()
 		}
 	}
 
-	fun checkModificationPermission(userId: Long, contentId: Long, principal: Principal) =
-		securityManager.isModificationAllowed(userId, contentId, principal)
+	fun checkModificationPermission(userId: Long, contentId: Long, username: String) =
+		securityManager.isModificationAllowed(userId, contentId, username)
 			.also { if (!it) throw EntityNotFoundException("") } //todo good exception
 
-	fun checkCreationPermission(userId: Long, principal: Principal) =
-		securityManager.isCreationAllowed(userId, principal)
+	fun checkCreationPermission(userId: Long, username: String) =
+		securityManager.isCreationAllowed(userId, username)
 			.also { if (!it) throw EntityNotFoundException("") } //todo good exception
 }

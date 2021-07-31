@@ -33,11 +33,7 @@ abstract class AbstractControllerTest {
 			as String
 	}
 
-	protected val principal = UsernamePasswordAuthenticationToken(
-		"user@gmail.com",
-		"123",
-		mutableListOf(SimpleGrantedAuthority("ROLE_USER"))
-	)
+	protected val username = "user@gmail.com"
 
 	protected val userId = 1L
 }
