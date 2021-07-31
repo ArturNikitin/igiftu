@@ -1,8 +1,10 @@
 package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.Content
+import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.ContentManager
+import com.svetka.igiftu.service.ContentReaderManager
 import com.svetka.igiftu.service.impl.ContentType.WISH
 import java.security.Principal
 import mu.KotlinLogging
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -22,10 +25,23 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("user/{userId}/wish")
 @CrossOrigin
 class WishController(
-	private val contentManager: ContentManager
+	private val contentManager: ContentManager,
+	private val readerManager: ContentReaderManager
 ) {
 
 	private val log = KotlinLogging.logger { }
+
+	@GetMapping
+	@ResponseStatus(HttpStatus.OK)
+	fun getWishes(
+		@PathVariable userId: Long,
+		principal: Principal?
+	) : PayloadDto {
+		log.info { "Received request to get wishes for user $userId" }
+		val payload = readerManager.getContent(userId, principal?.name, WISH)
+		log.info { "Finished request to get wished for user $userId wish data {$payload}" }
+		return payload
+	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)

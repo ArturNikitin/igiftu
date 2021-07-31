@@ -12,7 +12,7 @@ interface UserService {
     fun getUserById(id: Long) : UserDto
     fun update(userDto: UserDto) : UserDto
     fun register(userCredentials: UserCredentials) : UserDto
-    fun getAllWishes(userId: Long) : PayloadDto
+    fun getAllWishes(userId: Long) : List<WishDto>
     fun resetPassword(email: String)
     fun updatePassword(password: PasswordDto)
     fun get(userId: Long) : User

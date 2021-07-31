@@ -84,10 +84,14 @@ class UserServiceImpl(
 	}
 
 	@Transactional
-//	TODO remove method
-	override fun getAllWishes(userId: Long): PayloadDto {
-		checkConditions(userId)
-		return PayloadDto(isOwner(userId), wishService.getWishesByUserId(userId))
+	override fun getAllWishes(userId: Long): List<WishDto> {
+		return userRepo.findById(userId)
+			.orElseThrow {
+				EntityNotFoundException("User $userId not found")
+			}
+			.wishes
+			.map { mapper.map(it, WishDto::class.java) }
+			.toList()
 	}
 
 	@Transactional

@@ -15,4 +15,9 @@ class SecurityManagerImpl : SecurityManager {
 	override fun isCreationAllowed(userId: Long, username: String): Boolean {
 		return true
 	}
+
+	//	todo
+	override fun isOwner(userId: Long, username: String?): Boolean {
+		return true
+	}
 }

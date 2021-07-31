@@ -7,4 +7,5 @@ import java.security.Principal
 interface SecurityManager {
 	fun isModificationAllowed(userId: Long, contentId: Long, username: String) : Boolean
 	fun isCreationAllowed(userId: Long, username: String): Boolean
+	fun isOwner(userId: Long, username: String?) : Boolean
 }
