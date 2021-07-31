@@ -1,6 +1,9 @@
 package com.svetka.igiftu.service.impl
 
-import com.svetka.igiftu.dto.*
+import com.svetka.igiftu.dto.PasswordDto
+import com.svetka.igiftu.dto.UserCredentials
+import com.svetka.igiftu.dto.UserDto
+import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
@@ -8,17 +11,15 @@ import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.EmailService
 import com.svetka.igiftu.service.TokenService
 import com.svetka.igiftu.service.UserService
-import com.svetka.igiftu.service.WishService
-import ma.glasnost.orika.MapperFacade
-import mu.KotlinLogging
-import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
+import ma.glasnost.orika.MapperFacade
+import mu.KotlinLogging
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserServiceImpl(
@@ -26,13 +27,10 @@ class UserServiceImpl(
 	private val mapper: MapperFacade,
 	private val encoder: PasswordEncoder,
 	private val emailService: EmailService,
-	private val wishService: WishService,
 	private val tokenService: TokenService
 ) : UserService {
-	private val logger = KotlinLogging.logger { }
 
-	override fun get(userId: Long): User = userRepo.findById(userId)
-		.orElseThrow { UsernameNotFoundException("User {$userId} not found") }
+	private val logger = KotlinLogging.logger { }
 
 	override fun updatePassword(password: PasswordDto) {
 		val user = tokenService.verifyToken(password.token)
@@ -104,17 +102,6 @@ class UserServiceImpl(
 		val savedUser = userRepo.save(user)
 		return mapper.map(savedUser.wishes[savedUser.wishes.lastIndex], WishDto::class.java)
 	}
-
-	private fun checkConditions(userId: Long) = doesUserExist(userId)
-
-
-	private fun doesUserExist(userId: Long = 0, email: String = "") =
-		if (userRepo.existsByIdOrEmail(userId, email)) true
-		else throw EntityNotFoundException("User with id $userId not found")
-
-
-	//TODO add logic to this method
-	private fun isOwner(userId: Long) = userId > 0
 
 	private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))
 

@@ -2,6 +2,7 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.ContentManager
+import com.svetka.igiftu.service.ReaderManager
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,6 +35,9 @@ internal class WishControllerTest : AbstractControllerTest() {
 
 	@MockBean
 	private lateinit var manager: ContentManager
+
+	@MockBean
+	private lateinit var reader: ReaderManager
 
 	@BeforeEach
 	fun setUp() {

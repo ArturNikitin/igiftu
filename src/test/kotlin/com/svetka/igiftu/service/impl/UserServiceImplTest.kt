@@ -80,43 +80,6 @@ internal class UserServiceImplTest : UserTest() {
         assertThrows(EntityNotFoundException::class.java) { userService.resetPassword(email1) }
     }
 
-//    @Test
-//    fun getAllWishesByUserIdSuccessIsOwnerWithWishes() {
-//        every { wishService.getWishesByUserId(1L) } returns
-//            listOf(WishServiceImplTest1.getWishDto(), WishServiceImplTest1.getSecondWishDto())
-//
-//        val payloadDto = userService.getAllWishes(1L)
-//
-//        assertNotNull(payloadDto)
-//        assertEquals(true, payloadDto.isOwner)
-//        assertEquals(2, payloadDto.content.size)
-//
-//        verify {
-//            userRepository.existsByIdOrEmail(1L, "")
-//        }
-//    }
-//
-//    @Test
-//    fun getAllWishesByUserIdSuccessIsOwnerNoWishes() {
-//        every { wishService.getWishesByUserId(1L) } returns emptyList()
-//
-//        val payloadDto = userService.getAllWishes(1L)
-//
-//        assertNotNull(payloadDto)
-//        assertEquals(true, payloadDto.isOwner)
-//        assertEquals(emptyList<WishDto>(), payloadDto.content)
-//
-//        verify {
-//            userRepository.existsByIdOrEmail(id = 1L, email = "")
-//            wishService.getWishesByUserId(1L)
-//        }
-//    }
-//
-//    @Test
-//    fun getAllWishesByUserIdUserNotFound() {
-//        assertThrows(EntityNotFoundException::class.java) { userService.getAllWishes(2L) }
-//    }
-
     @Test
     fun getUserByIdSuccessTest() {
         every { userRepository.findById(1L) } returns Optional.of(getUser())

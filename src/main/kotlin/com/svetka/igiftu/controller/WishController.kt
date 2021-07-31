@@ -4,7 +4,7 @@ import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.ContentManager
-import com.svetka.igiftu.service.ContentReaderManager
+import com.svetka.igiftu.service.ReaderManager
 import com.svetka.igiftu.service.impl.ContentType.WISH
 import java.security.Principal
 import mu.KotlinLogging
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin
 class WishController(
 	private val contentManager: ContentManager,
-	private val readerManager: ContentReaderManager
+	private val readerManager: ReaderManager
 ) {
 
 	private val log = KotlinLogging.logger { }
@@ -38,7 +38,7 @@ class WishController(
 		principal: Principal?
 	) : PayloadDto {
 		log.info { "Received request to get wishes for user $userId" }
-		val payload = readerManager.getContent(userId, principal?.name, WISH)
+		val payload = readerManager.getUserContent(userId, principal?.name, WISH)
 		log.info { "Finished request to get wished for user $userId wish data {$payload}" }
 		return payload
 	}

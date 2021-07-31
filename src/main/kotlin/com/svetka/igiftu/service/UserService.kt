@@ -15,6 +15,5 @@ interface UserService {
     fun getAllWishes(userId: Long) : List<WishDto>
     fun resetPassword(email: String)
     fun updatePassword(password: PasswordDto)
-    fun get(userId: Long) : User
     fun addWish(userId: Long, wishDto: WishDto): WishDto
 }
