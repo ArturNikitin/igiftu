@@ -40,12 +40,7 @@ class WishServiceImpl(
 		}
 	)
 
-	//	TODO пока просто заглушка
 	override fun prepareForCreation(wishDto: WishDto): WishDto {
-		return createOrUpdate(wishDto)
-	}
-
-	override fun prepareForCreation(wishDto: WishDto, user: User): WishDto {
 		return createOrUpdate(wishDto)
 	}
 
@@ -69,7 +64,6 @@ class WishServiceImpl(
 		return mapWishToDto(wishRepository.save(wish))
 	}
 
-//	TODO
 	fun createOrUpdate(wishDto: WishDto): WishDto {
 	val createdDate = LocalDateTime.now().format(format)
 	return WishDto(
