@@ -2,8 +2,8 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.service.ContentCreationManager
-import com.svetka.igiftu.service.impl.ContentType
+import com.svetka.igiftu.service.ContentManager
+import com.svetka.igiftu.service.impl.ContentType.WISH
 import java.security.Principal
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("user/{userId}/wish")
 @CrossOrigin
 class WishController(
-	private val contentCreationManager: ContentCreationManager
+	private val contentManager: ContentManager
 ) {
 
 	private val log = KotlinLogging.logger { }
@@ -34,25 +34,24 @@ class WishController(
 		@PathVariable userId: Long,
 		@RequestBody wishDto: WishDto,
 		principal: Principal
-	)
-			: Content {
+	) : Content {
 		log.info { "Received request to create wish for user {$userId} and data {$wishDto}" }
-		val wish = contentCreationManager.create(userId, wishDto, principal.name)
+		val wish = contentManager.create(userId, wishDto, principal.name)
 		log.info { "Finished request to create wish for user {$userId} and data {$wish}" }
 		return wish
 	}
 
 	@PutMapping("/{wishId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun updateWish(
 		@PathVariable userId: Long,
 		@PathVariable wishId: Long,
 		@RequestBody wishDto: WishDto,
 		principal: Principal
-	)
-			: Any {
+	) : Any {
 		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
-		val wish = contentCreationManager.update(userId, wishId, wishDto, principal.name)
+		val wish = contentManager.update(userId, wishId, wishDto, principal.name)
 		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
 		return wish
 	}
@@ -65,7 +64,7 @@ class WishController(
 		principal: Principal
 	) {
 		log.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
-		contentCreationManager.delete(userId, wishId, ContentType.WISH, principal.name)
+		contentManager.delete(userId, wishId, WISH, principal.name)
 		log.info { "Completed request to delete wish with id with id {$wishId} and user ${principal.name}" }
 	}
 }

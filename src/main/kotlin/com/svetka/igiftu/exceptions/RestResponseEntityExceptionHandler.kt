@@ -4,7 +4,6 @@ import java.util.HashMap
 import java.util.function.Consumer
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
-import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -60,11 +59,11 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
     )
 
     @ExceptionHandler(
-            value = [ItemDoesNotBelongToUser::class]
+            value = [SecurityException::class]
     )
     fun handleEntityExists(
-            ex: ItemDoesNotBelongToUser,
-            request: WebRequest
+        ex: SecurityException,
+        request: WebRequest
     ): ResponseEntity<Any> = handleExceptionInternal(
             ex, ex.message,
             HttpHeaders.EMPTY, HttpStatus.UNAUTHORIZED, request

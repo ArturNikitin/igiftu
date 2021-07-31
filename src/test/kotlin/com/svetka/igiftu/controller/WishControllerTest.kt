@@ -1,13 +1,11 @@
 package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.service.ContentCreationManager
+import com.svetka.igiftu.service.ContentManager
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
-import org.mockito.Mockito.any
-import org.mockito.Mockito.anyLong
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -35,19 +33,19 @@ internal class WishControllerTest : AbstractControllerTest() {
 	}
 
 	@MockBean
-	private lateinit var creationManager: ContentCreationManager
+	private lateinit var manager: ContentManager
 
 	@BeforeEach
 	fun setUp() {
 
 		`when`(
-			creationManager.create(userId, wishDtoNoId(), username)
+			manager.create(userId, wishDtoNoId(), username)
 		).thenReturn(
 			wishDtoWithId()
 		)
 
 		`when`(
-			creationManager.update(userId, 1L, wishDtoWithId(), username)
+			manager.update(userId, 1L, wishDtoWithId(), username)
 		).thenReturn(
 			wishDtoWithId()
 		)
@@ -73,7 +71,7 @@ internal class WishControllerTest : AbstractControllerTest() {
 				Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString())
 			}
 
-		verify(creationManager, times(1))
+		verify(manager, times(1))
 			.create(userId, wishDtoNoId(), "user@gmail.com")
 	}
 
@@ -94,7 +92,7 @@ internal class WishControllerTest : AbstractControllerTest() {
 			.response
 			.also { Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString()) }
 
-		verify(creationManager, times(1))
+		verify(manager, times(1))
 			.update(userId, 1L, wishDtoWithId(), username)
 	}
 

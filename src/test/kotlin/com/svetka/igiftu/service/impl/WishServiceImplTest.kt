@@ -5,7 +5,6 @@ import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
 import com.svetka.igiftu.entity.enums.UserRoles
-import com.svetka.igiftu.exceptions.ItemDoesNotBelongToUser
 import com.svetka.igiftu.repository.WishRepository
 import com.svetka.igiftu.service.UserService
 import com.svetka.igiftu.service.UserTest
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.security.Principal
 
 internal class WishServiceImplTest {
 

@@ -3,7 +3,8 @@ package com.svetka.igiftu.service.impl
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
-import com.svetka.igiftu.exceptions.ItemDoesNotBelongToUser
+import com.svetka.igiftu.entity.enums.Access
+import com.svetka.igiftu.exceptions.SecurityException
 import com.svetka.igiftu.repository.WishRepository
 import com.svetka.igiftu.service.WishService
 import ma.glasnost.orika.MapperFacade
@@ -11,7 +12,6 @@ import mu.KotlinLogging
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.security.Principal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.persistence.EntityNotFoundException
@@ -25,14 +25,14 @@ class WishServiceImpl(
 	private val mapper: MapperFacade
 ) : WishService {
 
-	private val log = KotlinLogging.logger {  }
-	
+	private val log = KotlinLogging.logger { }
+
 	@Transactional
 	override fun getWishesByUserId(userId: Long): List<WishDto> {
 		val allByUserId = wishRepository.getAllByUserId(userId)
 		return allByUserId.map { mapWishToDto(it) }
 	}
-	
+
 	@Transactional
 	override fun getWishById(wishId: Long): WishDto = mapWishToDto(
 		wishRepository.findById(wishId).orElseThrow {
@@ -40,30 +40,33 @@ class WishServiceImpl(
 		}
 	)
 
-//	TODO пока просто заглушка
-	override fun create(wishDto: WishDto): WishDto {
+	//	TODO пока просто заглушка
+	override fun prepareForCreation(wishDto: WishDto): WishDto {
 		return createOrUpdate(wishDto)
 	}
 
-	override fun create(wishDto: WishDto, user: User): WishDto {
+	override fun prepareForCreation(wishDto: WishDto, user: User): WishDto {
 		return createOrUpdate(wishDto)
 	}
 
 	@Transactional
-	override fun delete(wishId: Long, principal: Principal) {
-		checkUser(wishId, principal.name)
-		log.info { "Deleting wish with id $wishId" }
-		wishRepository.deleteById(wishId)
-	}
+	override fun delete(wishId: Long) = wishRepository.deleteById(wishId)
 
-	@Transactional
-	override fun delete(wishId: Long) =
-		wishRepository.deleteById(wishId)
-
-//	TODO
 	@Transactional
 	override fun update(contentId: Long, content: WishDto): WishDto {
-		return	createOrUpdate(content)
+		val wish =
+			wishRepository.findById(contentId)
+				.orElseThrow { EntityNotFoundException("Wish {$contentId} does not exists") }
+				.also {
+					it.access = Access.valueOf(content.access)
+					it.name = content.name
+					it.price = content.price
+					it.lastModifiedDate = LocalDateTime.now()
+					it.isAnalogPossible = content.isAnalogPossible
+					it.isBooked = content.isBooked
+					it.isCompleted = content.isCompleted
+				}
+		return mapWishToDto(wishRepository.save(wish))
 	}
 
 //	TODO
@@ -76,15 +79,6 @@ class WishServiceImpl(
 			createdDate = createdDate,
 			lastModifiedDate = createdDate
 		)
-	}
-
-	private fun checkUser(wishId: Long, userName: String) = true
-
-	private fun checkName(userByWishId: User, userName: String) {
-		if ( userName != userByWishId.email && userName != userByWishId.login) {
-			throw ItemDoesNotBelongToUser("user with userName $userName is trying to access wish that belongs to " +
-					"${userByWishId.login}/ ${userByWishId.email}")
-		}
 	}
 
 	@Transactional

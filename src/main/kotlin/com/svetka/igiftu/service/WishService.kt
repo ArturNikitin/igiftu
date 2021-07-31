@@ -8,9 +8,8 @@ interface WishService {
 	fun getWishesByUserId(userId: Long): List<WishDto>
 	fun getWishesCountByUserId(userId: Long): Long
 	fun getWishById(wishId: Long) : WishDto
-	fun create(wishDto: WishDto): WishDto
-	fun create(wishDto: WishDto, user: User) : WishDto
-	fun delete(wishId: Long, principal: Principal)
+	fun prepareForCreation(wishDto: WishDto): WishDto
+	fun prepareForCreation(wishDto: WishDto, user: User) : WishDto
 	fun delete(wishId: Long)
 	fun update(contentId: Long, content: WishDto) : WishDto
 }

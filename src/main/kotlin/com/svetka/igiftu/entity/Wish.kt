@@ -60,7 +60,7 @@ class Wish(
 	@Column
 	var link: String? = null,
 	
-	@ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+	@ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	var user: User? = null
 ) {
