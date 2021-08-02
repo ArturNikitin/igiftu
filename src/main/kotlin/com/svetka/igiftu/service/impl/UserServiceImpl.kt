@@ -1,5 +1,6 @@
 package com.svetka.igiftu.service.impl
 
+import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
@@ -7,6 +8,7 @@ import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
+import com.svetka.igiftu.exceptions.UnknownContentTypeException
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.EmailService
 import com.svetka.igiftu.service.TokenService
@@ -93,8 +95,13 @@ class UserServiceImpl(
 	}
 
 	@Transactional
+	override fun addContent(ownerId: Long, content: Content): Content = when(content) {
+		is WishDto -> addWish(ownerId, content)
+		else -> throw UnknownContentTypeException("Ooops")
+	}
+
 //	TODO refactoring
-	override fun addWish(userId: Long, wishDto: WishDto): WishDto {
+	private fun addWish(userId: Long, wishDto: WishDto): WishDto {
 		val user = userRepo.getOne(userId)
 		val wish = mapper.map(wishDto, Wish::class.java)
 		wish.user = user

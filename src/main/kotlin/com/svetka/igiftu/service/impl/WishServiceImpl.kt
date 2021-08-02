@@ -1,10 +1,9 @@
 package com.svetka.igiftu.service.impl
 
+import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
-import com.svetka.igiftu.exceptions.SecurityException
 import com.svetka.igiftu.repository.WishRepository
 import com.svetka.igiftu.service.WishService
 import ma.glasnost.orika.MapperFacade
@@ -40,15 +39,17 @@ class WishServiceImpl(
 		}
 	)
 
-	override fun prepareForCreation(wishDto: WishDto): WishDto {
-		return createOrUpdate(wishDto)
-	}
-
 	@Transactional
 	override fun delete(wishId: Long) = wishRepository.deleteById(wishId)
 
+	override fun prepare(content: Content): Content {
+		return createOrUpdate(content as WishDto)
+	}
+
 	@Transactional
-	override fun update(contentId: Long, content: WishDto): WishDto {
+	override fun update(contentId: Long, content: Content): Content = updateWish(contentId, content as WishDto)
+
+	private fun updateWish(contentId: Long, content: WishDto): WishDto {
 		val wish =
 			wishRepository.findById(contentId)
 				.orElseThrow { EntityNotFoundException("Wish {$contentId} does not exists") }
@@ -77,6 +78,12 @@ class WishServiceImpl(
 
 	@Transactional
 	override fun getWishesCountByUserId(userId: Long): Long = wishRepository.countByUserId(userId)
+
+	override fun isOwner(ownerId: Long, contentId: Long?): Boolean {
+		contentId ?: return false
+		val userId = wishRepository.findById(contentId).orElseThrow { EntityNotFoundException("Oppps") }.user?.id ?: false
+		return userId == contentId
+	}
 
 	private fun mapWishToDto(wish: Wish) = mapper.map(wish, WishDto::class.java)
 }

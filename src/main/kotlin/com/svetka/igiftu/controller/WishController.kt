@@ -5,6 +5,7 @@ import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.ContentManager
 import com.svetka.igiftu.service.ReaderManager
+import com.svetka.igiftu.service.WishService
 import com.svetka.igiftu.service.impl.ContentType.WISH
 import java.security.Principal
 import mu.KotlinLogging
@@ -26,7 +27,8 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin
 class WishController(
 	private val contentManager: ContentManager,
-	private val readerManager: ReaderManager
+	private val readerManager: ReaderManager,
+	private val wishService: WishService
 ) {
 
 	private val log = KotlinLogging.logger { }
@@ -52,7 +54,7 @@ class WishController(
 		principal: Principal
 	) : Content {
 		log.info { "Received request to create wish for user {$userId} and data {$wishDto}" }
-		val wish = contentManager.create(userId, wishDto, principal.name)
+		val wish = contentManager.create(userId, wishDto, principal.name, wishService)
 		log.info { "Finished request to create wish for user {$userId} and data {$wish}" }
 		return wish
 	}
@@ -67,7 +69,7 @@ class WishController(
 		principal: Principal
 	) : Any {
 		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
-		val wish = contentManager.update(userId, wishId, wishDto, principal.name)
+		val wish = contentManager.update(userId, wishId, wishDto, principal.name, wishService)
 		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
 		return wish
 	}
@@ -80,7 +82,7 @@ class WishController(
 		principal: Principal
 	) {
 		log.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
-		contentManager.delete(userId, wishId, WISH, principal.name)
+		contentManager.delete(userId, wishId, principal.name, wishService)
 		log.info { "Completed request to delete wish with id with id {$wishId} and user ${principal.name}" }
 	}
 }

@@ -3,6 +3,7 @@ package com.svetka.igiftu.controller
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.ContentManager
 import com.svetka.igiftu.service.ReaderManager
+import com.svetka.igiftu.service.WishService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,17 +40,20 @@ internal class WishControllerTest : AbstractControllerTest() {
 	@MockBean
 	private lateinit var reader: ReaderManager
 
+	@MockBean
+	private lateinit var service: WishService
+
 	@BeforeEach
 	fun setUp() {
 
 		`when`(
-			manager.create(userId, wishDtoNoId(), username)
+			manager.create(userId, wishDtoNoId(), username, service)
 		).thenReturn(
 			wishDtoWithId()
 		)
 
 		`when`(
-			manager.update(userId, 1L, wishDtoWithId(), username)
+			manager.update(userId, wishDtoWithId().id!!, wishDtoWithId(), username, service)
 		).thenReturn(
 			wishDtoWithId()
 		)
@@ -76,7 +80,7 @@ internal class WishControllerTest : AbstractControllerTest() {
 			}
 
 		verify(manager, times(1))
-			.create(userId, wishDtoNoId(), "user@gmail.com")
+			.create(userId, wishDtoNoId(), "user@gmail.com", service)
 	}
 
 //	PUT TODO
@@ -97,7 +101,7 @@ internal class WishControllerTest : AbstractControllerTest() {
 			.also { Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString()) }
 
 		verify(manager, times(1))
-			.update(userId, 1L, wishDtoWithId(), username)
+			.update(userId, wishDtoWithId().id!!, wishDtoWithId(), username, service)
 	}
 
 //	PATCH TODO
