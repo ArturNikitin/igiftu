@@ -1,8 +1,8 @@
 package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.service.SecurityManager
-import com.svetka.igiftu.service.UserService
-import com.svetka.igiftu.service.interfaces.Updatable
+import com.svetka.igiftu.service.Updatable
+import com.svetka.igiftu.service.entity.UserService
 import org.springframework.stereotype.Service
 
 @Service
@@ -11,7 +11,7 @@ class SecurityManagerImpl(
 ) : SecurityManager {
 	//	todo
 	override fun isModificationAllowed(userId: Long, username: String, contentId: Long, service: Updatable) =
-		getPermission(userId, username, null) { l: Long, l1: Long? -> service.isOwner(l, l1) }
+		getPermission(userId, username, contentId) { l: Long, l1: Long? -> service.isOwner(l, l1) }
 			.all { it }
 
 

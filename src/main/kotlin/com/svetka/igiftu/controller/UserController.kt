@@ -2,11 +2,9 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.EmailDto
 import com.svetka.igiftu.dto.PasswordDto
-import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
-import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.service.UserService
+import com.svetka.igiftu.service.entity.UserService
 import javax.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus.CREATED

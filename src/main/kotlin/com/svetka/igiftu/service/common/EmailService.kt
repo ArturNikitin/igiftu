@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service
+package com.svetka.igiftu.service.common
 
 interface EmailService {
 	fun sendEmail(email: String)

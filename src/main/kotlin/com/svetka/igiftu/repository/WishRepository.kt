@@ -9,8 +9,4 @@ import java.util.*
 interface WishRepository : JpaRepository<Wish, Long> {
 	fun getAllByUserId(userId: Long) : List<Wish>
 	fun countByUserId(userId: Long): Long
-	@Query("Select w.user From Wish as w " +
-			"INNER JOIN User as u on w.user.id = u.id " +
-			"WHERE w.id = ?1")
-	fun getUserById(wishId: Long) : Optional<User>
 }

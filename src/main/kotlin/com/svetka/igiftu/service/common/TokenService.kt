@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service
+package com.svetka.igiftu.service.common
 
 import com.svetka.igiftu.entity.User
 

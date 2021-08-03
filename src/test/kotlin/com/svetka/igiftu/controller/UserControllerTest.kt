@@ -3,7 +3,7 @@ package com.svetka.igiftu.controller
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
-import com.svetka.igiftu.service.UserService
+import com.svetka.igiftu.service.entity.UserService
 import com.svetka.igiftu.service.impl.WishServiceImplTest
 import java.nio.charset.StandardCharsets
 import javax.persistence.EntityNotFoundException
@@ -74,16 +74,7 @@ internal class UserControllerTest : AbstractControllerTest() {
 				login = "@bob"
 			)
 		}
-		
-		`when`(
-			userService.getAllWishes(userId)
-		).then {
-			PayloadDto(true, listOf(WishServiceImplTest.getWishDto()))
-		}
-		
-		`when`(
-		userService.getAllWishes(2L)
-		).thenThrow(EntityNotFoundException::class.java)
+
 	}
 
 	@Test

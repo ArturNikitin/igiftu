@@ -10,9 +10,9 @@ import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.exceptions.UnknownContentTypeException
 import com.svetka.igiftu.repository.UserRepository
-import com.svetka.igiftu.service.EmailService
-import com.svetka.igiftu.service.TokenService
-import com.svetka.igiftu.service.UserService
+import com.svetka.igiftu.service.common.EmailService
+import com.svetka.igiftu.service.common.TokenService
+import com.svetka.igiftu.service.entity.UserService
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
@@ -34,6 +34,7 @@ class UserServiceImpl(
 
 	private val logger = KotlinLogging.logger { }
 
+	@Transactional
 	override fun updatePassword(password: PasswordDto) {
 		val user = tokenService.verifyToken(password.token)
 		user.password = encoder.encode(password.password)
@@ -46,6 +47,7 @@ class UserServiceImpl(
 			getUserDto(it)
 		}.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
 
+	@Transactional
 	override fun resetPassword(email: String) {
 		val user = userRepo.getUserByEmail(email)
 			.orElseThrow { EntityNotFoundException("User with email $email was not found ") }
@@ -84,18 +86,7 @@ class UserServiceImpl(
 	}
 
 	@Transactional
-	override fun getAllWishes(userId: Long): List<WishDto> {
-		return userRepo.findById(userId)
-			.orElseThrow {
-				EntityNotFoundException("User $userId not found")
-			}
-			.wishes
-			.map { mapper.map(it, WishDto::class.java) }
-			.toList()
-	}
-
-	@Transactional
-	override fun addContent(ownerId: Long, content: Content): Content = when(content) {
+	override fun addContent(ownerId: Long, content: Content): Content = when (content) {
 		is WishDto -> addWish(ownerId, content)
 		else -> throw UnknownContentTypeException("Ooops")
 	}

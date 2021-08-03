@@ -2,11 +2,12 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
+import com.svetka.igiftu.dto.RequestDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.ContentManager
 import com.svetka.igiftu.service.ReaderManager
-import com.svetka.igiftu.service.WishService
-import com.svetka.igiftu.service.impl.ContentType.WISH
+import com.svetka.igiftu.service.entity.WishService
+import com.svetka.igiftu.service.impl.OwnerType
 import java.security.Principal
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("user/{userId}/wish")
+@RequestMapping("user/{userId}")
 @CrossOrigin
 class WishController(
 	private val contentManager: ContentManager,
@@ -33,19 +34,27 @@ class WishController(
 
 	private val log = KotlinLogging.logger { }
 
-	@GetMapping
+	@GetMapping("/wish")
 	@ResponseStatus(HttpStatus.OK)
 	fun getWishes(
 		@PathVariable userId: Long,
 		principal: Principal?
 	) : PayloadDto {
-		log.info { "Received request to get wishes for user $userId" }
-		val payload = readerManager.getUserContent(userId, principal?.name, WISH)
+		val requestDto = RequestDto(
+			userId,
+			userId,
+			principal?.name,
+			OwnerType.USER,
+			null,
+			wishService
+		)
+		log.info { "Received request to get wishes with data $requestDto" }
+		val payload = readerManager.getContent(requestDto)
 		log.info { "Finished request to get wished for user $userId wish data {$payload}" }
 		return payload
 	}
 
-	@PostMapping
+	@PostMapping("/wish")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun createWish(
@@ -59,7 +68,7 @@ class WishController(
 		return wish
 	}
 
-	@PutMapping("/{wishId}")
+	@PutMapping("/wish/{wishId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun updateWish(
@@ -74,7 +83,7 @@ class WishController(
 		return wish
 	}
 
-	@DeleteMapping("/{wishId}")
+	@DeleteMapping("/wish/{wishId}")
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun deleteWish(
 		@PathVariable userId: Long,
@@ -83,6 +92,6 @@ class WishController(
 	) {
 		log.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
 		contentManager.delete(userId, wishId, principal.name, wishService)
-		log.info { "Completed request to delete wish with id with id {$wishId} and user ${principal.name}" }
+		log.info { "Completed request to delete wish {$wishId} and user ${principal.name}" }
 	}
 }

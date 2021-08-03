@@ -1,13 +1,12 @@
 package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.dto.UserDto
-import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.UserRepository
-import com.svetka.igiftu.service.EmailService
-import com.svetka.igiftu.service.TokenService
+import com.svetka.igiftu.service.common.EmailService
+import com.svetka.igiftu.service.common.TokenService
 import com.svetka.igiftu.service.UserTest
-import com.svetka.igiftu.service.WishService
+import com.svetka.igiftu.service.entity.WishService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
-import com.svetka.igiftu.service.impl.WishServiceImplTest.Companion as WishServiceImplTest1
 
 internal class UserServiceImplTest : UserTest() {
 

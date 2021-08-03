@@ -5,9 +5,9 @@ import com.svetka.igiftu.exceptions.SecurityCreationException
 import com.svetka.igiftu.exceptions.SecurityModificationException
 import com.svetka.igiftu.service.ContentManager
 import com.svetka.igiftu.service.SecurityManager
-import com.svetka.igiftu.service.UserService
-import com.svetka.igiftu.service.interfaces.Possessing
-import com.svetka.igiftu.service.interfaces.Updatable
+import com.svetka.igiftu.service.entity.UserService
+import com.svetka.igiftu.service.Possessing
+import com.svetka.igiftu.service.Updatable
 import org.springframework.stereotype.Service
 
 @Service
