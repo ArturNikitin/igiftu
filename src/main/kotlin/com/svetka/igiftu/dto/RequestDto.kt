@@ -11,3 +11,13 @@ data class RequestDto(
 	val content: Content?,
 	val service: Readable
 )
+
+fun fillUserReadRequest(userId: Long, username: String?, service: Readable) =
+	RequestDto(
+		userId,
+		userId,
+		username,
+		OwnerType.USER,
+		null,
+		service
+	)

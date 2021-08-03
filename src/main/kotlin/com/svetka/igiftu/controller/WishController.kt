@@ -2,12 +2,11 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
-import com.svetka.igiftu.dto.RequestDto
 import com.svetka.igiftu.dto.WishDto
+import com.svetka.igiftu.dto.fillUserReadRequest
 import com.svetka.igiftu.service.ContentManager
 import com.svetka.igiftu.service.ReaderManager
 import com.svetka.igiftu.service.entity.WishService
-import com.svetka.igiftu.service.impl.OwnerType
 import java.security.Principal
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -40,12 +39,9 @@ class WishController(
 		@PathVariable userId: Long,
 		principal: Principal?
 	) : PayloadDto {
-		val requestDto = RequestDto(
-			userId,
+		val requestDto = fillUserReadRequest(
 			userId,
 			principal?.name,
-			OwnerType.USER,
-			null,
 			wishService
 		)
 		log.info { "Received request to get wishes with data $requestDto" }
