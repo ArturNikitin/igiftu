@@ -8,6 +8,7 @@ data class RequestDto(
 	val userId: Long,
 	val username: String?,
 	val ownerType: OwnerType,
+	val contentId: Long?,
 	val content: Content?,
 	val service: Readable
 )
@@ -18,6 +19,7 @@ fun fillUserReadRequest(userId: Long, username: String?, service: Readable) =
 		userId,
 		username,
 		OwnerType.USER,
+		null,
 		null,
 		service
 	)
