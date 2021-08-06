@@ -27,7 +27,7 @@ class UserController(
 	private val logger = KotlinLogging.logger { }
 
 	@GetMapping("/{id}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	fun getUser(@PathVariable id: Long): UserDto {
 		return userService.getUserById(id)
 	}

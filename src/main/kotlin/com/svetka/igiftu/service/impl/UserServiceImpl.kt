@@ -5,6 +5,7 @@ import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.dto.WishDto
+import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
@@ -68,8 +69,7 @@ class UserServiceImpl(
 	@Transactional
 	override fun register(userCredentials: UserCredentials): UserDto {
 		logger.info { "Trying to register user with email ${userCredentials.email}" }
-		if (userRepo.getUserByEmail(userCredentials.email).isEmpty) {
-
+		if (!exists(userCredentials)) {
 			val mappedUser = mapper.map(userCredentials, User::class.java).apply {
 				createdDate = LocalDateTime.now()
 				password = encoder.encode(this.password)
@@ -85,17 +85,21 @@ class UserServiceImpl(
 		}
 	}
 
+	private fun exists(userCredentials: UserCredentials) =
+		!userRepo.getUserByEmail(userCredentials.email).isEmpty
+
 	@Transactional
 	override fun addContent(ownerId: Long, content: Content): Content = when (content) {
 		is WishDto -> addWish(ownerId, content)
 		else -> throw UnknownContentTypeException("Ooops")
 	}
 
-//	TODO refactoring
+	//	TODO refactoring
 	private fun addWish(userId: Long, wishDto: WishDto): WishDto {
 		val user = userRepo.getOne(userId)
 		val wish = mapper.map(wishDto, Wish::class.java)
 		wish.user = user
+		wish.image = Image(wishDto.image?.id, name = wishDto.image?.name!!)
 		user.wishes.add(wish)
 		val savedUser = userRepo.save(user)
 		return mapper.map(savedUser.wishes[savedUser.wishes.lastIndex], WishDto::class.java)

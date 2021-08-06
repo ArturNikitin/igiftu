@@ -218,6 +218,20 @@
             <artifactId>mail</artifactId>
             <version>1.5.0-b01</version>
         </dependency>
+
+        <!--GOOGLE STORAGE-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-storage</artifactId>
+            <version>1.2.8.RELEASE</version>
+        </dependency>
+        <!--AWS S3-->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.12.44</version>
+        </dependency>
+
     </dependencies>
 
     <build>

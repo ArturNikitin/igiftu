@@ -10,5 +10,5 @@ data class UserDto(
     @JsonProperty
     val email: String = "",
     @JsonProperty
-    val login: String? = null,
+    val login: String? = null
 )

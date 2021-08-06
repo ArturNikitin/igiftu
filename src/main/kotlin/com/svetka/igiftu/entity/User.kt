@@ -36,7 +36,11 @@ class User(
 	var isAccountNonLocked: Boolean = false,
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
-	val wishes: MutableList<Wish> = mutableListOf()
+	val wishes: MutableList<Wish> = mutableListOf(),
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.PERSIST])
+	@JoinColumn(name = "image_id")
+	val image: Image? = null
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

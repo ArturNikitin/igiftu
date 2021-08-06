@@ -62,7 +62,11 @@ class Wish(
 	
 	@ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	var user: User? = null
+	var user: User? = null,
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.PERSIST])
+	@JoinColumn(name = "image_id")
+	var image: Image? = null
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

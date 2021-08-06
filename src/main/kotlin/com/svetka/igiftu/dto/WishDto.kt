@@ -13,7 +13,8 @@ data class WishDto (
 	var lastModifiedDate: String? = null,
 	var isBooked: Boolean = false,
 	var isCompleted: Boolean = false,
-	val isAnalogPossible: Boolean = true
+	val isAnalogPossible: Boolean = true,
+	val image: ImageDto? = null
 ) : Content() {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
