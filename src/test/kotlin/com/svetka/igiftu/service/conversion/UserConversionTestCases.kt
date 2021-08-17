@@ -5,7 +5,7 @@ import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
-import com.svetka.igiftu.service.impl.WishServiceImplTest
+import com.svetka.igiftu.service.entity.impl.WishServiceImplTest
 import java.time.LocalDateTime
 import ma.glasnost.orika.MapperFacade
 import ma.glasnost.orika.MapperFactory

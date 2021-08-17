@@ -1,8 +1,8 @@
 package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.service.ContentManager
-import com.svetka.igiftu.service.ReaderManager
+import com.svetka.igiftu.service.manager.ContentManager
+import com.svetka.igiftu.service.manager.ReaderManager
 import com.svetka.igiftu.service.entity.WishService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -82,8 +82,6 @@ internal class WishControllerTest : AbstractControllerTest() {
 		verify(manager, times(1))
 			.create(userId, wishDtoNoId(), "user@gmail.com", service)
 	}
-
-//	PUT TODO
 
 	@Test
 	fun updateWishSuccess() {

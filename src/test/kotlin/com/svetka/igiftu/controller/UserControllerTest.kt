@@ -1,12 +1,9 @@
 package com.svetka.igiftu.controller
 
-import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.service.entity.UserService
-import com.svetka.igiftu.service.impl.WishServiceImplTest
 import java.nio.charset.StandardCharsets
-import javax.persistence.EntityNotFoundException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.jupiter.api.BeforeEach

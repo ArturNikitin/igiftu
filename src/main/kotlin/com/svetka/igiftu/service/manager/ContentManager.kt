@@ -1,6 +1,7 @@
-package com.svetka.igiftu.service
+package com.svetka.igiftu.service.manager
 
 import com.svetka.igiftu.dto.Content
+import com.svetka.igiftu.service.Updatable
 
 interface ContentManager {
 	fun create(userId: Long, content: Content, username: String, service: Updatable): Content

@@ -1,31 +1,20 @@
 package com.svetka.igiftu.integration
 
-import com.svetka.igiftu.TestConfiguration
-import com.svetka.igiftu.controller.UserControllerTest
-import com.svetka.igiftu.controller.WishController
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.ApplicationContextInitializer
-import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.springframework.test.context.support.TestPropertySourceUtils
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.testcontainers.junit.jupiter.Testcontainers
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,12 +39,12 @@ class TestContainer {
 			registry.add("spring.datasource.password", postgreDBContainer::getPassword)
 			registry.add("spring.datasource.username", postgreDBContainer::getUsername)
 			registry.add("spring.jpa.hibernate.ddl-auto") { "validate" }
-			registry.add("aws.cred.key") {"1234"}
-			registry.add("aws.cred.pass") {"1234"}
-			registry.add("spring.mail.password") {"1234"}
+			registry.add("aws.cred.key") { "1234" }
+			registry.add("aws.cred.pass") { "1234" }
+			registry.add("spring.mail.password") { "1234" }
 		}
 	}
-	
+
 	@Test
 	fun testContainer() {
 		val token = getToken("admin@gmail.com")
@@ -77,7 +66,7 @@ class TestContainer {
 		).andReturn()
 			.response
 			.getHeaderValue("authorization")
-			as String
+				as String
 	}
 }
 

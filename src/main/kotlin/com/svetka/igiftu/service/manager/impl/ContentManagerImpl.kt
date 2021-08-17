@@ -1,10 +1,10 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.manager.impl
 
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.exceptions.SecurityCreationException
 import com.svetka.igiftu.exceptions.SecurityModificationException
-import com.svetka.igiftu.service.ContentManager
-import com.svetka.igiftu.service.SecurityManager
+import com.svetka.igiftu.service.manager.ContentManager
+import com.svetka.igiftu.service.manager.SecurityManager
 import com.svetka.igiftu.service.entity.UserService
 import com.svetka.igiftu.service.Possessing
 import com.svetka.igiftu.service.Updatable

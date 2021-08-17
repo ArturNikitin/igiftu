@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.entity.impl
 
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
@@ -7,6 +7,7 @@ import com.svetka.igiftu.entity.enums.Access
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.repository.WishRepository
 import com.svetka.igiftu.service.UserTest
+import com.svetka.igiftu.service.entity.impl.WishServiceImpl
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

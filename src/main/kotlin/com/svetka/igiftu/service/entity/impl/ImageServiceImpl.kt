@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.entity.impl
 
 import com.svetka.igiftu.dto.ImageDto
 import com.svetka.igiftu.entity.Image

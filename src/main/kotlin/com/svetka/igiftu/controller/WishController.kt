@@ -4,8 +4,8 @@ import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.dto.fillUserReadRequest
-import com.svetka.igiftu.service.ContentManager
-import com.svetka.igiftu.service.ReaderManager
+import com.svetka.igiftu.service.manager.ContentManager
+import com.svetka.igiftu.service.manager.ReaderManager
 import com.svetka.igiftu.service.entity.WishService
 import java.security.Principal
 import mu.KotlinLogging

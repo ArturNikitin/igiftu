@@ -1,6 +1,6 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.manager.impl
 
-import com.svetka.igiftu.service.SecurityManager
+import com.svetka.igiftu.service.manager.SecurityManager
 import com.svetka.igiftu.service.UserTest
 import io.mockk.impl.annotations.InjectMockKs
 import org.junit.jupiter.api.Test

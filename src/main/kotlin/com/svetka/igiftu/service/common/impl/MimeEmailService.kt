@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.common.impl
 
 import com.svetka.igiftu.service.common.EmailService
 import java.nio.file.Files

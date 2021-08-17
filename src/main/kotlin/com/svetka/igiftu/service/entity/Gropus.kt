@@ -1,7 +1,7 @@
 package com.svetka.igiftu.service
 
 import com.svetka.igiftu.dto.Content
-import com.svetka.igiftu.service.impl.OwnerType
+import com.svetka.igiftu.service.manager.impl.OwnerType
 
 interface Readable {
 	fun get(ownerId: Long, ownerType: OwnerType): List<Content>

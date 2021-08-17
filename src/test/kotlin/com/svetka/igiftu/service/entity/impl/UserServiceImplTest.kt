@@ -1,10 +1,10 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.entity.impl
 
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.common.EmailService
-import com.svetka.igiftu.service.common.TokenService
+import com.svetka.igiftu.service.entity.TokenService
 import com.svetka.igiftu.service.UserTest
 import com.svetka.igiftu.service.entity.WishService
 import io.mockk.MockKAnnotations

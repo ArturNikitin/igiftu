@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.entity.impl
 
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.ImageDto
@@ -8,6 +8,7 @@ import com.svetka.igiftu.entity.enums.Access
 import com.svetka.igiftu.repository.WishRepository
 import com.svetka.igiftu.service.entity.ImageService
 import com.svetka.igiftu.service.entity.WishService
+import com.svetka.igiftu.service.manager.impl.OwnerType
 import java.nio.file.Files
 import java.nio.file.Paths
 import ma.glasnost.orika.MapperFacade

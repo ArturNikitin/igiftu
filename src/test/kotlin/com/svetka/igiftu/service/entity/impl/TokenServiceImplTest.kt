@@ -1,8 +1,9 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.entity.impl
 
 import com.svetka.igiftu.entity.Token
 import com.svetka.igiftu.repository.TokenRepository
 import com.svetka.igiftu.service.UserTest
+import com.svetka.igiftu.service.entity.impl.TokenServiceImpl
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

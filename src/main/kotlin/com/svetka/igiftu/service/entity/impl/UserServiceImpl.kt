@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.entity.impl
 
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PasswordDto
@@ -12,7 +12,7 @@ import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.exceptions.UnknownContentTypeException
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.common.EmailService
-import com.svetka.igiftu.service.common.TokenService
+import com.svetka.igiftu.service.entity.TokenService
 import com.svetka.igiftu.service.entity.UserService
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture

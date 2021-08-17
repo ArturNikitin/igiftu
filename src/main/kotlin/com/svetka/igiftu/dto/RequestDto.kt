@@ -1,7 +1,7 @@
 package com.svetka.igiftu.dto
 
 import com.svetka.igiftu.service.Readable
-import com.svetka.igiftu.service.impl.OwnerType
+import com.svetka.igiftu.service.manager.impl.OwnerType
 
 data class RequestDto(
 	val ownerId: Long,

@@ -1,9 +1,9 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.entity.impl
 
 import com.svetka.igiftu.entity.Token
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.TokenRepository
-import com.svetka.igiftu.service.common.TokenService
+import com.svetka.igiftu.service.entity.TokenService
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -26,9 +26,9 @@ class TokenServiceImpl(
 
 //    TODO сделать нормальное исключение для просроченного токена
     override fun verifyToken(token: String): User {
-        val token = tokenRepo.getTokenByPasswordToken(token)
+        val tokenEntity = tokenRepo.getTokenByPasswordToken(token)
             .orElseThrow { EntityNotFoundException("Token not found") }
-        if (token.expirationDate.isAfter(LocalDateTime.now())) return token.user
+        if (tokenEntity.expirationDate.isAfter(LocalDateTime.now())) return tokenEntity.user
         else throw EntityNotFoundException("YOUR TOKEN IS EXPIRED")
     }
 

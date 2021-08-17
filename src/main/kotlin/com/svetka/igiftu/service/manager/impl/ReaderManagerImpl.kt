@@ -1,9 +1,9 @@
-package com.svetka.igiftu.service.impl
+package com.svetka.igiftu.service.manager.impl
 
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.RequestDto
-import com.svetka.igiftu.service.ReaderManager
-import com.svetka.igiftu.service.SecurityManager
+import com.svetka.igiftu.service.manager.ReaderManager
+import com.svetka.igiftu.service.manager.SecurityManager
 import org.springframework.stereotype.Service
 
 @Service
