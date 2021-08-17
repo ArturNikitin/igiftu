@@ -2,7 +2,7 @@ package com.svetka.igiftu.dto
 
 data class ImageDto(
 	val id: Long?,
-	val name: String?,
+	var name: String?,
 	val content: String?
 ) {
 	companion object {

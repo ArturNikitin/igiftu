@@ -24,19 +24,26 @@ class ImageServiceImpl(
 		)
 	}
 
-//	TODO refactor
-	override fun saveImage(imageDto: ImageDto): ImageDto {
+	override fun saveImage(imageName: String, content: ByteArray): ImageDto {
 		CompletableFuture<String>().completeAsync {
-			s3StorageService.putFile(imageDto.content!!.toByteArray(), imageDto.name!!)
+			s3StorageService.putFile(content, imageName)
 		}
-		val image = imageRepository.save(Image(name = imageDto.name!!))
-		return ImageDto(id = image.id, name = image.name, content = imageDto.content)
+
+		val image = imageRepository.save(Image(name = imageName))
+
+		return ImageDto(id = image.id,
+			name = image.name,
+			content = content.contentToString())
 	}
 
 	override fun getImage(imageName: String): ImageDto {
 		val content = simpleCash[imageName] ?: s3StorageService.getFile(imageName)
+
 		val image = imageRepository.findByName(imageName)
 			.orElseThrow { EntityNotFoundException("Image with name $imageName not found") }
-		return ImageDto(id = image.id, name = image.name, content = content.contentToString())
+
+		return ImageDto(id = image.id,
+			name = image.name,
+			content = content.contentToString())
 	}
 }
