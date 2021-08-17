@@ -26,7 +26,7 @@ class Wish(
 	
 	@Column(name = "created_date")
 	@CreatedDate
-	val createdDate: LocalDateTime,
+	var createdDate: LocalDateTime,
 	
 	@Column(name = "last_modified_date")
 	@LastModifiedDate
@@ -60,9 +60,13 @@ class Wish(
 	@Column
 	var link: String? = null,
 	
-	@ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+	@ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	val user: User
+	var user: User? = null,
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.PERSIST])
+	@JoinColumn(name = "image_id")
+	var image: Image? = null
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

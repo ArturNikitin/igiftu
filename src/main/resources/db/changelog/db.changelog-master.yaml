@@ -56,3 +56,33 @@ databaseChangeLog:
         - sqlFile:
             encoding: utf8
             path: db/sql/20210525_1752_CREATE_TOKEN_TABLE.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202108101830
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20210810_1236_REFACTOR_WISHLIST_FILES_TABLE.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202108101836
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20210810_1836_ADD_BLOD_ID.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202108152140
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20211508_2125_INSERT_INTO_FILES.sql

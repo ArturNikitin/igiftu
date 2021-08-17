@@ -1,117 +1,127 @@
 package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.entity.enums.Access
-import com.svetka.igiftu.service.WishService
-import io.mockk.verify
+import com.svetka.igiftu.service.ContentManager
+import com.svetka.igiftu.service.ReaderManager
+import com.svetka.igiftu.service.entity.WishService
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
-import org.springframework.beans.factory.annotation.Autowired
+import org.mockito.Mockito.verify
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.nio.charset.StandardCharsets
-import javax.persistence.EntityNotFoundException
-import kotlin.test.assertEquals
 
 @WebMvcTest(WishController::class)
 internal class WishControllerTest : AbstractControllerTest() {
-	
+
 	companion object {
 		const val id: Long = 1L
-		const val wishDto = "{\n" +
-				"    \"name\": \"My first wish\",\n" +
+		const val wishDtoNoId = "{\n" +
+				"    \"name\": \"My test wish\",\n" +
+				"    \"price\": 10.15,\n" +
+				"    \"access\": \"PUBLIC\"\n" +
+				"}"
+		const val wishDtoWithId = "{\n" +
+				"    \"id\": \"1\",\n" +
+				"    \"name\": \"My test wish\",\n" +
 				"    \"price\": 10.15,\n" +
 				"    \"access\": \"PUBLIC\"\n" +
 				"}"
 	}
-	
+
 	@MockBean
-	private lateinit var wishService: WishService
-	
-	@Autowired
-	private lateinit var mockMvc: MockMvc
-	
+	private lateinit var manager: ContentManager
+
+	@MockBean
+	private lateinit var reader: ReaderManager
+
+	@MockBean
+	private lateinit var service: WishService
+
 	@BeforeEach
 	fun setUp() {
-		Mockito.`when`(
-			wishService.getWishById(id)
+
+		`when`(
+			manager.create(userId, wishDtoNoId(), username, service)
 		).thenReturn(
-			WishDto(
-				id,
-				name = "My Wish",
-				price = 10.00,
-				access = Access.PUBLIC.name
-			)
+			wishDtoWithId()
 		)
-		Mockito.`when`(
-			wishService.getWishById(2L)
-		).thenThrow(EntityNotFoundException("Wish with ID 2 not found"))
+
+		`when`(
+			manager.update(userId, wishDtoWithId().id!!, wishDtoWithId(), username, service)
+		).thenReturn(
+			wishDtoWithId()
+		)
 	}
 
-	@Test
-	fun deleteWish() {
-		mockMvc.perform(
-				delete("/wish/$id")
-		).andExpect(status().isOk)
+	// GET TODO
 
-		Mockito.verify(wishService, times(1)).deleteWish(id)
-	}
-	
+	// POST
 	@Test
-	fun getWish() {
+	fun createWishSuccess() {
+		val token = getToken("user@gmail.com")
+
 		mockMvc.perform(
-			get("/wish/1")
-		).andExpect(status().isOk)
-		
-		Mockito.verify(wishService, times(1)).getWishById(id)
-	}
-	
-	@Test
-	fun getWishEntityNotFound() {
-		val contentAsString = mockMvc.perform(
-			get("/wish/2")
-		)
-			.andExpect(status().isNotFound)
-			.andReturn()
-			.response.getContentAsString(StandardCharsets.UTF_8)
-		
-		assertEquals("Wish with ID 2 not found", contentAsString)
-		
-	}
-	
-	@Test
-	fun createWish() {
-		Mockito.`when`(
-			wishService.createWish(wishDto())
-		).thenReturn(
-			wishDto()
-		)
-		mockMvc.perform(
-			MockMvcRequestBuilders.post("/wish")
-				.content(wishDto)
+			MockMvcRequestBuilders.post("/user/1/wish")
+				.header("authorization", token)
+				.content(wishDtoNoId)
 				.contentType(MediaType.APPLICATION_JSON)
 		)
 			.andExpect(status().isCreated)
-			.andExpect(
-				MockMvcResultMatchers.content()
-					.contentType(MediaType.APPLICATION_JSON)
-			)
-		
-		Mockito.verify(wishService, times(1)).createWish(wishDto())
+			.andReturn()
+			.response
+			.also {
+				Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString())
+			}
+
+		verify(manager, times(1))
+			.create(userId, wishDtoNoId(), "user@gmail.com", service)
 	}
-	
-	private fun wishDto() = WishDto(
-		name = "My first wish",
+
+//	PUT TODO
+
+	@Test
+	fun updateWishSuccess() {
+		val token = getToken("user@gmail.com")
+
+		mockMvc.perform(
+			MockMvcRequestBuilders.put("/user/1/wish/1")
+				.header("authorization", token)
+				.content(wishDtoWithId)
+				.contentType(MediaType.APPLICATION_JSON)
+		)
+			.andExpect(status().isAccepted)
+			.andReturn()
+			.response
+			.also { Assertions.assertTrue(it.contentAsString.subSequence(6, 7) == id.toString()) }
+
+		verify(manager, times(1))
+			.update(userId, wishDtoWithId().id!!, wishDtoWithId(), username, service)
+	}
+
+//	PATCH TODO
+
+	private fun wishDtoNoId() = WishDto(
+		name = "My test wish",
 		price = 10.15,
-		access = Access.PUBLIC.name
+		access = "PUBLIC"
 	)
+
+	private fun wishDtoWithId() = WishDto(
+		id = 1L,
+		name = "My test wish",
+		price = 10.15,
+		access = "PUBLIC",
+		createdDate = "created date",
+		lastModifiedDate = "last modified date",
+		isBooked = false,
+		isAnalogPossible = true,
+		isCompleted = false
+	)
+
 }

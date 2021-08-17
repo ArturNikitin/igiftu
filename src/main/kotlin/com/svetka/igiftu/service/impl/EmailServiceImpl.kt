@@ -1,6 +1,6 @@
 package com.svetka.igiftu.service.impl
 
-import com.svetka.igiftu.service.EmailService
+import com.svetka.igiftu.service.common.EmailService
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service

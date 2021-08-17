@@ -1,13 +1,12 @@
 package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.dto.UserDto
-import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.UserRepository
-import com.svetka.igiftu.service.EmailService
-import com.svetka.igiftu.service.TokenService
+import com.svetka.igiftu.service.common.EmailService
+import com.svetka.igiftu.service.common.TokenService
 import com.svetka.igiftu.service.UserTest
-import com.svetka.igiftu.service.WishService
+import com.svetka.igiftu.service.entity.WishService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
-import com.svetka.igiftu.service.impl.WishServiceImplTest.Companion as WishServiceImplTest1
 
 internal class UserServiceImplTest : UserTest() {
 
@@ -81,43 +79,6 @@ internal class UserServiceImplTest : UserTest() {
     }
 
     @Test
-    fun getAllWishesByUserIdSuccessIsOwnerWithWishes() {
-        every { wishService.getWishesByUserId(1L) } returns
-            listOf(WishServiceImplTest1.getWishDto(), WishServiceImplTest1.getSecondWishDto())
-
-        val payloadDto = userService.getAllWishesByUserId(1L)
-
-        assertNotNull(payloadDto)
-        assertEquals(true, payloadDto.isOwner)
-        assertEquals(2, payloadDto.payload.size)
-
-        verify {
-            userRepository.existsByIdOrEmail(1L, "")
-        }
-    }
-
-    @Test
-    fun getAllWishesByUserIdSuccessIsOwnerNoWishes() {
-        every { wishService.getWishesByUserId(1L) } returns emptyList()
-
-        val payloadDto = userService.getAllWishesByUserId(1L)
-
-        assertNotNull(payloadDto)
-        assertEquals(true, payloadDto.isOwner)
-        assertEquals(emptyList<WishDto>(), payloadDto.payload)
-
-        verify {
-            userRepository.existsByIdOrEmail(id = 1L, email = "")
-            wishService.getWishesByUserId(1L)
-        }
-    }
-
-    @Test
-    fun getAllWishesByUserIdUserNotFound() {
-        assertThrows(EntityNotFoundException::class.java) { userService.getAllWishesByUserId(2L) }
-    }
-
-    @Test
     fun getUserByIdSuccessTest() {
         every { userRepository.findById(1L) } returns Optional.of(getUser())
         every { userRepository.findById(2L) } returns Optional.of(getUser2())
@@ -158,7 +119,7 @@ internal class UserServiceImplTest : UserTest() {
         } returns getUserAfterUpdate()
         every { mapper.map(getUserAfterUpdate(), UserDto::class.java) } returns getUserDtoToUpdate()
 
-        val updateUser = userService.updateUser(getUserDtoToUpdate())
+        val updateUser = userService.update(getUserDtoToUpdate())
 
         assertNotNull(updateUser)
         assertEquals(email1, updateUser.email)
@@ -176,7 +137,7 @@ internal class UserServiceImplTest : UserTest() {
     fun updateUserDoesNotExist() {
         every { userRepository.findById(1L) } returns Optional.empty()
 
-        assertThrows(EntityNotFoundException::class.java) { userService.updateUser(getUserDtoToUpdate()) }
+        assertThrows(EntityNotFoundException::class.java) { userService.update(getUserDtoToUpdate()) }
     }
 
     @Test
@@ -187,7 +148,7 @@ internal class UserServiceImplTest : UserTest() {
         every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.empty()
         every { emailService.sendWelcomingEmail(getUserCreds().email) } returns Unit
 
-        val registeredUser = userService.registerUser(getUserCreds())
+        val registeredUser = userService.register(getUserCreds())
 
         assertNotNull(registeredUser)
         assertEquals(email1, registeredUser.email)
@@ -209,7 +170,7 @@ internal class UserServiceImplTest : UserTest() {
 
         assertThrows(
             EntityExistsException::class.java
-        ) { userService.registerUser(getUserCreds()) }
+        ) { userService.register(getUserCreds()) }
     }
 
 }
