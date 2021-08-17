@@ -49,7 +49,10 @@ class TestContainer {
 			registry.add("spring.datasource.url", postgreDBContainer::getJdbcUrl)
 			registry.add("spring.datasource.password", postgreDBContainer::getPassword)
 			registry.add("spring.datasource.username", postgreDBContainer::getUsername)
-			registry.add("spring.jpa.hibernate.ddl-auto") { "none" }
+			registry.add("spring.jpa.hibernate.ddl-auto") { "validate" }
+			registry.add("aws.cred.key") {"1234"}
+			registry.add("aws.cred.pass") {"1234"}
+			registry.add("spring.mail.password") {"1234"}
 		}
 	}
 	

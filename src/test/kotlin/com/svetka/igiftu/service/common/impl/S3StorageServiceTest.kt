@@ -57,6 +57,6 @@ internal class S3StorageServiceTest {
 	}
 
 	private val byteArray = ByteArray(1)
-	private val bucket = "bucket"
+	private val bucket = "i-gift-u-wish-test-bucket"
 	private val fileName = "fileName"
 }

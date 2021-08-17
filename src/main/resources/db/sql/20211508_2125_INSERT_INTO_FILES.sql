@@ -1,4 +1,4 @@
-INSERT INTO images (blob_name)
+INSERT INTO images (file_name)
 VALUES (
        'default-wish'
         )

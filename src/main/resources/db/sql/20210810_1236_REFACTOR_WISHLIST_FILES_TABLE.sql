@@ -3,7 +3,7 @@ DROP TABLE Wishlist_files;
 CREATE TABLE IF NOT EXISTS images
 (
     id        BIGSERIAL PRIMARY KEY,
-    file_type VARCHAR,
+    file_type VARCHAR
 );
 
 ALTER TABLE users
