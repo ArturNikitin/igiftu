@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.social.connect.ConnectionFactoryLocator
+import org.springframework.social.connect.ConnectionSignUp
 import org.springframework.social.connect.UsersConnectionRepository
 import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository
 import org.springframework.social.connect.support.ConnectionFactoryRegistry
@@ -33,7 +34,7 @@ class SecurityConfig(
 	private val userDetailsService: UserDetailsService,
 	private val secretKey: SecretKey,
 	private val jwtConfig: JwtConfig,
-	private val facebookSignUp: FacebookConnectionSignup
+	private val facebookSignUp: ConnectionSignUp
 ) : WebSecurityConfigurerAdapter() {
 
 	@Value("\${spring.social.facebook.appId}")

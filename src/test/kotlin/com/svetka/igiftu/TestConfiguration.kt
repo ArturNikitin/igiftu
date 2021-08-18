@@ -4,12 +4,23 @@ import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.JwtSecretKey
 import com.svetka.igiftu.security.service.MyUserDetails
+import com.svetka.igiftu.security.service.facebook.FacebookSignInAdapter
 import io.jsonwebtoken.security.Keys
 import javax.crypto.SecretKey
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.social.connect.Connection
+import org.springframework.social.connect.ConnectionFactoryLocator
+import org.springframework.social.connect.ConnectionSignUp
+import org.springframework.social.connect.UsersConnectionRepository
+import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository
+import org.springframework.social.connect.support.ConnectionFactoryRegistry
+import org.springframework.social.connect.web.ProviderSignInController
+import org.springframework.social.connect.web.SignInAdapter
+import org.springframework.social.facebook.connect.FacebookConnectionFactory
+import org.springframework.web.context.request.NativeWebRequest
 
 @TestConfiguration
 class TestConfiguration {
@@ -31,4 +42,34 @@ class TestConfiguration {
 	
 	@Bean
 	fun secretKey(): SecretKey = Keys.hmacShaKeyFor(jwtConfig().key.toByteArray())
+
+	@Bean
+	fun facebookConnectionSignup() = ConnectionSignUp { "usernameFacebook" }
+//
+//	@Bean
+//	fun facebookSignInAdapter() = SignInAdapter { s: String, connection: Connection<*>, nativeWebRequest: NativeWebRequest ->
+//		""
+//	}
+//
+//	@Bean
+//	fun providerSignInController(): ProviderSignInController {
+//		val connectionFactoryLocator = connectionFactoryLocator()
+//		val usersConnectionRepository = getUsersConnectionRepository(connectionFactoryLocator)
+//		(usersConnectionRepository as InMemoryUsersConnectionRepository)
+//			.setConnectionSignUp(facebookSignUp())
+//		return ProviderSignInController(
+//			connectionFactoryLocator,
+//			usersConnectionRepository, FacebookSignInAdapter()
+//		)
+//	}
+//
+//	private fun connectionFactoryLocator(): ConnectionFactoryLocator {
+//		val registry = ConnectionFactoryRegistry()
+//		registry.addConnectionFactory(FacebookConnectionFactory("appId", "appSecret"))
+//		return registry
+//	}
+//
+//	private fun getUsersConnectionRepository(connectionFactoryLocator: ConnectionFactoryLocator): UsersConnectionRepository {
+//		return InMemoryUsersConnectionRepository(connectionFactoryLocator)
+//	}
 }

@@ -42,6 +42,7 @@ class TestContainer {
 			registry.add("aws.cred.key") { "1234" }
 			registry.add("aws.cred.pass") { "1234" }
 			registry.add("spring.mail.password") { "1234" }
+			registry.add("spring.social.facebook.appSecret") {"1235"}
 		}
 	}
 
