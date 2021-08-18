@@ -85,4 +85,14 @@ databaseChangeLog:
       changes:
         - sqlFile:
             encoding: utf8
-            path: db/sql/20211508_2125_INSERT_INTO_FILES.sql
+            path: db/sql/20210815_2125_INSERT_INTO_FILES.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202108181203
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20210818_1200_ALTER_USERS_TABLE.sql

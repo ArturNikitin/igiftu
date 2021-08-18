@@ -1,5 +1,6 @@
 package com.svetka.igiftu.entity
 
+import com.svetka.igiftu.entity.enums.RegistrationTypes
 import com.svetka.igiftu.entity.enums.UserRoles
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
@@ -17,7 +18,7 @@ class User(
 	var createdDate: LocalDateTime? = null,
 
 	@Column
-	var password: String = "",
+	var password: String? = null,
 
 	@Column
 	var email: String,
@@ -34,7 +35,11 @@ class User(
 
 	@Column(name = "isaccountnonlocked")
 	var isAccountNonLocked: Boolean = false,
-	
+
+	@Column(name = "registration_type")
+	@Enumerated(value = EnumType.STRING)
+	var registrationType: RegistrationTypes = RegistrationTypes.EMAIL,
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
 	val wishes: MutableList<Wish> = mutableListOf(),
 

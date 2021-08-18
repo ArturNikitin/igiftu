@@ -31,6 +31,10 @@ spring:
       auth: true
       starttls.enable: true
       ssl.trust: smtp.gmail.com
+  social:
+    facebook:
+      appId: 336219914276334
+      appSecret: ${FACEBOOK_SECRET}
 
 #AWS
 aws:

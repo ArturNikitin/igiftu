@@ -17,6 +17,7 @@ class UserDetailsServiceImpl(
 			UsernameNotFoundException("User with email $email not found")
 		}
 
-		return MyUserDetails(user.email, user.password, user.role.toString())
+//		todo in case of FACEBOOK
+		return MyUserDetails(user.email, user.password!!, user.role.toString())
 	}
 }
