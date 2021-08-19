@@ -17,10 +17,10 @@ deploy:
     on:
       all_branches: true
       branch: develop
-  - provider: heroku
-    app: igiftudev-app
-    api_key:
-      secure: N7pml7NGZbXj9CaM/o3HBCb4WeiNk81tp2zxrWMEgPrjVeMtd+JFqQMMcp6ndlMz3+pfJju5Efxa903IcZ5HakQcAdjX+scngYmrO8qbdGm6tQlqSOM30cCpRCPBso+SshMhL/QbwM0sXQvznWJ0EyhNQIAa0//mkOSga6tdezFbQof4jRo16gTJziZudDGajpijl9Rd67552I6RWvhz/vC+cZQJRuJcatTzH9n64235ccQxbF/m6XfcLgp/Lui8u0+oLZr7+f4gRIj0BHclRDDjRJ+pAjqTcbFyQDJ0AEEnA6gOioUdZVpDODNjUrx62knwJckmMRU3Hpvsees+2eDY4NlBYJ4Do3FL8sdI3WB3HFRxRt1TShL1+aIERynd2RFo/FGojLIQfQ+eSlw5swA95Aqigz5LeI4oz7K9Z7f5pAvEbyYwAaLj/V60wqNoVoWxIxibLfBjiY976iS/6xAugcz0NWU/gPBsQNPkp9gaoeJCIWPt7Sw53RgU2eIRirfMYg9qIMPVWuOdRCIzcztXB7KVKlopDpDml7QzpaTpIQxuQgpO/Mdtym+hoZwkLA+Vf6elDE/vHmYFZJ3g78GkDyBae/tfhDGxfv8plcyQbb/P+GsENjya+s/6OkyLJSK5XWukNoFpv+x57JLK/sGTlZNYDQ1c5mmuw5YgS2w=
-    on:
-      all_branches: true
-      branch: master
+#  - provider: heroku
+#    app: igiftudev-app
+#    api_key:
+#      secure: N7pml7NGZbXj9CaM/o3HBCb4WeiNk81tp2zxrWMEgPrjVeMtd+JFqQMMcp6ndlMz3+pfJju5Efxa903IcZ5HakQcAdjX+scngYmrO8qbdGm6tQlqSOM30cCpRCPBso+SshMhL/QbwM0sXQvznWJ0EyhNQIAa0//mkOSga6tdezFbQof4jRo16gTJziZudDGajpijl9Rd67552I6RWvhz/vC+cZQJRuJcatTzH9n64235ccQxbF/m6XfcLgp/Lui8u0+oLZr7+f4gRIj0BHclRDDjRJ+pAjqTcbFyQDJ0AEEnA6gOioUdZVpDODNjUrx62knwJckmMRU3Hpvsees+2eDY4NlBYJ4Do3FL8sdI3WB3HFRxRt1TShL1+aIERynd2RFo/FGojLIQfQ+eSlw5swA95Aqigz5LeI4oz7K9Z7f5pAvEbyYwAaLj/V60wqNoVoWxIxibLfBjiY976iS/6xAugcz0NWU/gPBsQNPkp9gaoeJCIWPt7Sw53RgU2eIRirfMYg9qIMPVWuOdRCIzcztXB7KVKlopDpDml7QzpaTpIQxuQgpO/Mdtym+hoZwkLA+Vf6elDE/vHmYFZJ3g78GkDyBae/tfhDGxfv8plcyQbb/P+GsENjya+s/6OkyLJSK5XWukNoFpv+x57JLK/sGTlZNYDQ1c5mmuw5YgS2w=
+#    on:
+#      all_branches: true
+#      branch: master
