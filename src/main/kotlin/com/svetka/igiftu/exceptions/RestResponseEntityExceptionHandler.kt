@@ -28,7 +28,7 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
         ex.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
             val fieldName = (error as FieldError).field
             val errorMessage = error.getDefaultMessage()
-            errors[fieldName] = errorMessage
+            errors["message"] = errorMessage
         })
         return handleExceptionInternal(
             ex, errors, HttpHeaders.EMPTY,
@@ -53,10 +53,14 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleEntityExists(
         ex: EntityExistsException,
         request: WebRequest
-    ): ResponseEntity<Any> = handleExceptionInternal(
-        ex, ex.message,
-        HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
-    )
+    ): ResponseEntity<Any> {
+        val errors: MutableMap<String, String?> = HashMap()
+        errors["message"] = ex.message
+        return handleExceptionInternal(
+            ex, errors,
+            HttpHeaders.EMPTY, HttpStatus.NOT_FOUND, request
+        )
+    }
 
     @ExceptionHandler(
             value = [SecurityException::class]
