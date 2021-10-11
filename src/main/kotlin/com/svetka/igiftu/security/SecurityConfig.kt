@@ -6,6 +6,7 @@ import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
 import com.svetka.igiftu.security.service.facebook.FacebookConnectionSignup
 import com.svetka.igiftu.security.service.facebook.FacebookSignInAdapter
 import javax.crypto.SecretKey
+import org.apache.tomcat.util.file.ConfigurationSource
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -25,6 +26,8 @@ import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository
 import org.springframework.social.connect.support.ConnectionFactoryRegistry
 import org.springframework.social.connect.web.ProviderSignInController
 import org.springframework.social.facebook.connect.FacebookConnectionFactory
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
 
 
 @Configuration
@@ -48,8 +51,14 @@ class SecurityConfig(
 	}
 
 	override fun configure(http: HttpSecurity) {
-		http.cors().and()
-			.csrf().disable().addFilter(
+		http.cors().configurationSource {
+			CorsConfiguration().apply {
+				allowedOrigins = listOf("http://localhost:3000")
+				allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+				allowedHeaders = listOf("*")
+			}
+		}
+			.and().csrf().disable().addFilter(
 			JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
 		)
 			.addFilterAfter(
