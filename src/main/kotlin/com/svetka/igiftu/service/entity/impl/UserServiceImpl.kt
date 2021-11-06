@@ -12,6 +12,7 @@ import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.exceptions.UnknownContentTypeException
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.common.EmailService
+import com.svetka.igiftu.service.entity.ImageService
 import com.svetka.igiftu.service.entity.TokenService
 import com.svetka.igiftu.service.entity.UserService
 import java.time.LocalDateTime
@@ -30,7 +31,8 @@ class UserServiceImpl(
 	private val mapper: MapperFacade,
 	private val encoder: PasswordEncoder,
 	private val emailService: EmailService,
-	private val tokenService: TokenService
+	private val tokenService: TokenService,
+	private val imageService: ImageService
 ) : UserService {
 
 	private val logger = KotlinLogging.logger { }
@@ -44,13 +46,13 @@ class UserServiceImpl(
 
 	@Transactional
 	override fun getUserById(id: Long): UserDto =
-		userRepo.findById(id).map {
-			getUserDto(it)
-		}.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
+		userRepo.findById(id).map { getUserDto(it) }
+			.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
+			.apply { image?.content = imageService.getContent(image?.name!!) }
 
 	@Transactional
 	override fun resetPassword(email: String) {
-		val user = userRepo.getUserByEmail(email)
+		val user = userRepo.findUserByEmail(email)
 			.orElseThrow { EntityNotFoundException("User with email $email was not found ") }
 
 		CompletableFuture.supplyAsync { tokenService.addPasswordTokenForUser(user) }
@@ -69,24 +71,28 @@ class UserServiceImpl(
 	@Transactional
 	override fun register(userCredentials: UserCredentials): UserDto {
 		logger.info { "Trying to register user with email ${userCredentials.email}" }
-		if (!exists(userCredentials)) {
+		if (notExists(userCredentials)) {
+			val image = imageService.getImage("default-user-pic")
 			val mappedUser = mapper.map(userCredentials, User::class.java).apply {
 				createdDate = LocalDateTime.now()
 				password = encoder.encode(this.password)
 				login = login ?: getLoginFromEmail()
 				role = UserRoles.ROLE_USER
+				this.image = image.let { Image(it.id, name = it.name!!) }
+				isAccountNonLocked = true
+				isEnabled = true
 			}
 			CompletableFuture.supplyAsync { emailService.sendWelcomingEmail(mappedUser.email) }
 			logger.info { "Saving new user with email ${userCredentials.email}" }
-			return saveOrUpdateUser(mappedUser)
+			return saveOrUpdateUser(mappedUser).apply { this.image?.content = image.content }
 		} else {
 			logger.info { "User with email ${userCredentials.email} already exists" }
 			throw EntityExistsException("Пользователь с имейлом ${userCredentials.email} уже существует")
 		}
 	}
 
-	private fun exists(userCredentials: UserCredentials) =
-		!userRepo.getUserByEmail(userCredentials.email).isEmpty
+	private fun notExists(userCredentials: UserCredentials) =
+		userRepo.findUserByEmail(userCredentials.email).isEmpty
 
 	@Transactional
 	override fun addContent(ownerId: Long, content: Content): Content = when (content) {

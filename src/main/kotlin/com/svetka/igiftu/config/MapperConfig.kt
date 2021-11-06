@@ -106,7 +106,9 @@ class MapperConfig(
 			return UserDto(
 				source.id ?: 0L,
 				source.email,
-				login = source.login
+				login = source.login,
+				role = source.role.toString(),
+				image = source.image?.let { ImageDto.fill(it.id ?: 0L, it.name) }
 			)
 		}
 

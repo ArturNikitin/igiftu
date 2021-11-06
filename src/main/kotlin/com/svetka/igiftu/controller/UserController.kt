@@ -8,7 +8,6 @@ import com.svetka.igiftu.service.entity.UserService
 import javax.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus.CREATED
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -26,9 +25,12 @@ class UserController(
 ) {
 	private val logger = KotlinLogging.logger { }
 
-	@GetMapping("/{id}")
-	fun getUser(@PathVariable id: Long): UserDto {
-		return userService.getUserById(id)
+	@GetMapping("/{userId}")
+	fun getUser(@PathVariable userId: Long): UserDto {
+		logger.info { "Received request to getUser [$userId]" }
+		val user = userService.getUserById(userId)
+		logger.info { "Finished request to getUser with data {$user}" }
+		return user
 	}
 
 	@PostMapping
@@ -36,7 +38,12 @@ class UserController(
 
 	@PostMapping("/registration")
 	@ResponseStatus(CREATED)
-	fun registerUser(@Valid @RequestBody user: UserCredentials) = userService.register(user)
+	fun registerUser(@Valid @RequestBody userCreds: UserCredentials): UserDto {
+		logger.info { "Received request to registerUser with creds $userCreds" }
+		val userDto = userService.register(userCreds)
+		logger.info { "Finished request to registerUser with data {$userDto}" }
+		return userDto
+	}
 
 	@PostMapping("/password")
 	fun resetPassword(@RequestBody email: EmailDto): String {

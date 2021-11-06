@@ -95,7 +95,7 @@ class WishServiceImpl(
 
 	private fun dealWithImage(imageDto: ImageDto?): ImageDto {
 		imageDto?.content ?: return imageService.getImage("default-wish")
-		return imageService.saveImage(getUUIDNoDashes(), imageDto.content.toByteArray())
+		return imageService.saveImage(getUUIDNoDashes(), imageDto.content!!)
 	}
 
 	private fun getUUIDNoDashes() = UUID.randomUUID().toString().replace("-", "")

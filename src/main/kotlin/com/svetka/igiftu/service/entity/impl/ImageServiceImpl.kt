@@ -10,6 +10,7 @@ import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ImageServiceImpl(
@@ -20,10 +21,14 @@ class ImageServiceImpl(
 		val simpleCash = mapOf(
 			"default-wish" to Files.readAllBytes(
 				Paths.get("src/main/resources/static/pictures/wish.jpeg")
+			),
+			"default-user-pic" to Files.readAllBytes(
+				Paths.get("src/main/resources/static/pictures/user_pic.png")
 			)
 		)
 	}
 
+	@Transactional
 	override fun saveImage(imageName: String, content: ByteArray): ImageDto {
 		CompletableFuture<String>().completeAsync {
 			s3StorageService.putFile(content, imageName)
@@ -33,9 +38,10 @@ class ImageServiceImpl(
 
 		return ImageDto(id = image.id,
 			name = image.name,
-			content = content.contentToString())
+			content = content)
 	}
 
+	@Transactional
 	override fun getImage(imageName: String): ImageDto {
 		val content = simpleCash[imageName] ?: s3StorageService.getFile(imageName)
 
@@ -44,6 +50,10 @@ class ImageServiceImpl(
 
 		return ImageDto(id = image.id,
 			name = image.name,
-			content = content.contentToString())
+			content = content)
+	}
+
+	override fun getContent(imageName: String): ByteArray {
+		return simpleCash[imageName] ?: s3StorageService.getFile(imageName)
 	}
 }

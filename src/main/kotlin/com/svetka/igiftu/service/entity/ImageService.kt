@@ -5,4 +5,5 @@ import com.svetka.igiftu.dto.ImageDto
 interface ImageService {
 	fun saveImage(imageName: String, content: ByteArray): ImageDto
 	fun getImage(imageName: String): ImageDto
+	fun getContent(imageName: String): ByteArray
 }

@@ -43,9 +43,9 @@ class User(
 	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
 	val wishes: MutableList<Wish> = mutableListOf(),
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.PERSIST])
+	@ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.DETACH])
 	@JoinColumn(name = "image_id")
-	val image: Image? = null
+	var image: Image? = null
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

@@ -62,18 +62,18 @@ internal class UserServiceImplTest : UserTest() {
 
     @Test
     fun resetPasswordSuccess() {
-        every { userRepository.getUserByEmail(email1) } returns Optional.of(getUser())
+        every { userRepository.findUserByEmail(email1) } returns Optional.of(getUser())
 
         userService.resetPassword(email1)
 
         verify {
-            userRepository.getUserByEmail(email1)
+            userRepository.findUserByEmail(email1)
         }
     }
 
     @Test
     fun resetPasswordUserDoesNotExist() {
-        every { userRepository.getUserByEmail(email1) } returns Optional.empty()
+        every { userRepository.findUserByEmail(email1) } returns Optional.empty()
 
         assertThrows(EntityNotFoundException::class.java) { userService.resetPassword(email1) }
     }
@@ -145,7 +145,7 @@ internal class UserServiceImplTest : UserTest() {
         every { mapper.map(getUserCreds(), User::class.java) } returns (getUserToSave())
         every { userRepository.save(getUserToSave()) } returns getUser()
         every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
-        every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.empty()
+        every { userRepository.findUserByEmail(getUserCreds().email) } returns Optional.empty()
         every { emailService.sendWelcomingEmail(getUserCreds().email) } returns Unit
 
         val registeredUser = userService.register(getUserCreds())
@@ -159,14 +159,14 @@ internal class UserServiceImplTest : UserTest() {
             mapper.map(getUser(), UserDto::class.java)
             userRepository.save(getUserToSave())
             encoder.encode(password1)
-            userRepository.getUserByEmail(email1)
+            userRepository.findUserByEmail(email1)
             emailService.sendWelcomingEmail(email1)
         }
     }
 
     @Test
     fun registerDuplicatedUser() {
-        every { userRepository.getUserByEmail(getUserCreds().email) } returns Optional.of(getUser())
+        every { userRepository.findUserByEmail(getUserCreds().email) } returns Optional.of(getUser())
 
         assertThrows(
             EntityExistsException::class.java
