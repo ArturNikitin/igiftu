@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ImageDto(
-	val id: Long?,
-	var name: String?,
-	var content: ByteArray?
+	val id: Long? = null,
+	var name: String? = null,
+	var content: ByteArray? = null
 ) {
 	companion object {
 		fun fill(name: String) = ImageDto(null, name, null)

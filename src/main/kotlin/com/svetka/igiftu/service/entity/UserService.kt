@@ -7,7 +7,7 @@ import com.svetka.igiftu.service.Possessing
 
 interface UserService : Possessing {
     fun getUserById(id: Long) : UserDto
-    fun update(userDto: UserDto) : UserDto
+    fun update(userDto: UserDto, username: String) : UserDto
     fun register(userCredentials: UserCredentials) : UserDto
     fun resetPassword(email: String)
     fun updatePassword(password: PasswordDto)

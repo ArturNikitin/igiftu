@@ -30,15 +30,19 @@ class ImageServiceImpl(
 
 	@Transactional
 	override fun saveImage(imageName: String, content: ByteArray): ImageDto {
+		if (simpleCash.containsKey(imageName))
+			return imageRepository.findByName(imageName).get().let { ImageDto(it.id, it.name, content) }
 		CompletableFuture<String>().completeAsync {
 			s3StorageService.putFile(content, imageName)
 		}
 
 		val image = imageRepository.save(Image(name = imageName))
 
-		return ImageDto(id = image.id,
+		return ImageDto(
+			id = image.id,
 			name = image.name,
-			content = content)
+			content = content
+		)
 	}
 
 	@Transactional
@@ -48,9 +52,11 @@ class ImageServiceImpl(
 		val image = imageRepository.findByName(imageName)
 			.orElseThrow { EntityNotFoundException("Image with name $imageName not found") }
 
-		return ImageDto(id = image.id,
+		return ImageDto(
+			id = image.id,
 			name = image.name,
-			content = content)
+			content = content
+		)
 	}
 
 	override fun getContent(imageName: String): ByteArray {

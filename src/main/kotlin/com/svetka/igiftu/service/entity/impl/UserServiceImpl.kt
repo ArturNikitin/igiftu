@@ -9,6 +9,7 @@ import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
+import com.svetka.igiftu.exceptions.SecurityModificationException
 import com.svetka.igiftu.exceptions.UnknownContentTypeException
 import com.svetka.igiftu.repository.UserRepository
 import com.svetka.igiftu.service.common.EmailService
@@ -16,6 +17,7 @@ import com.svetka.igiftu.service.entity.ImageService
 import com.svetka.igiftu.service.entity.TokenService
 import com.svetka.igiftu.service.entity.UserService
 import java.time.LocalDateTime
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
@@ -60,12 +62,26 @@ class UserServiceImpl(
 	}
 
 	@Transactional
-	override fun update(userDto: UserDto): UserDto =
-		userRepo.findById(userDto.id).map {
-			saveOrUpdateUser(it.apply {
+	override fun update(userDto: UserDto, username: String): UserDto {
+		val user = userRepo.findById(userDto.id)
+			.orElseThrow { EntityNotFoundException("User with id ${userDto.id} not found ") }
+			.also {
+				if (it.email != username && it.login != username)
+					throw SecurityModificationException("Illegal modification attempt")
+			}
+		val imageDto = userDto.image?.content?.let {
+			imageService.saveImage(
+				userDto.image.name ?: UUID.randomUUID().toString(),
+				it
+			)
+		}
+		return saveOrUpdateUser(
+			user.apply {
+				image = Image(imageDto?.id, name = imageDto?.name!!)
 				login = userDto.login
-			})
-		}.orElseThrow { EntityNotFoundException("User with id ${userDto.id} not found ") }
+			}
+		)
+	}
 
 
 	@Transactional
