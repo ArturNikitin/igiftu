@@ -1,8 +1,10 @@
 package com.svetka.igiftu.config
 
+import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.ImageDto
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.dto.WishDto
+import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
@@ -29,6 +31,39 @@ class MapperConfig(
 		converterFactory.apply {
 			registerConverter(UserConverter())
 			registerConverter(WishConverter())
+			registerConverter(BoardConverter())
+			registerConverter(ImageConverter())
+		}
+	}
+
+	class BoardConverter : BidirectionalConverter<Board, BoardDto>() {
+		override fun convertTo(
+			source: Board,
+			destinationTtype: Type<BoardDto>?,
+			mappingContext: MappingContext?
+		): BoardDto {
+
+			return BoardDto(
+				id = source.id,
+				name = source.name,
+				createdDate = source.createdDate?.format(format),
+				lastModifiedDate = source.lastModifiedDate?.format(format),
+				image = source.image?.let { ImageDto.fill(it.name) }
+			)
+		}
+
+		override fun convertFrom(
+			source: BoardDto,
+			destinationType: Type<Board>,
+			mappingContext: MappingContext
+		): Board {
+			return Board(
+				id = source.id,
+				createdDate = source.createdDate?.let { LocalDateTime.parse(source.createdDate, format) },
+				lastModifiedDate = source.lastModifiedDate?.let { LocalDateTime.parse(source.lastModifiedDate, format) },
+				name = source.name,
+				image = source.image?.let { Image(source.id, null, name = source.name) }
+			)
 		}
 	}
 
@@ -74,11 +109,7 @@ class MapperConfig(
 				isBooked = source.isBooked,
 				isAnalogPossible = source.isAnalogPossible,
 				isCompleted = source.isCompleted,
-				image = if (source.image == null) {
-					null
-				} else {
-					ImageDto.fill(source.image!!.name)
-				}
+				image = source.image?.let { ImageDto.fill(source.image!!.name) }
 			)
 		}
 
@@ -108,7 +139,7 @@ class MapperConfig(
 				source.email,
 				login = source.login,
 				role = source.role.toString(),
-				image = source.image?.let { ImageDto.fill(it.id ?: 0L, it.name) }
+				image = source.image?.let { ImageDto.fill(it.name) }
 			)
 		}
 

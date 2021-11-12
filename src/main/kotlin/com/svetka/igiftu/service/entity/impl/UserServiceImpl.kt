@@ -1,10 +1,12 @@
 package com.svetka.igiftu.service.entity.impl
 
+import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.dto.WishDto
+import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
@@ -17,7 +19,6 @@ import com.svetka.igiftu.service.entity.ImageService
 import com.svetka.igiftu.service.entity.TokenService
 import com.svetka.igiftu.service.entity.UserService
 import java.time.LocalDateTime
-import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
@@ -71,7 +72,6 @@ class UserServiceImpl(
 			}
 		val imageDto = userDto.image?.content?.let {
 			imageService.saveImage(
-				userDto.image.name ?: UUID.randomUUID().toString(),
 				it
 			)
 		}
@@ -88,7 +88,7 @@ class UserServiceImpl(
 	override fun register(userCredentials: UserCredentials): UserDto {
 		logger.info { "Trying to register user with email ${userCredentials.email}" }
 		if (notExists(userCredentials)) {
-			val image = imageService.getImage("default-user-pic")
+			val image = imageService.getDefaultImage("default-user-pic")
 			val mappedUser = mapper.map(userCredentials, User::class.java).apply {
 				createdDate = LocalDateTime.now()
 				password = encoder.encode(this.password)
@@ -113,7 +113,20 @@ class UserServiceImpl(
 	@Transactional
 	override fun addContent(ownerId: Long, content: Content): Content = when (content) {
 		is WishDto -> addWish(ownerId, content)
+		is BoardDto -> addBoard(ownerId, content)
 		else -> throw UnknownContentTypeException("Ooops")
+	}
+
+	private fun addBoard(userId: Long, boardDto: BoardDto): BoardDto {
+		val user = userRepo.getOne(userId)
+		val image = mapper.map(boardDto.image, Image::class.java)
+		val board = mapper.map(boardDto, Board::class.java).apply { this.image = image }
+		board.user = user
+		user.boards.add(board)
+		val savedUser = userRepo.save(user)
+		val savedBoard = savedUser.boards.last()
+		return mapper.map(savedBoard, BoardDto::class.java)
+			.apply { this.image?.content = boardDto.image?.content }
 	}
 
 	//	TODO refactoring

@@ -3,11 +3,11 @@ package com.svetka.igiftu.service.manager.impl
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.exceptions.SecurityCreationException
 import com.svetka.igiftu.exceptions.SecurityModificationException
-import com.svetka.igiftu.service.manager.ContentManager
-import com.svetka.igiftu.service.manager.SecurityManager
-import com.svetka.igiftu.service.entity.UserService
 import com.svetka.igiftu.service.Possessing
 import com.svetka.igiftu.service.Updatable
+import com.svetka.igiftu.service.entity.UserService
+import com.svetka.igiftu.service.manager.ContentManager
+import com.svetka.igiftu.service.manager.SecurityManager
 import org.springframework.stereotype.Service
 
 @Service
@@ -22,11 +22,7 @@ class ContentManagerImpl(
 	}
 
 	override fun update(
-		userId: Long,
-		contentId: Long,
-		content: Content,
-		username: String,
-		service: Updatable
+		userId: Long, contentId: Long, content: Content, username: String, service: Updatable
 	): Content {
 		checkModificationPermission(userId, contentId, username, service)
 		return service.update(contentId, content)
@@ -45,7 +41,7 @@ class ContentManagerImpl(
 
 
 	fun checkCreationPermission(userId: Long, username: String, service: Updatable) {
-		if (!securityManager.isCreationAllowed(userId, username, service))
+		if (!securityManager.isOwner(userId, username))
 			throw SecurityCreationException("Illegal creation attempt")
 	}
 

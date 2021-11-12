@@ -28,5 +28,4 @@ class Image(
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "image")
 	val wishes: List<Wish>? = null
-
 )

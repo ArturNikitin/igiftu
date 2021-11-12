@@ -43,6 +43,9 @@ class User(
 	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
 	val wishes: MutableList<Wish> = mutableListOf(),
 
+	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
+	val boards: MutableList<Board> = mutableListOf(),
+
 	@ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.DETACH])
 	@JoinColumn(name = "image_id")
 	var image: Image? = null

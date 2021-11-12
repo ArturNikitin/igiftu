@@ -37,6 +37,7 @@ data class ImageDto(
 	}
 
 	override fun toString(): String {
-		return "ImageDto(id=$id, name=$name)"
+		val content = if (content == null) "with NO content" else "with content"
+		return "ImageDto(id=$id, name=$name and $content)"
 	}
 }

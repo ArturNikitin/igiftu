@@ -153,7 +153,7 @@ internal class UserServiceImplTest : UserTest() {
 		every { mapper.map(getUser(), UserDto::class.java) } returns getUserDto1()
 		every { userRepository.findUserByEmail(getUserCreds().email) } returns Optional.empty()
 		every { emailService.sendWelcomingEmail(getUserCreds().email) } returns Unit
-        every { imageService.getImage("default-user-pic") } returns ImageDto(1L, "default-user-pic", "Opps".toByteArray())
+        every { imageService.getDefaultImage("default-user-pic") } returns ImageDto(1L, "default-user-pic", "Opps".toByteArray())
 
 
         val registeredUser = userService.register(getUserCreds())

@@ -24,11 +24,7 @@ class AwsConfig {
 	@Bean
 	fun getS3Client(): AmazonS3 = AmazonS3ClientBuilder
 		.standard()
-		.withCredentials(
-			AWSStaticCredentialsProvider(
-				getAwsCredentials()
-			)
-		)
+		.withCredentials(AWSStaticCredentialsProvider(getAwsCredentials()))
 		.withRegion(Regions.EU_NORTH_1)
 		.build()
 
