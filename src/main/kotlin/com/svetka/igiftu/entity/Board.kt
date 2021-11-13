@@ -1,14 +1,18 @@
 package com.svetka.igiftu.entity
 
 import java.time.LocalDateTime
-import javax.persistence.CascadeType
+import javax.persistence.CascadeType.DETACH
+import javax.persistence.CascadeType.PERSIST
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.FetchType
+import javax.persistence.FetchType.EAGER
+import javax.persistence.FetchType.LAZY
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 import javax.persistence.Table
@@ -33,13 +37,21 @@ class Board(
 	@Column(name = "name")
 	var name: String,
 
-	@ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+	@ManyToOne(cascade = [PERSIST], fetch = LAZY)
 	@JoinColumn(name = "user_id")
 	var user: User? = null,
 
-	@OneToOne(cascade = [CascadeType.DETACH], fetch = FetchType.EAGER)
+	@OneToOne(cascade = [DETACH], fetch = EAGER)
 	@JoinColumn(name = "image_id")
-	var image: Image? = null
+	var image: Image? = null,
+
+	@ManyToMany(cascade = [PERSIST])
+	@JoinTable(
+		name = "boards_wishes",
+		joinColumns = [JoinColumn(name = "board_id")],
+		inverseJoinColumns = [JoinColumn(name = "wish_id")]
+	)
+	val wishes: List<Wish> = mutableListOf()
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

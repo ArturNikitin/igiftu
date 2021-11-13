@@ -116,3 +116,13 @@ databaseChangeLog:
         - sqlFile:
             encoding: utf8
             path: db/sql/20211112_1800_INSERT_INTO_IMAGE.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202111131521
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20211113_1521_CREATE_BOARDS_WISHES.sql
