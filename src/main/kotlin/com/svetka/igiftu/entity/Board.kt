@@ -51,7 +51,7 @@ class Board(
 		joinColumns = [JoinColumn(name = "board_id")],
 		inverseJoinColumns = [JoinColumn(name = "wish_id")]
 	)
-	val wishes: List<Wish> = mutableListOf()
+	val wishes: MutableSet<Wish> = mutableSetOf()
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

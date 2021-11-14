@@ -11,15 +11,15 @@ import com.svetka.igiftu.service.entity.WishService
 import com.svetka.igiftu.service.manager.impl.OwnerType
 import java.nio.file.Files
 import java.nio.file.Paths
-import ma.glasnost.orika.MapperFacade
-import org.springframework.context.annotation.Primary
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
+import ma.glasnost.orika.MapperFacade
 import mu.KotlinLogging
+import org.springframework.context.annotation.Primary
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 
 @Service
@@ -32,8 +32,8 @@ class WishServiceImpl(
 
 
 	companion object {
-		private val logger = KotlinLogging.logger {  }
-		private fun getDefaultPicture() : ByteArray {
+		private val logger = KotlinLogging.logger { }
+		private fun getDefaultPicture(): ByteArray {
 			logger.info { "Reading wish image" }
 			return Files.readAllBytes(Paths.get("src/main/resources/static/pictures/wish.jpeg"))
 		}
@@ -62,6 +62,21 @@ class WishServiceImpl(
 		contentId ?: return false
 		val wish = wishRepository.findById(contentId).orElseThrow { EntityNotFoundException("EntityNotFound") }
 		return wish.user?.id == ownerId
+	}
+
+	override fun getWishes(ids: Iterable<Long>): Iterable<WishDto> =
+		ids.flatMap(::getWish)
+			.map { mapper.map(it, WishDto::class.java) }
+			.toSet()
+
+	private fun getWish(id: Long): Sequence<Wish> {
+		val wish = wishRepository.findById(id)
+		return if (wish.isPresent)
+			sequenceOf(wish.get())
+		else {
+			logger.warn { "Wish with id $id not found" }
+			emptySequence()
+		}
 	}
 
 	private fun updateWish(contentId: Long, content: WishDto): WishDto {

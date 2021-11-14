@@ -1,6 +1,6 @@
 package com.svetka.igiftu.dto
 
-import com.svetka.igiftu.service.Readable
+import com.svetka.igiftu.service.entity.Readable
 import com.svetka.igiftu.service.manager.impl.OwnerType
 
 data class RequestDto(

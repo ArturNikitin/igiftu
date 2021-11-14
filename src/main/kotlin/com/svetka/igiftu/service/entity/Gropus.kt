@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service
+package com.svetka.igiftu.service.entity
 
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.service.manager.impl.OwnerType

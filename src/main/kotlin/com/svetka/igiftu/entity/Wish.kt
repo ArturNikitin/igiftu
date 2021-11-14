@@ -71,13 +71,13 @@ class Wish(
 	@JoinColumn(name = "image_id")
 	var image: Image? = null,
 
-	@ManyToMany(fetch = LAZY)
+	@ManyToMany(cascade = [PERSIST])
 	@JoinTable(
 		name = "boards_wishes",
 		joinColumns = [JoinColumn(name = "wish_id")],
 		inverseJoinColumns = [JoinColumn(name = "board_id")]
 	)
-	val boards: Set<Board>? = mutableSetOf()
+	val boards: MutableSet<Board> = mutableSetOf()
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

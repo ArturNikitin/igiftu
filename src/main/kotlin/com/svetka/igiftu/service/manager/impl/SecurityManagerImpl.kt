@@ -1,7 +1,7 @@
 package com.svetka.igiftu.service.manager.impl
 
 import com.svetka.igiftu.service.manager.SecurityManager
-import com.svetka.igiftu.service.Updatable
+import com.svetka.igiftu.service.entity.Updatable
 import com.svetka.igiftu.service.entity.UserService
 import org.springframework.stereotype.Service
 

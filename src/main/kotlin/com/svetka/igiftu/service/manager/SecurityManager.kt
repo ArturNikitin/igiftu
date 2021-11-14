@@ -1,6 +1,6 @@
 package com.svetka.igiftu.service.manager
 
-import com.svetka.igiftu.service.Updatable
+import com.svetka.igiftu.service.entity.Updatable
 import org.springframework.stereotype.Service
 
 @Service

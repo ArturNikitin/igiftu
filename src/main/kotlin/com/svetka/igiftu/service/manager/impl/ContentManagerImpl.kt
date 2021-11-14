@@ -3,8 +3,8 @@ package com.svetka.igiftu.service.manager.impl
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.exceptions.SecurityCreationException
 import com.svetka.igiftu.exceptions.SecurityModificationException
-import com.svetka.igiftu.service.Possessing
-import com.svetka.igiftu.service.Updatable
+import com.svetka.igiftu.service.entity.Possessing
+import com.svetka.igiftu.service.entity.Updatable
 import com.svetka.igiftu.service.entity.UserService
 import com.svetka.igiftu.service.manager.ContentManager
 import com.svetka.igiftu.service.manager.SecurityManager

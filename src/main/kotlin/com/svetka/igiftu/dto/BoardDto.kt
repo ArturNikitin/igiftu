@@ -8,5 +8,6 @@ data class BoardDto(
 	var name: String,
 	var createdDate: String? = null,
 	var lastModifiedDate: String? = null,
-	var image: ImageDto? = null
+	var image: ImageDto? = null,
+	var wishes: Set<WishDto> = emptySet()
 ) : Content()
