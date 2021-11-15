@@ -48,7 +48,8 @@ class MapperConfig(
 				name = source.name,
 				createdDate = source.createdDate?.format(format),
 				lastModifiedDate = source.lastModifiedDate?.format(format),
-				image = source.image?.let { ImageDto.fill(it.name) }
+				image = source.image?.let { ImageDto.fill(it.name) },
+				wishes = source.wishes.map { mapperFacade.map(it, WishDto::class.java) }.toSet()
 			)
 		}
 
@@ -62,7 +63,8 @@ class MapperConfig(
 				createdDate = source.createdDate?.let { LocalDateTime.parse(source.createdDate, format) },
 				lastModifiedDate = source.lastModifiedDate?.let { LocalDateTime.parse(source.lastModifiedDate, format) },
 				name = source.name,
-				image = source.image?.let { Image(source.id, null, name = source.name) }
+				image = source.image?.let { Image(source.id, null, name = source.name) },
+				wishes = source.wishes.map { mapperFacade.map(it, Wish::class.java) }.toMutableSet()
 			)
 		}
 	}

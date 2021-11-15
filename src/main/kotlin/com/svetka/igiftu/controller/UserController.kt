@@ -1,5 +1,6 @@
 package com.svetka.igiftu.controller
 
+import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.dto.EmailDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
@@ -23,9 +24,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
 class UserController(
-	private val userService: UserService
+	private val userService: UserComponent
 ) {
 	private val logger = KotlinLogging.logger { }
 
@@ -62,7 +62,7 @@ class UserController(
 
 	@PostMapping("/password")
 	fun resetPassword(@RequestBody email: EmailDto): String {
-		userService.resetPassword(email.email)
+		userService.requestResetPassword(email.email)
 		return "На ваш имейл отправлены ссылка для перехода обновление пароля"
 	}
 

@@ -6,7 +6,7 @@ import com.svetka.igiftu.entity.enums.Access
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class WishDto (
 	var id: Long? = null,
-	var name: String,
+	var name: String = "",
 	var price: Double? = null,
 	var access: String = Access.PUBLIC.name,
 	var createdDate: String? = null,

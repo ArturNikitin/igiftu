@@ -73,7 +73,7 @@ class Wish(
 
 	@ManyToMany(cascade = [PERSIST])
 	@JoinTable(
-		name = "boards_wishes",
+		name = "wishes_boards",
 		joinColumns = [JoinColumn(name = "wish_id")],
 		inverseJoinColumns = [JoinColumn(name = "board_id")]
 	)

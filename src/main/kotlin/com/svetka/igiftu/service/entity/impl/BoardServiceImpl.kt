@@ -3,22 +3,19 @@ package com.svetka.igiftu.service.entity.impl
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.ImageDto
-import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.repository.BoardRepository
 import com.svetka.igiftu.service.entity.BoardService
 import com.svetka.igiftu.service.entity.ImageService
 import com.svetka.igiftu.service.entity.WishService
 import com.svetka.igiftu.service.manager.impl.OwnerType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
 class BoardServiceImpl(
 	val imageService: ImageService,
 	val wishService: WishService,
-	val boardRepository: BoardRepository
+//	val boardRepository: BoardRepository
 ) : BoardService {
 	override fun prepare(content: Content): Content {
 		return prepareBoardForCreation(content as BoardDto)
@@ -33,8 +30,9 @@ class BoardServiceImpl(
 	}
 
 	override fun isOwner(ownerId: Long, contentId: Long?) =
-		boardRepository.findById(ownerId).orElseThrow { EntityNotFoundException("Board [$ownerId]") }
-			.user?.id == contentId!!
+//		boardRepository.findById(ownerId).orElseThrow { EntityNotFoundException("Board [$ownerId]") }
+//			.user?.id == contentId!!
+		true
 
 	override fun get(ownerId: Long, ownerType: OwnerType): List<Content> {
 		TODO("Not yet implemented")

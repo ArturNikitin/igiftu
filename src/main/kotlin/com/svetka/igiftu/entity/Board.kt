@@ -45,9 +45,9 @@ class Board(
 	@JoinColumn(name = "image_id")
 	var image: Image? = null,
 
-	@ManyToMany(cascade = [PERSIST])
+	@ManyToMany(cascade = [PERSIST], fetch = LAZY)
 	@JoinTable(
-		name = "boards_wishes",
+		name = "wishes_boards",
 		joinColumns = [JoinColumn(name = "board_id")],
 		inverseJoinColumns = [JoinColumn(name = "wish_id")]
 	)
