@@ -1,11 +1,14 @@
 package com.svetka.igiftu.component.user
 
+import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
 import com.svetka.igiftu.dto.WishDto
+import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.User
+import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.exceptions.SecurityModificationException
 import com.svetka.igiftu.repository.UserRepository
@@ -99,19 +102,35 @@ class UserService(
 		userRepo.save(user)
 	}
 
-	override fun addWishes(userId: Long, wishes: Set<WishDto>) {
+	@Transactional
+	override fun addWishes(userId: Long, wishes: Set<Wish>): Set<WishDto> {
+		return getUserIfExists(userId)
+			.apply {
+				wishes.forEach { it.user = this }
+				this.wishes.addAll(wishes) }
+			.let { userRepo.save(it) }
+			.wishes
+			.map { mapper.map(it, WishDto::class.java) }
+			.toSet()
+	}
+
+	override fun deleteWishes(userId: Long, wishes: Set<Wish>): Set<WishDto> {
 		TODO("Not yet implemented")
 	}
 
-	override fun deleteWishes(userId: Long, wishes: Set<WishDto>) {
-		TODO("Not yet implemented")
+	@Transactional
+	override fun addBoards(userId: Long, boards: Set<Board>): Set<BoardDto> {
+		return getUserIfExists(userId)
+			.apply {
+				boards.forEach { it.user = this }
+				this.boards.addAll(boards) }
+			.let { userRepo.save(it) }
+			.boards
+			.map { mapper.map(it, BoardDto::class.java) }
+			.toSet()
 	}
 
-	override fun addBoards(userId: Long, wishes: Set<WishDto>) {
-		TODO("Not yet implemented")
-	}
-
-	override fun deleteBoards(userId: Long, wishes: Set<WishDto>) {
+	override fun deleteBoards(userId: Long, boards: Set<WishDto>) {
 		TODO("Not yet implemented")
 	}
 
@@ -122,6 +141,10 @@ class UserService(
 	private fun User.getLoginFromEmail() = "@" + email
 		.replaceAfter("@", "")
 		.removeSuffix("@")
+
+	private fun getUserIfExists(id: Long): User =
+		userRepo.findById(id)
+			.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
 
 	private fun notExists(userCredentials: UserCredentials) =
 		userRepo.findUserByEmail(userCredentials.email).isEmpty

@@ -1,6 +1,7 @@
 package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.component.board.BoardComponent
+import com.svetka.igiftu.component.board.UserInfo
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.service.entity.BoardService
@@ -40,7 +41,8 @@ class BoardController(
 		@RequestBody incomingBoard: BoardDto
 	): Content {
 		log.info { "Receive request to create board for user [$userId] and data {$incomingBoard}" }
-		val createdBoard = contentManager.create(userId, incomingBoard, principal.name, boardService)
+//		val createdBoard = contentManager.create(userId, incomingBoard, principal.name, boardService)
+		val createdBoard = boardComponent.createBoard(incomingBoard, UserInfo(userId, principal.name))
 		log.info { "Finished request to create board for user [$userId] and data {$createdBoard}" }
 		return createdBoard
 	}

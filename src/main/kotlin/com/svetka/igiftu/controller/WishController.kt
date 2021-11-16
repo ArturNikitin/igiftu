@@ -1,5 +1,7 @@
 package com.svetka.igiftu.controller
 
+import com.svetka.igiftu.component.board.UserInfo
+import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.WishDto
@@ -28,7 +30,8 @@ import org.springframework.web.bind.annotation.RestController
 class WishController(
 	private val contentManager: ContentManager,
 	private val readerManager: ReaderManager,
-	private val wishService: WishService
+	private val wishServiceOld: WishService,
+	private val wishService: WishComponent
 ) {
 
 	private val log = KotlinLogging.logger { }
@@ -42,7 +45,7 @@ class WishController(
 		val requestDto = fillUserReadRequest(
 			userId,
 			principal?.name,
-			wishService
+			wishServiceOld
 		)
 		log.info { "Received request to get wishes with data $requestDto" }
 		val payload = readerManager.getContent(requestDto)
@@ -59,7 +62,8 @@ class WishController(
 		principal: Principal
 	) : Content {
 		log.info { "Received request to create wish for user {$userId} and data {$wishDto}" }
-		val wish = contentManager.create(userId, wishDto, principal.name, wishService)
+//		val wish = contentManager.create(userId, wishDto, principal.name, wishService)
+		val wish = wishService.createWish(UserInfo(userId, principal.name), wishDto)
 		log.info { "Finished request to create wish for user {$userId} and data {$wish}" }
 		return wish
 	}
@@ -74,7 +78,7 @@ class WishController(
 		principal: Principal
 	) : Any {
 		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
-		val wish = contentManager.update(userId, wishId, wishDto, principal.name, wishService)
+		val wish = contentManager.update(userId, wishId, wishDto, principal.name, wishServiceOld)
 		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
 		return wish
 	}
@@ -87,7 +91,7 @@ class WishController(
 		principal: Principal
 	) {
 		log.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
-		contentManager.delete(userId, wishId, principal.name, wishService)
+		contentManager.delete(userId, wishId, principal.name, wishServiceOld)
 		log.info { "Completed request to delete wish {$wishId} and user ${principal.name}" }
 	}
 }

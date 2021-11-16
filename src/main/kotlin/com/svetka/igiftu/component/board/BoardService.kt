@@ -1,10 +1,17 @@
 package com.svetka.igiftu.component.board
 
+import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.component.wish.WishComponent
+import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.BoardDto
+import com.svetka.igiftu.dto.ImageDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Board
+import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.Wish
+import com.svetka.igiftu.service.entity.ImageService
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
 import mu.KotlinLogging
@@ -15,13 +22,26 @@ import org.springframework.transaction.annotation.Transactional
 internal class BoardService(
 	private val mapper: MapperFacade,
 	private val wishService: WishComponent,
+	private val userService: UserComponent,
+	private val imageService: ImageService,
 	private val boardRepository: BoardRepository
 ) : BoardComponent {
 
 	private val logger = KotlinLogging.logger { }
 
-	override fun createBoard(boardDto: BoardDto): BoardDto {
-		TODO("Not yet implemented")
+	override fun createBoard(boardDto: BoardDto, user: UserInfo): BoardDto {
+		boardDto.apply {
+			createdDate = LocalDateTime.now().format(dateTimeFormat)
+			image = boardDto.image?.content?.let { processCustomImage(it) } ?: getDefaultImage()
+			lastModifiedDate = createdDate
+		}
+		val image = mapper.map(boardDto.image, Image::class.java)
+		val board = mapper.map(boardDto, Board::class.java).apply { this.image = image }
+
+		return userService.addBoards(user.id, setOf(board))
+				.filter { it.lastModifiedDate == boardDto.lastModifiedDate }
+				.map { mapper.map(it, BoardDto::class.java) }
+				.first()
 	}
 
 	@Transactional
@@ -30,7 +50,7 @@ internal class BoardService(
 		val board = getBoard(boardId)
 		val wishes = connectWishesToBoard(board, wishesDto)
 		board.wishes.addAll(wishes)
-		val savedBoard = saveOrUpdateUser(board)
+		val savedBoard = saveOrUpdateBoard(board)
 		logger.debug { "Attached wishes to $savedBoard" }
 		return savedBoard
 	}
@@ -41,7 +61,7 @@ internal class BoardService(
 		val board = getBoard(boardId)
 		val wishes = connectWishesToBoard(board, wishesDto)
 		board.wishes.removeAll(wishes)
-		val savedBoard = saveOrUpdateUser(board)
+		val savedBoard = saveOrUpdateBoard(board)
 		logger.debug { "Removed wishes from $savedBoard" }
 		return savedBoard
 	}
@@ -56,7 +76,16 @@ internal class BoardService(
 			.onEach { it.boards.add(board) }
 			.toSet()
 
-	private fun saveOrUpdateUser(board: Board) = getBoardDto(boardRepository.save(board))
+	private fun saveOrUpdateBoard(board: Board) = getBoardDto(boardRepository.save(board))
 
 	private fun getBoardDto(board: Board) = mapper.map(board, BoardDto::class.java)
+
+	private fun processCustomImage(content: ByteArray) =
+		imageService.saveImage(content)
+
+	private fun getDefaultImage(): ImageDto =
+		imageService.getDefaultImage(DEFAULT_BOARD_IMAGE_NAME)
+
 }
+
+private const val DEFAULT_BOARD_IMAGE_NAME = "default-board"
