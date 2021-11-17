@@ -78,7 +78,8 @@ class WishController(
 		principal: Principal
 	) : Any {
 		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
-		val wish = contentManager.update(userId, wishId, wishDto, principal.name, wishServiceOld)
+//		val wish = contentManager.update(userId, wishId, wishDto, principal.name, wishServiceOld)
+		val wish = wishService.updateWish(UserInfo(userId, principal.name), wishDto)
 		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
 		return wish
 	}

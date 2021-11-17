@@ -6,12 +6,15 @@ import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.ImageDto
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Wish
+import com.svetka.igiftu.entity.enums.Access
 import com.svetka.igiftu.repository.WishRepository
 import com.svetka.igiftu.service.entity.ImageService
 import java.time.LocalDateTime
+import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 internal class WishService(
@@ -47,6 +50,27 @@ internal class WishService(
 		.map { mapper.map(it, WishDto::class.java) }
 		.first()
 }
+
+//	todo deal with image
+	@Transactional
+	override fun updateWish(user: UserInfo, requestWish: WishDto): WishDto {
+	val updatedWish = findWish(requestWish.id!!)
+		.also {
+			it.access = Access.valueOf(requestWish.access)
+			it.name = requestWish.name
+			it.price = requestWish.price
+			it.lastModifiedDate = LocalDateTime.now()
+			it.isAnalogPossible = requestWish.isAnalogPossible
+			it.isBooked = requestWish.isBooked
+			it.isCompleted = requestWish.isCompleted
+		}.let { wishRepository.save(it) }
+
+	return getWishDto(updatedWish)
+}
+
+	private fun findWish(wishId: Long) =
+		wishRepository.findById(wishId)
+			.orElseThrow { EntityNotFoundException("Wish [$wishId] not found") }
 
 	private fun dealWithImage(imageDto: ImageDto?): ImageDto {
 		imageDto?.content ?: return imageService.getDefaultImage("default-wish")
