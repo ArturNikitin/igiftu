@@ -1,5 +1,6 @@
 package com.svetka.igiftu.component.user
 
+import com.svetka.igiftu.component.board.UserInfo
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
@@ -18,4 +19,5 @@ interface UserComponent {
 	fun deleteWishes(userId: Long, wishes: Set<Wish>): Set<WishDto>
 	fun addBoards(userId: Long, boards: Set<Board>): Set<BoardDto>
 	fun deleteBoards(userId: Long, boards: Set<WishDto>)
+	fun getWishes(user: UserInfo): Set<WishDto>
 }

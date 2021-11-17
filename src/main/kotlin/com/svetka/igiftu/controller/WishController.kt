@@ -1,6 +1,7 @@
 package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.component.board.UserInfo
+import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
@@ -31,7 +32,8 @@ class WishController(
 	private val contentManager: ContentManager,
 	private val readerManager: ReaderManager,
 	private val wishServiceOld: WishService,
-	private val wishService: WishComponent
+	private val wishService: WishComponent,
+	private val userService: UserComponent
 ) {
 
 	private val log = KotlinLogging.logger { }
@@ -41,14 +43,15 @@ class WishController(
 	fun getWishes(
 		@PathVariable userId: Long,
 		principal: Principal?
-	) : PayloadDto {
+	) : Set<WishDto> {
 		val requestDto = fillUserReadRequest(
 			userId,
 			principal?.name,
 			wishServiceOld
 		)
 		log.info { "Received request to get wishes with data $requestDto" }
-		val payload = readerManager.getContent(requestDto)
+//		val payload = readerManager.getContent(requestDto)
+		val payload = userService.getWishes(UserInfo(userId, principal?.name ?: ""))
 		log.info { "Finished request to get wished for user $userId wish data {$payload}" }
 		return payload
 	}
@@ -78,13 +81,13 @@ class WishController(
 		principal: Principal
 	) : Any {
 		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
-//		val wish = contentManager.update(userId, wishId, wishDto, principal.name, wishServiceOld)
 		val wish = wishService.updateWish(UserInfo(userId, principal.name), wishDto)
 		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
 		return wish
 	}
 
 	@DeleteMapping("/wish/{wishId}")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun deleteWish(
 		@PathVariable userId: Long,
@@ -92,7 +95,8 @@ class WishController(
 		principal: Principal
 	) {
 		log.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
-		contentManager.delete(userId, wishId, principal.name, wishServiceOld)
+//		contentManager.delete(userId, wishId, principal.name, wishServiceOld)
+		wishService.deleteWish(UserInfo(userId, principal.name), wishId)
 		log.info { "Completed request to delete wish {$wishId} and user ${principal.name}" }
 	}
 }

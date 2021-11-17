@@ -8,4 +8,5 @@ interface WishComponent {
 	fun getWishesById(ids: Set<Long>): Iterable<WishDto>
 	fun createWish(user: UserInfo, requestWish: WishDto): WishDto
 	fun updateWish(user: UserInfo, requestWish: WishDto): WishDto
+	fun deleteWish(user: UserInfo, wishId: Long)
 }

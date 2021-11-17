@@ -1,5 +1,6 @@
 package com.svetka.igiftu.component.user
 
+import com.svetka.igiftu.component.board.UserInfo
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
@@ -132,6 +133,14 @@ class UserService(
 
 	override fun deleteBoards(userId: Long, boards: Set<WishDto>) {
 		TODO("Not yet implemented")
+	}
+
+	@Transactional
+	override fun getWishes(user: UserInfo): Set<WishDto> {
+		return getUserIfExists(user.id)
+			.wishes
+			.map { mapper.map(it, WishDto::class.java) }
+			.toSet()
 	}
 
 	private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))

@@ -37,36 +37,41 @@ internal class WishService(
 		return wishes
 	}
 
-//	TODO deal with image
+	//	TODO deal with image
 	override fun createWish(user: UserInfo, requestWish: WishDto): WishDto {
-	val createdDate = LocalDateTime.now().format(dateTimeFormat)
-	val wish = requestWish.apply {
-		this.createdDate = createdDate
-		lastModifiedDate = createdDate
-	}.let { mapper.map(it, Wish::class.java) }
+		val createdDate = LocalDateTime.now().format(dateTimeFormat)
+		val wish = requestWish.apply {
+			this.createdDate = createdDate
+			lastModifiedDate = createdDate
+		}.let { mapper.map(it, Wish::class.java) }
 
-	return userService.addWishes(user.id, setOf(wish))
-		.filter { it.lastModifiedDate == createdDate }
-		.map { mapper.map(it, WishDto::class.java) }
-		.first()
-}
+		return userService.addWishes(user.id, setOf(wish))
+			.filter { it.lastModifiedDate == createdDate }
+			.map { mapper.map(it, WishDto::class.java) }
+			.first()
+	}
 
-//	todo deal with image
+	//	todo deal with image
 	@Transactional
 	override fun updateWish(user: UserInfo, requestWish: WishDto): WishDto {
-	val updatedWish = findWish(requestWish.id!!)
-		.also {
-			it.access = Access.valueOf(requestWish.access)
-			it.name = requestWish.name
-			it.price = requestWish.price
-			it.lastModifiedDate = LocalDateTime.now()
-			it.isAnalogPossible = requestWish.isAnalogPossible
-			it.isBooked = requestWish.isBooked
-			it.isCompleted = requestWish.isCompleted
-		}.let { wishRepository.save(it) }
+		val updatedWish = findWish(requestWish.id!!)
+			.also {
+				it.access = Access.valueOf(requestWish.access)
+				it.name = requestWish.name
+				it.price = requestWish.price
+				it.lastModifiedDate = LocalDateTime.now()
+				it.isAnalogPossible = requestWish.isAnalogPossible
+				it.isBooked = requestWish.isBooked
+				it.isCompleted = requestWish.isCompleted
+			}.let { wishRepository.save(it) }
 
-	return getWishDto(updatedWish)
-}
+		return getWishDto(updatedWish)
+	}
+
+	@Transactional
+	override fun deleteWish(user: UserInfo, wishId: Long) =
+		wishRepository.deleteById(wishId)
+
 
 	private fun findWish(wishId: Long) =
 		wishRepository.findById(wishId)
