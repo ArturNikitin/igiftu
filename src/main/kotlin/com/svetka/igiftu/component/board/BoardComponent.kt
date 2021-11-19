@@ -1,6 +1,7 @@
 package com.svetka.igiftu.component.board
 
 import com.svetka.igiftu.dto.BoardDto
+import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 
 interface BoardComponent {
@@ -8,9 +9,3 @@ interface BoardComponent {
 	fun addWishes(boardId: Long, wishesDto: Set<WishDto>): BoardDto
 	fun deleteWishes(boardId: Long, wishesDto: Set<WishDto>): BoardDto
 }
-
-data class UserInfo(
-	val id: Long,
-	/**Email or login*/
-	val username: String
-)

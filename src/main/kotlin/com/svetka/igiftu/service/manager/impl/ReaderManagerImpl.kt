@@ -1,20 +1,33 @@
 package com.svetka.igiftu.service.manager.impl
 
+import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.dto.PayloadDto
-import com.svetka.igiftu.dto.RequestDto
 import com.svetka.igiftu.service.manager.ReaderManager
 import com.svetka.igiftu.service.manager.SecurityManager
 import org.springframework.stereotype.Service
 
 @Service
 class ReaderManagerImpl(
-	private val securityManager: SecurityManager
+	private val securityManager: SecurityManager,
+	private val userService: UserComponent,
+	private val boardComponent: UserComponent
 ) : ReaderManager {
-
-	override fun getContent(requestDto: RequestDto): PayloadDto {
+	override fun readWishesByUser(userId: Long, readerUsername: String?): PayloadDto {
 		return PayloadDto(
-			securityManager.isOwner(requestDto.userId, requestDto.username),
-			requestDto.service.get(requestDto.ownerId, requestDto.ownerType)
+			readerUsername?.let { userService.isSameUser(userId, it) } ?: false,
+			userService.getWishes(userId)
 		)
+	}
+
+	override fun readWishesByBoard(boardId: Long, readerUsername: String?): PayloadDto {
+		TODO("Not yet implemented")
+	}
+
+	override fun readBoardsByUser(userId: Long, readerUsername: String?): PayloadDto {
+		TODO("Not yet implemented")
+	}
+
+	override fun readWishesByBoard(boardId: Long, userId: Long, readerUsername: String?): PayloadDto {
+		TODO("Not yet implemented")
 	}
 }

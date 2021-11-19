@@ -1,6 +1,6 @@
 package com.svetka.igiftu.component.wish
 
-import com.svetka.igiftu.component.board.UserInfo
+import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 
 interface WishComponent {

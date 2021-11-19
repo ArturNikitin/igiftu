@@ -1,10 +1,10 @@
 package com.svetka.igiftu.component.user
 
-import com.svetka.igiftu.component.board.UserInfo
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
+import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
@@ -36,6 +36,11 @@ class UserService(
 	private val imageService: ImageService
 ) : UserComponent {
 	private val logger = KotlinLogging.logger { }
+
+	override fun isSameUser(userId: Long, username: String): Boolean {
+		val user = getUserIfExists(userId)
+		return user.email == username || user.login == username
+	}
 
 	@Transactional
 	override fun getUserById(id: Long): UserDto =
@@ -108,7 +113,8 @@ class UserService(
 		return getUserIfExists(userId)
 			.apply {
 				wishes.forEach { it.user = this }
-				this.wishes.addAll(wishes) }
+				this.wishes.addAll(wishes)
+			}
 			.let { userRepo.save(it) }
 			.wishes
 			.map { mapper.map(it, WishDto::class.java) }
@@ -124,7 +130,8 @@ class UserService(
 		return getUserIfExists(userId)
 			.apply {
 				boards.forEach { it.user = this }
-				this.boards.addAll(boards) }
+				this.boards.addAll(boards)
+			}
 			.let { userRepo.save(it) }
 			.boards
 			.map { mapper.map(it, BoardDto::class.java) }
@@ -136,8 +143,8 @@ class UserService(
 	}
 
 	@Transactional
-	override fun getWishes(user: UserInfo): Set<WishDto> {
-		return getUserIfExists(user.id)
+	override fun getWishes(userId: Long): Set<WishDto> {
+		return getUserIfExists(userId)
 			.wishes
 			.map { mapper.map(it, WishDto::class.java) }
 			.toSet()

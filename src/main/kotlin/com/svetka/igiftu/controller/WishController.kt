@@ -1,15 +1,11 @@
 package com.svetka.igiftu.controller
 
-import com.svetka.igiftu.component.board.UserInfo
-import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
+import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.dto.fillUserReadRequest
-import com.svetka.igiftu.service.manager.ContentManager
 import com.svetka.igiftu.service.manager.ReaderManager
-import com.svetka.igiftu.service.entity.WishService
 import java.security.Principal
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -29,11 +25,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("user/{userId}")
 @CrossOrigin
 class WishController(
-	private val contentManager: ContentManager,
 	private val readerManager: ReaderManager,
-	private val wishServiceOld: WishService,
 	private val wishService: WishComponent,
-	private val userService: UserComponent
 ) {
 
 	private val log = KotlinLogging.logger { }
@@ -43,15 +36,9 @@ class WishController(
 	fun getWishes(
 		@PathVariable userId: Long,
 		principal: Principal?
-	) : Set<WishDto> {
-		val requestDto = fillUserReadRequest(
-			userId,
-			principal?.name,
-			wishServiceOld
-		)
-		log.info { "Received request to get wishes with data $requestDto" }
-//		val payload = readerManager.getContent(requestDto)
-		val payload = userService.getWishes(UserInfo(userId, principal?.name ?: ""))
+	): PayloadDto {
+		log.info { "Received request from ${principal?.name ?: "unauthorized user"} to get wishes for user [$userId]" }
+		val payload = readerManager.readWishesByUser(userId, principal?.name)
 		log.info { "Finished request to get wished for user $userId wish data {$payload}" }
 		return payload
 	}
@@ -63,9 +50,8 @@ class WishController(
 		@PathVariable userId: Long,
 		@RequestBody wishDto: WishDto,
 		principal: Principal
-	) : Content {
+	): Content {
 		log.info { "Received request to create wish for user {$userId} and data {$wishDto}" }
-//		val wish = contentManager.create(userId, wishDto, principal.name, wishService)
 		val wish = wishService.createWish(UserInfo(userId, principal.name), wishDto)
 		log.info { "Finished request to create wish for user {$userId} and data {$wish}" }
 		return wish
@@ -79,7 +65,7 @@ class WishController(
 		@PathVariable wishId: Long,
 		@RequestBody wishDto: WishDto,
 		principal: Principal
-	) : Any {
+	): Any {
 		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
 		val wish = wishService.updateWish(UserInfo(userId, principal.name), wishDto)
 		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
@@ -95,7 +81,6 @@ class WishController(
 		principal: Principal
 	) {
 		log.info { "Received request to delete a wish with id {$wishId} and user ${principal.name}" }
-//		contentManager.delete(userId, wishId, principal.name, wishServiceOld)
 		wishService.deleteWish(UserInfo(userId, principal.name), wishId)
 		log.info { "Completed request to delete wish {$wishId} and user ${principal.name}" }
 	}

@@ -1,9 +1,9 @@
 package com.svetka.igiftu.component.wish
 
-import com.svetka.igiftu.component.board.UserInfo
 import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.ImageDto
+import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
