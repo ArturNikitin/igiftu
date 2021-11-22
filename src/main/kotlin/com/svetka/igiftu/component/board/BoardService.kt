@@ -5,13 +5,15 @@ import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.ImageDto
+import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.Wish
+import com.svetka.igiftu.exceptions.SecurityCreationException
+import com.svetka.igiftu.exceptions.SecurityModificationException
 import com.svetka.igiftu.service.entity.ImageService
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
 import mu.KotlinLogging
@@ -29,36 +31,49 @@ internal class BoardService(
 
 	private val logger = KotlinLogging.logger { }
 
+	@Transactional
 	override fun createBoard(boardDto: BoardDto, user: UserInfo): BoardDto {
+		if (!isOperationAllowed(user.id, user.username))
+			throw SecurityCreationException("illegal creation attempt by user [${user.username}]")
+
 		boardDto.apply {
 			createdDate = LocalDateTime.now().format(dateTimeFormat)
-			image = boardDto.image?.content?.let { processCustomImage(it) } ?: getDefaultImage()
 			lastModifiedDate = createdDate
 		}
-		val image = mapper.map(boardDto.image, Image::class.java)
-		val board = mapper.map(boardDto, Board::class.java).apply { this.image = image }
+		val board = mapper.map(boardDto, Board::class.java)
+			.apply { image = boardDto.image?.let(::dealWithImage) }
 
 		return userService.addBoards(user.id, setOf(board))
-				.filter { it.lastModifiedDate == boardDto.lastModifiedDate }
-				.map { mapper.map(it, BoardDto::class.java) }
-				.first()
+			.filter { it.lastModifiedDate == boardDto.lastModifiedDate }
+			.map { mapper.map(it, BoardDto::class.java) }
+			.first()
 	}
 
 	@Transactional
-	override fun addWishes(boardId: Long, wishesDto: Set<WishDto>): BoardDto {
+	override fun addWishes(boardId: Long, wishesDto: Set<WishDto>, username: String): BoardDto {
 		logger.debug { "Attaching wishes:{${wishesDto}} to board: {$boardId}" }
-		val board = getBoard(boardId)
+		val board = getBoardIfExists(boardId)
+		if (!isOperationAllowed(board.user?.id!!, username))
+			throw SecurityModificationException("Illegal modification attempt by user [${username}]")
+
 		val wishes = connectWishesToBoard(board, wishesDto)
 		board.wishes.addAll(wishes)
-		val savedBoard = saveOrUpdateBoard(board)
-		logger.debug { "Attached wishes to $savedBoard" }
-		return savedBoard
+
+		val savedBoard = boardRepository.save(board).also { it.wishes }
+		val result = getBoardDto(savedBoard)
+		logger.debug { "Attached wishes to $result" }
+		return result
 	}
 
 	@Transactional
-	override fun deleteWishes(boardId: Long, wishesDto: Set<WishDto>): BoardDto {
+	override fun deleteWishes(boardId: Long, wishesDto: Set<WishDto>, username: String): BoardDto {
 		logger.debug { "Removing wishes:{${wishesDto}} to board: {$boardId}" }
-		val board = getBoard(boardId)
+
+		val board = getBoardIfExists(boardId)
+
+		if (!isOperationAllowed(board.user?.id!!, username))
+			throw SecurityModificationException("Illegal modification attempt by user [${username}]")
+
 		val wishes = connectWishesToBoard(board, wishesDto)
 		board.wishes.removeAll(wishes)
 		val savedBoard = saveOrUpdateBoard(board)
@@ -66,7 +81,16 @@ internal class BoardService(
 		return savedBoard
 	}
 
-	private fun getBoard(boardId: Long) =
+	@Transactional
+	override fun deleteBoard(boardId: Long, username: String) {
+		val board = getBoardIfExists(boardId)
+		if (!isOperationAllowed(board.user?.id!!, username))
+			throw SecurityModificationException("Illegal modification attempt by user [${username}]")
+		boardRepository.deleteById(boardId)
+		logger.debug { "Board $boardId deleted" }
+	}
+
+	private fun getBoardIfExists(boardId: Long) =
 		boardRepository.findById(boardId)
 			.orElseThrow { EntityNotFoundException("Board [$boardId] not found") }
 
@@ -81,11 +105,17 @@ internal class BoardService(
 	private fun getBoardDto(board: Board) = mapper.map(board, BoardDto::class.java)
 
 	private fun processCustomImage(content: ByteArray) =
-		imageService.saveImage(content)
+		imageService.uploadImage(content)
+
+	private fun isOperationAllowed(userId: Long, username: String) =
+		userService.isSameUser(userId, username)
 
 	private fun getDefaultImage(): ImageDto =
 		imageService.getDefaultImage(DEFAULT_BOARD_IMAGE_NAME)
 
+	private fun dealWithImage(imageDto: ImageDto): Image =
+		imageService.uploadImage(imageDto.content!!)
+			.let { mapper.map(it, Image::class.java) }
 }
 
 private const val DEFAULT_BOARD_IMAGE_NAME = "default-board"

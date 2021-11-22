@@ -8,6 +8,7 @@ import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
+import com.svetka.igiftu.entity.enums.Access
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import ma.glasnost.orika.MapperFactory
@@ -111,7 +112,7 @@ class MapperConfig(
 				isBooked = source.isBooked,
 				isAnalogPossible = source.isAnalogPossible,
 				isCompleted = source.isCompleted,
-				image = source.image?.let { ImageDto.fill(source.image!!.name) }
+				image = source.image?.let { ImageDto.fill(it.name) }
 			)
 		}
 
@@ -125,7 +126,9 @@ class MapperConfig(
 				createdDate = LocalDateTime.parse(source.createdDate, format),
 				lastModifiedDate = LocalDateTime.parse(source.lastModifiedDate, format),
 				name = source.name,
-				price = source.price
+				price = source.price,
+				access = Access.valueOf(source.access),
+				image = source.image?.let { mapperFacade.map(it, Image::class.java) }
 			)
 		}
 	}

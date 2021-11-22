@@ -5,6 +5,7 @@ import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.ImageDto
 import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
+import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
 import com.svetka.igiftu.repository.WishRepository
@@ -30,6 +31,7 @@ internal class WishService(
 		TODO("Not yet implemented")
 	}
 
+	@Transactional
 	override fun getWishesById(ids: Set<Long>): Iterable<WishDto> {
 		logger.debug { "Getting wishes {$ids}" }
 		val wishes = wishRepository.findAllById(ids).map(::getWishDto)
@@ -37,13 +39,15 @@ internal class WishService(
 		return wishes
 	}
 
-	//	TODO deal with image
+	@Transactional
 	override fun createWish(user: UserInfo, requestWish: WishDto): WishDto {
 		val createdDate = LocalDateTime.now().format(dateTimeFormat)
 		val wish = requestWish.apply {
 			this.createdDate = createdDate
 			lastModifiedDate = createdDate
 		}.let { mapper.map(it, Wish::class.java) }
+
+		wish.image = requestWish.image?.let(::dealWithImage)
 
 		return userService.addWishes(user.id, setOf(wish))
 			.filter { it.lastModifiedDate == createdDate }
@@ -77,10 +81,10 @@ internal class WishService(
 		wishRepository.findById(wishId)
 			.orElseThrow { EntityNotFoundException("Wish [$wishId] not found") }
 
-	private fun dealWithImage(imageDto: ImageDto?): ImageDto {
-		imageDto?.content ?: return imageService.getDefaultImage("default-wish")
-		return imageService.saveImage(imageDto.content!!)
-	}
+	private fun dealWithImage(imageDto: ImageDto): Image =
+		imageService.uploadImage(imageDto.content!!)
+			.let { mapper.map(it, Image::class.java) }
+
 
 	private fun getWishDto(wish: Wish) = mapper.map(wish, WishDto::class.java)
 }

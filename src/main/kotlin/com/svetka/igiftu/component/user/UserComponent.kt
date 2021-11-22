@@ -21,4 +21,5 @@ interface UserComponent {
 	fun addBoards(userId: Long, boards: Set<Board>): Set<BoardDto>
 	fun deleteBoards(userId: Long, boards: Set<WishDto>)
 	fun getWishes(userId: Long): Set<WishDto>
+	fun getBoards(userId: Long): Set<BoardDto>
 }

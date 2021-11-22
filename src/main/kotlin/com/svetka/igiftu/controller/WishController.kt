@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("user/{userId}")
+@RequestMapping("user/{userId}/wish")
 @CrossOrigin
 class WishController(
 	private val readerManager: ReaderManager,
@@ -31,7 +31,7 @@ class WishController(
 
 	private val log = KotlinLogging.logger { }
 
-	@GetMapping("/wish")
+	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	fun getWishes(
 		@PathVariable userId: Long,
@@ -43,7 +43,7 @@ class WishController(
 		return payload
 	}
 
-	@PostMapping("/wish")
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun createWish(
@@ -57,7 +57,7 @@ class WishController(
 		return wish
 	}
 
-	@PutMapping("/wish/{wishId}")
+	@PutMapping("/{wishId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun updateWish(
@@ -65,14 +65,14 @@ class WishController(
 		@PathVariable wishId: Long,
 		@RequestBody wishDto: WishDto,
 		principal: Principal
-	): Any {
+	): WishDto {
 		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
 		val wish = wishService.updateWish(UserInfo(userId, principal.name), wishDto)
 		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
 		return wish
 	}
 
-	@DeleteMapping("/wish/{wishId}")
+	@DeleteMapping("/{wishId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun deleteWish(

@@ -36,18 +36,13 @@ class ImageServiceImpl(
 		)
 	}
 
-	@Transactional
-	override fun saveImage(content: ByteArray): ImageDto {
+	override fun uploadImage(content: ByteArray): ImageDto {
 		val imageName = getNewImageName()
 		CompletableFuture<String>().completeAsync {
 			s3StorageService.putFile(content, imageName)
 		}
-
-		val image = imageRepository.save(Image(name = imageName))
-
 		return ImageDto(
-			id = image.id,
-			name = image.name,
+			name = imageName,
 			content = content
 		)
 	}

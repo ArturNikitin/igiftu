@@ -2,6 +2,7 @@ package com.svetka.igiftu.entity
 
 import com.svetka.igiftu.entity.enums.Access
 import java.time.LocalDateTime
+import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -67,7 +68,7 @@ class Wish(
 	@JoinColumn(name = "user_id")
 	var user: User? = null,
 
-	@ManyToOne(cascade = [PERSIST], fetch = EAGER)
+	@ManyToOne(cascade = [ALL], fetch = EAGER)
 	@JoinColumn(name = "image_id")
 	var image: Image? = null,
 

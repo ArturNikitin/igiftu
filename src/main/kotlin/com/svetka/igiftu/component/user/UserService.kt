@@ -4,7 +4,6 @@ import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
-import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
@@ -57,7 +56,7 @@ class UserService(
 					throw SecurityModificationException("Illegal modification attempt")
 			}
 		val imageDto = userDto.image?.content?.let {
-			imageService.saveImage(
+			imageService.uploadImage(
 				it
 			)
 		}
@@ -70,22 +69,21 @@ class UserService(
 	}
 
 	@Transactional
+//  TODO add custom image
 	override fun register(userCredentials: UserCredentials): UserDto {
 		logger.info { "Trying to register user with email ${userCredentials.email}" }
-		if (notExists(userCredentials)) {
-			val image = imageService.getDefaultImage("default-user-pic")
+		if (!exists(userCredentials)) {
 			val mappedUser = mapper.map(userCredentials, User::class.java).apply {
 				createdDate = LocalDateTime.now()
 				password = encoder.encode(this.password)
 				login = login ?: getLoginFromEmail()
 				role = UserRoles.ROLE_USER
-				this.image = image.let { Image(it.id, name = it.name!!) }
 				isAccountNonLocked = true
 				isEnabled = true
 			}
 			CompletableFuture.supplyAsync { emailService.sendWelcomingEmail(mappedUser.email) }
 			logger.info { "Saving new user with email ${userCredentials.email}" }
-			return saveOrUpdateUser(mappedUser).apply { this.image?.content = image.content }
+			return saveOrUpdateUser(mappedUser)
 		} else {
 			logger.info { "User with email ${userCredentials.email} already exists" }
 			throw EntityExistsException("Пользователь с имейлом ${userCredentials.email} уже существует")
@@ -150,6 +148,14 @@ class UserService(
 			.toSet()
 	}
 
+	@Transactional
+	override fun getBoards(userId: Long): Set<BoardDto> {
+		return getUserIfExists(userId)
+			.boards
+			.map { mapper.map(it, BoardDto::class.java) }
+			.toSet()
+	}
+
 	private fun saveOrUpdateUser(user: User) = getUserDto(userRepo.save(user))
 
 	private fun getUserDto(user: User) = mapper.map(user, UserDto::class.java)
@@ -162,6 +168,6 @@ class UserService(
 		userRepo.findById(id)
 			.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
 
-	private fun notExists(userCredentials: UserCredentials) =
-		userRepo.findUserByEmail(userCredentials.email).isEmpty
+	private fun exists(userCredentials: UserCredentials) =
+		userRepo.findUserByEmail(userCredentials.email).isPresent
 }

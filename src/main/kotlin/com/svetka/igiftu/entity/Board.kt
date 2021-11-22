@@ -1,6 +1,7 @@
 package com.svetka.igiftu.entity
 
 import java.time.LocalDateTime
+import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.DETACH
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.Column
@@ -41,7 +42,7 @@ class Board(
 	@JoinColumn(name = "user_id")
 	var user: User? = null,
 
-	@OneToOne(cascade = [DETACH], fetch = EAGER)
+	@OneToOne(cascade = [ALL], fetch = EAGER)
 	@JoinColumn(name = "image_id")
 	var image: Image? = null,
 

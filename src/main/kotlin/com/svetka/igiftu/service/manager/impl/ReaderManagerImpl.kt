@@ -24,7 +24,10 @@ class ReaderManagerImpl(
 	}
 
 	override fun readBoardsByUser(userId: Long, readerUsername: String?): PayloadDto {
-		TODO("Not yet implemented")
+		return PayloadDto(
+			readerUsername?.let { userService.isSameUser(userId, it) } ?: false,
+			userService.getBoards(userId)
+		)
 	}
 
 	override fun readWishesByBoard(boardId: Long, userId: Long, readerUsername: String?): PayloadDto {

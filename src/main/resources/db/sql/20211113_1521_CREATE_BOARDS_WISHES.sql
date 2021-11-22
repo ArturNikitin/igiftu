@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS boards_wishes (
+CREATE TABLE IF NOT EXISTS wishes_boards (
     board_id BIGINT NOT NULL,
     wish_id BIGINT NOT NULL,
     CONSTRAINT board_id_fk FOREIGN KEY (board_id)

@@ -45,31 +45,4 @@ class TestConfiguration {
 
 	@Bean
 	fun facebookConnectionSignup() = ConnectionSignUp { "usernameFacebook" }
-//
-//	@Bean
-//	fun facebookSignInAdapter() = SignInAdapter { s: String, connection: Connection<*>, nativeWebRequest: NativeWebRequest ->
-//		""
-//	}
-//
-//	@Bean
-//	fun providerSignInController(): ProviderSignInController {
-//		val connectionFactoryLocator = connectionFactoryLocator()
-//		val usersConnectionRepository = getUsersConnectionRepository(connectionFactoryLocator)
-//		(usersConnectionRepository as InMemoryUsersConnectionRepository)
-//			.setConnectionSignUp(facebookSignUp())
-//		return ProviderSignInController(
-//			connectionFactoryLocator,
-//			usersConnectionRepository, FacebookSignInAdapter()
-//		)
-//	}
-//
-//	private fun connectionFactoryLocator(): ConnectionFactoryLocator {
-//		val registry = ConnectionFactoryRegistry()
-//		registry.addConnectionFactory(FacebookConnectionFactory("appId", "appSecret"))
-//		return registry
-//	}
-//
-//	private fun getUsersConnectionRepository(connectionFactoryLocator: ConnectionFactoryLocator): UsersConnectionRepository {
-//		return InMemoryUsersConnectionRepository(connectionFactoryLocator)
-//	}
 }
