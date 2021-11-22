@@ -43,7 +43,14 @@ class UserService(
 
 	@Transactional
 	override fun getUserById(id: Long): UserDto =
-		userRepo.findById(id).map { getUserDto(it) }
+		userRepo.findById(id)
+			.map { user ->
+				getUserDto(user)
+					.also {
+						it.boardAmount = user.boards.size
+						it.wishAmount = user.wishes.size
+					}
+			}
 			.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
 			.apply { image?.content = imageService.getContent(image?.name!!) }
 

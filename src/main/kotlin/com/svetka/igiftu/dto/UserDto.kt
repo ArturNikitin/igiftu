@@ -10,4 +10,6 @@ data class UserDto(
     val login: String? = null,
     val role: String? = null,
     val image: ImageDto? = null,
+    var wishAmount: Int? = null,
+    var boardAmount: Int? = null
 )
