@@ -8,8 +8,8 @@ import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
-import com.svetka.igiftu.repository.WishRepository
-import com.svetka.igiftu.service.entity.ImageService
+import com.svetka.igiftu.exceptions.SecurityModificationException
+import com.svetka.igiftu.service.ImageService
 import java.time.LocalDateTime
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
@@ -55,10 +55,12 @@ internal class WishService(
 			.first()
 	}
 
-	//	todo deal with image
 	@Transactional
 	override fun updateWish(user: UserInfo, requestWish: WishDto): WishDto {
-		val updatedWish = findWish(requestWish.id!!)
+		if (!isOperationAllowed(user.id, user.username))
+			throw SecurityModificationException("Illegal modification attempt by user [${user.username}]")
+
+		val updatedWish = getWishIfExists(requestWish.id ?: 0L)
 			.also {
 				it.access = Access.valueOf(requestWish.access)
 				it.name = requestWish.name
@@ -67,6 +69,7 @@ internal class WishService(
 				it.isAnalogPossible = requestWish.isAnalogPossible
 				it.isBooked = requestWish.isBooked
 				it.isCompleted = requestWish.isCompleted
+				it.image = requestWish.image?.let { image -> dealWithImage(image) }
 			}.let { wishRepository.save(it) }
 
 		return getWishDto(updatedWish)
@@ -77,7 +80,7 @@ internal class WishService(
 		wishRepository.deleteById(wishId)
 
 
-	private fun findWish(wishId: Long) =
+	private fun getWishIfExists(wishId: Long) =
 		wishRepository.findById(wishId)
 			.orElseThrow { EntityNotFoundException("Wish [$wishId] not found") }
 
@@ -87,4 +90,7 @@ internal class WishService(
 
 
 	private fun getWishDto(wish: Wish) = mapper.map(wish, WishDto::class.java)
+
+	private fun isOperationAllowed(userId: Long, username: String) =
+		userService.isSameUser(userId, username)
 }

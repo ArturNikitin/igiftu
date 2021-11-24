@@ -5,6 +5,7 @@ import com.svetka.igiftu.entity.enums.UserRoles
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 import javax.persistence.*
+import javax.persistence.CascadeType.*
 
 @Entity
 @Table(name = "Users")
@@ -40,13 +41,13 @@ class User(
 	@Enumerated(value = EnumType.STRING)
 	var registrationType: RegistrationTypes = RegistrationTypes.EMAIL,
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
+	@OneToMany(fetch = FetchType.LAZY, cascade = [PERSIST], mappedBy = "user")
 	val wishes: MutableList<Wish> = mutableListOf(),
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], mappedBy = "user")
+	@OneToMany(fetch = FetchType.LAZY, cascade = [PERSIST], mappedBy = "user")
 	val boards: MutableList<Board> = mutableListOf(),
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.DETACH])
+	@OneToOne(fetch = FetchType.EAGER, cascade = [MERGE], orphanRemoval = true)
 	@JoinColumn(name = "image_id")
 	var image: Image? = null
 ) {

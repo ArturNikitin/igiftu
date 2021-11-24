@@ -11,10 +11,9 @@ import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.exceptions.SecurityModificationException
-import com.svetka.igiftu.repository.UserRepository
-import com.svetka.igiftu.service.common.EmailService
-import com.svetka.igiftu.service.entity.ImageService
-import com.svetka.igiftu.service.entity.TokenService
+import com.svetka.igiftu.service.EmailService
+import com.svetka.igiftu.service.ImageService
+import com.svetka.igiftu.service.TokenService
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 import javax.persistence.EntityExistsException
@@ -59,7 +58,8 @@ class UserService(
 		val user = userRepo.findById(userDto.id)
 			.orElseThrow { EntityNotFoundException("User with id ${userDto.id} not found ") }
 			.also {
-				if (it.email != username && it.login != username)
+				val notSameUser = it.email != username && it.login != username
+				if (notSameUser)
 					throw SecurityModificationException("Illegal modification attempt")
 			}
 		val imageDto = userDto.image?.content?.let {
@@ -67,16 +67,18 @@ class UserService(
 				it
 			)
 		}
-		return saveOrUpdateUser(
+		val oldImage = user.image
+		val updateUser = saveOrUpdateUser(
 			user.apply {
-				image = Image(imageDto?.id, name = imageDto?.name!!)
+				image = Image(name = imageDto?.name!!)
 				login = userDto.login
 			}
 		)
+		imageService.deleteImageIfExists(oldImage?.name)
+		return updateUser
 	}
 
 	@Transactional
-//  TODO add custom image
 	override fun register(userCredentials: UserCredentials): UserDto {
 		logger.info { "Trying to register user with email ${userCredentials.email}" }
 		if (!exists(userCredentials)) {
@@ -152,14 +154,16 @@ class UserService(
 		return getUserIfExists(userId)
 			.wishes
 			.map { mapper.map(it, WishDto::class.java) }
+			.onEach { it.image?.apply { content = imageService.getContent(name ?: "") } }
 			.toSet()
 	}
 
 	@Transactional
 	override fun getBoards(userId: Long): Set<BoardDto> {
-		return getUserIfExists(userId)
+		return userRepo.findUserById(userId).orElseThrow { EntityNotFoundException() }
 			.boards
 			.map { mapper.map(it, BoardDto::class.java) }
+			.onEach { it.image?.apply { content = imageService.getContent(name ?: "") } }
 			.toSet()
 	}
 

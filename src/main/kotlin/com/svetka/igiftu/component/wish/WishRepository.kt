@@ -1,4 +1,4 @@
-package com.svetka.igiftu.repository
+package com.svetka.igiftu.component.wish
 
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish

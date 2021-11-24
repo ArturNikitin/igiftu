@@ -1,9 +1,9 @@
-package com.svetka.igiftu.service.entity.impl
+package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.entity.Token
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.repository.TokenRepository
-import com.svetka.igiftu.service.entity.TokenService
+import com.svetka.igiftu.service.TokenService
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID

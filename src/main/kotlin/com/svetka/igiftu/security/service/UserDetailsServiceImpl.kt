@@ -1,6 +1,6 @@
 package com.svetka.igiftu.security.service
 
-import com.svetka.igiftu.repository.UserRepository
+import com.svetka.igiftu.component.user.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

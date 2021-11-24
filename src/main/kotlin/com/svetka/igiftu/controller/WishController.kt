@@ -5,7 +5,7 @@ import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
-import com.svetka.igiftu.service.manager.ReaderManager
+import com.svetka.igiftu.service.ReaderManager
 import java.security.Principal
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus

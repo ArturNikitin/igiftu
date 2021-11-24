@@ -12,7 +12,7 @@ import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.exceptions.SecurityCreationException
 import com.svetka.igiftu.exceptions.SecurityModificationException
-import com.svetka.igiftu.service.entity.ImageService
+import com.svetka.igiftu.service.ImageService
 import java.time.LocalDateTime
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade

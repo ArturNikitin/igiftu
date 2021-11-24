@@ -1,6 +1,6 @@
-package com.svetka.igiftu.service.common.impl
+package com.svetka.igiftu.service.impl
 
-import com.svetka.igiftu.service.common.EmailService
+import com.svetka.igiftu.service.EmailService
 import java.nio.file.Files
 import java.nio.file.Paths
 import javax.activation.DataHandler

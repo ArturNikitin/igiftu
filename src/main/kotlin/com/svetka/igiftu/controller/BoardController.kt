@@ -2,10 +2,9 @@ package com.svetka.igiftu.controller
 
 import com.svetka.igiftu.component.board.BoardComponent
 import com.svetka.igiftu.dto.BoardDto
-import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
 import com.svetka.igiftu.dto.UserInfo
-import com.svetka.igiftu.service.manager.ReaderManager
+import com.svetka.igiftu.service.ReaderManager
 import java.security.Principal
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus.ACCEPTED

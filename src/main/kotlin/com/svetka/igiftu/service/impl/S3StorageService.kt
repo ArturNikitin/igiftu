@@ -1,16 +1,15 @@
-package com.svetka.igiftu.service.common.impl
+package com.svetka.igiftu.service.impl
 
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
-import com.svetka.igiftu.service.common.StorageService
+import com.svetka.igiftu.service.StorageService
 import java.io.ByteArrayInputStream
-import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
 class S3StorageService(
-	private val S3Client: AmazonS3
+	private val amazonClient: AmazonS3
 ) : StorageService {
 
 	private val logger = KotlinLogging.logger { }
@@ -20,7 +19,7 @@ class S3StorageService(
 	override fun putFile(content: ByteArray, fileName: String): String {
 		logger.info { "Received request to save $fileName with data $content" }
 		return try {
-			S3Client.putObject(
+			amazonClient.putObject(
 				bucketName,
 				fileName,
 				ByteArrayInputStream(content),
@@ -36,10 +35,19 @@ class S3StorageService(
 
 	override fun getFile(fileName: String): ByteArray =
 		try {
-			val s3File = S3Client.getObject(bucketName, fileName)
+			val s3File = amazonClient.getObject(bucketName, fileName)
 			logger.info { "Got file $fileName from storage" }
 
 			s3File.objectContent.readAllBytes()
+		} catch (ex: Exception) {
+			logger.error { "File was not read" }
+			throw ex
+		}
+
+	override fun deleteFile(fileName: String): Unit =
+		try {
+			amazonClient.deleteObject(bucketName, fileName)
+			logger.info { "Deleted file $fileName from storage" }
 		} catch (ex: Exception) {
 			logger.error { "File was not read" }
 			throw ex

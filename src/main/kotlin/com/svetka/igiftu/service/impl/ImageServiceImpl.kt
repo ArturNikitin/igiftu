@@ -1,10 +1,9 @@
-package com.svetka.igiftu.service.entity.impl
+package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.dto.ImageDto
-import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.repository.ImageRepository
-import com.svetka.igiftu.service.common.StorageService
-import com.svetka.igiftu.service.entity.ImageService
+import com.svetka.igiftu.service.StorageService
+import com.svetka.igiftu.service.ImageService
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.UUID
@@ -36,6 +35,8 @@ class ImageServiceImpl(
 		)
 	}
 
+
+
 	override fun uploadImage(content: ByteArray): ImageDto {
 		val imageName = getNewImageName()
 		CompletableFuture<String>().completeAsync {
@@ -61,6 +62,25 @@ class ImageServiceImpl(
 	override fun getContent(imageName: String): ByteArray {
 		return simpleCash[imageName] ?: s3StorageService.getFile(imageName)
 	}
+
+	@Transactional
+	override fun deleteImageIfExists(imageName: String?) {
+//		imageName?.id?.let { imageRepository.findById(it) }
+//			?.ifPresent {
+//				log.debug { "Deleting image [${it.id}]" }
+//				imageRepository.deleteById(it.id!!)
+//				s3StorageService.deleteFile(it.name)
+//				log.debug { "Image with id [${it.id}] deleted" }
+//			}
+		try {
+			log.debug { "Deleting image [${imageName}]" }
+			imageName?.let{ s3StorageService.deleteFile(it) }
+		} catch (ex: Exception) {
+			log.error { "${ex.message}" }
+		}
+
+	}
+
 
 	private fun getNewImageName() = UUID.randomUUID().toString().replace("-", "")
 

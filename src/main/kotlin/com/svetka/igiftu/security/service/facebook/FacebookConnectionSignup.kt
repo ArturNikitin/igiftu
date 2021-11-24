@@ -3,7 +3,7 @@ package com.svetka.igiftu.security.service.facebook
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.enums.RegistrationTypes
 import com.svetka.igiftu.entity.enums.UserRoles
-import com.svetka.igiftu.repository.UserRepository
+import com.svetka.igiftu.component.user.UserRepository
 import java.time.LocalDateTime
 import org.springframework.social.connect.Connection
 import org.springframework.social.connect.ConnectionSignUp

@@ -45,7 +45,7 @@ class UserController(
 	): UserDto {
 		logger.info { "Received request to updateUser [$userId]" }
 		val updatedUser = userService.update(userDto, principal.name)
-		logger.info { "Received request to updateUser with data {$updatedUser}" }
+		logger.info { "Finished request to updateUser with data {$updatedUser}" }
 		return updatedUser
 	}
 

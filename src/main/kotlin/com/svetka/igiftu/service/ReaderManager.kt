@@ -1,4 +1,4 @@
-package com.svetka.igiftu.service.manager
+package com.svetka.igiftu.service
 
 import com.svetka.igiftu.dto.PayloadDto
 

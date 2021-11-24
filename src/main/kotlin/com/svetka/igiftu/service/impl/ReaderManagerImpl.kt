@@ -1,14 +1,12 @@
-package com.svetka.igiftu.service.manager.impl
+package com.svetka.igiftu.service.impl
 
 import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.dto.PayloadDto
-import com.svetka.igiftu.service.manager.ReaderManager
-import com.svetka.igiftu.service.manager.SecurityManager
+import com.svetka.igiftu.service.ReaderManager
 import org.springframework.stereotype.Service
 
 @Service
 class ReaderManagerImpl(
-	private val securityManager: SecurityManager,
 	private val userService: UserComponent,
 	private val boardComponent: UserComponent
 ) : ReaderManager {

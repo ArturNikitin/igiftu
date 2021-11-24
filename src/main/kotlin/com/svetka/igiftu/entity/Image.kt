@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 import javax.persistence.Table
 
 @Entity
@@ -21,11 +22,5 @@ class Image(
 	val type: String? = null,
 
 	@Column(name = "file_name", nullable = true)
-	val name: String,
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "image")
-	val users: List<User>? = null,
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "image")
-	val wishes: List<Wish>? = null
+	val name: String
 )
