@@ -41,13 +41,13 @@ class User(
 	@Enumerated(value = EnumType.STRING)
 	var registrationType: RegistrationTypes = RegistrationTypes.EMAIL,
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = [PERSIST], mappedBy = "user")
+	@OneToMany(fetch = FetchType.LAZY, cascade = [ALL], mappedBy = "user")
 	val wishes: MutableList<Wish> = mutableListOf(),
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = [PERSIST], mappedBy = "user")
+	@OneToMany(fetch = FetchType.LAZY, cascade = [ALL], mappedBy = "user")
 	val boards: MutableList<Board> = mutableListOf(),
 
-	@OneToOne(fetch = FetchType.EAGER, cascade = [MERGE], orphanRemoval = true)
+	@OneToOne(fetch = FetchType.EAGER, cascade = [ALL], orphanRemoval = true)
 	@JoinColumn(name = "image_id")
 	var image: Image? = null
 ) {
