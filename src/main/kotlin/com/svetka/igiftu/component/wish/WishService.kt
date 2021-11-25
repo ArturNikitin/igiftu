@@ -76,8 +76,13 @@ internal class WishService(
 	}
 
 	@Transactional
-	override fun deleteWish(user: UserInfo, wishId: Long) =
-		wishRepository.deleteById(wishId)
+	override fun deleteWish(user: UserInfo, wishId: Long) {
+		if (!isOperationAllowed(user.id, user.username))
+			throw SecurityModificationException("Illegal modification attempt by user [${user.username}]")
+		getWishIfExists(wishId)
+			.also { wishRepository.deleteById(it.id!!) }
+	}
+
 
 
 	private fun getWishIfExists(wishId: Long) =
