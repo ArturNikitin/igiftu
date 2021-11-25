@@ -1,5 +1,6 @@
 package com.svetka.igiftu.component.wish
 
+import com.svetka.igiftu.aop.ModificationPermissionRequired
 import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.ImageDto
@@ -83,7 +84,18 @@ internal class WishService(
 			.also { wishRepository.deleteById(it.id!!) }
 	}
 
-
+	@Transactional
+	@ModificationPermissionRequired
+	override fun deleteWishes(user: UserInfo, wishes: Set<WishDto>) {
+		 wishes
+			.map { getWishIfExists(it.id!!) }
+			.onEach {
+				it.boards = mutableSetOf()
+				it.user = null
+				wishRepository.save(it)
+				wishRepository.deleteById(it.id!!)
+			}
+	}
 
 	private fun getWishIfExists(wishId: Long) =
 		wishRepository.findById(wishId)

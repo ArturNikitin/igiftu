@@ -9,4 +9,5 @@ interface WishComponent {
 	fun createWish(user: UserInfo, requestWish: WishDto): WishDto
 	fun updateWish(user: UserInfo, requestWish: WishDto): WishDto
 	fun deleteWish(user: UserInfo, wishId: Long)
+	fun deleteWishes(user: UserInfo, wishes: Set<WishDto>)
 }

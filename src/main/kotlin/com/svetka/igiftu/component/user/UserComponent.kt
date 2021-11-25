@@ -17,7 +17,6 @@ interface UserComponent {
 	fun requestResetPassword(email: String)
 	fun updatePassword(password: PasswordDto)
 	fun addWishes(userId: Long, wishes: Set<Wish>): Set<WishDto>
-	fun deleteWishes(userId: Long, wishes: Set<Wish>): Set<WishDto>
 	fun addBoards(userId: Long, boards: Set<Board>): Set<BoardDto>
 	fun deleteBoards(userId: Long, boards: Set<WishDto>)
 	fun getWishes(userId: Long): Set<WishDto>

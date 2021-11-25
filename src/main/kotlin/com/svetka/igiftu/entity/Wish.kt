@@ -79,7 +79,7 @@ class Wish(
 		joinColumns = [JoinColumn(name = "wish_id")],
 		inverseJoinColumns = [JoinColumn(name = "board_id")]
 	)
-	val boards: MutableSet<Board> = mutableSetOf()
+	var boards: MutableSet<Board> = mutableSetOf()
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

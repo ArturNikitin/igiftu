@@ -84,4 +84,17 @@ class WishController(
 		wishService.deleteWish(UserInfo(userId, principal.name), wishId)
 		log.info { "Completed request to delete wish {$wishId} and user ${principal.name}" }
 	}
+
+	@DeleteMapping
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+	fun deleteWishes(
+		@PathVariable userId: Long,
+		@RequestBody wishes: Set<WishDto>,
+		principal: Principal
+	) {
+		log.info { "Received request to delete a wish with ids {${wishes.map { it.id }}} and user ${principal.name}" }
+		wishService.deleteWishes(UserInfo(userId, principal.name), wishes)
+		log.info { "Completed request to delete wishes {${wishes.map { it.id }}} and user ${principal.name}" }
+	}
 }

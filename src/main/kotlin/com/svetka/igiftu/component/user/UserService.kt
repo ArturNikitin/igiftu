@@ -1,9 +1,11 @@
 package com.svetka.igiftu.component.user
 
+import com.svetka.igiftu.aop.ModificationPermissionRequired
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
+import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
@@ -126,10 +128,6 @@ class UserService(
 			.wishes
 			.map { mapper.map(it, WishDto::class.java) }
 			.toSet()
-	}
-
-	override fun deleteWishes(userId: Long, wishes: Set<Wish>): Set<WishDto> {
-		TODO("Not yet implemented")
 	}
 
 	@Transactional
