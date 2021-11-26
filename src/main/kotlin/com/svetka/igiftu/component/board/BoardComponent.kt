@@ -5,8 +5,8 @@ import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 
 interface BoardComponent {
-	fun createBoard(boardDto: BoardDto, user: UserInfo): BoardDto
-	fun addWishes(boardId: Long, wishesDto: Set<WishDto>, username: String): BoardDto
-	fun deleteWishes(boardId: Long, wishesDto: Set<WishDto>, username: String): BoardDto
-	fun deleteBoard(boardId: Long, username: String)
+	fun createBoard(boardDto: BoardDto, userInfo: UserInfo): BoardDto
+	fun addWishes(boardId: Long, wishesDto: Set<WishDto>, userInfo: UserInfo): BoardDto
+	fun deleteWishes(boardId: Long, wishesDto: Set<WishDto>, userInfo: UserInfo): BoardDto
+	fun deleteBoard(boardId: Long, userInfo: UserInfo)
 }

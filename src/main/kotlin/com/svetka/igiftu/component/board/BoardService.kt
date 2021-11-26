@@ -1,5 +1,6 @@
 package com.svetka.igiftu.component.board
 
+import com.svetka.igiftu.aop.ModificationPermissionRequired
 import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dateTimeFormat
@@ -32,9 +33,10 @@ internal class BoardService(
 	private val logger = KotlinLogging.logger { }
 
 	@Transactional
-	override fun createBoard(boardDto: BoardDto, user: UserInfo): BoardDto {
-		if (!isOperationAllowed(user.id, user.username))
-			throw SecurityCreationException("illegal creation attempt by user [${user.username}]")
+	@ModificationPermissionRequired
+	override fun createBoard(boardDto: BoardDto, userInfo: UserInfo): BoardDto {
+		if (!isOperationAllowed(userInfo.id, userInfo.username))
+			throw SecurityCreationException("illegal creation attempt by user [${userInfo.username}]")
 
 		boardDto.apply {
 			createdDate = LocalDateTime.now().format(dateTimeFormat)
@@ -43,19 +45,17 @@ internal class BoardService(
 		val board = mapper.map(boardDto, Board::class.java)
 			.apply { image = boardDto.image?.let(::dealWithImage) }
 
-		return userService.addBoards(user.id, setOf(board))
+		return userService.addBoards(userInfo.id, setOf(board))
 			.filter { it.lastModifiedDate == boardDto.lastModifiedDate }
 			.map { mapper.map(it, BoardDto::class.java) }
 			.first()
 	}
 
 	@Transactional
-	override fun addWishes(boardId: Long, wishesDto: Set<WishDto>, username: String): BoardDto {
+	@ModificationPermissionRequired
+	override fun addWishes(boardId: Long, wishesDto: Set<WishDto>, userInfo: UserInfo): BoardDto {
 		logger.debug { "Attaching wishes:{${wishesDto}} to board: {$boardId}" }
 		val board = getBoardIfExists(boardId)
-		if (!isOperationAllowed(board.user?.id!!, username))
-			throw SecurityModificationException("Illegal modification attempt by user [${username}]")
-
 		val wishes = connectWishesToBoard(board, wishesDto)
 		board.wishes.addAll(wishes)
 
@@ -66,14 +66,10 @@ internal class BoardService(
 	}
 
 	@Transactional
-	override fun deleteWishes(boardId: Long, wishesDto: Set<WishDto>, username: String): BoardDto {
+	@ModificationPermissionRequired
+	override fun deleteWishes(boardId: Long, wishesDto: Set<WishDto>, userInfo: UserInfo): BoardDto {
 		logger.debug { "Removing wishes:{${wishesDto}} to board: {$boardId}" }
-
 		val board = getBoardIfExists(boardId)
-
-		if (!isOperationAllowed(board.user?.id!!, username))
-			throw SecurityModificationException("Illegal modification attempt by user [${username}]")
-
 		val wishes = connectWishesToBoard(board, wishesDto)
 		board.wishes.removeAll(wishes)
 		val savedBoard = saveOrUpdateBoard(board)
@@ -82,10 +78,8 @@ internal class BoardService(
 	}
 
 	@Transactional
-	override fun deleteBoard(boardId: Long, username: String) {
-		val board = getBoardIfExists(boardId)
-		if (!isOperationAllowed(board.user?.id!!, username))
-			throw SecurityModificationException("Illegal modification attempt by user [${username}]")
+	override fun deleteBoard(boardId: Long, userInfo: UserInfo) {
+		getBoardIfExists(boardId)
 		boardRepository.deleteById(boardId)
 		logger.debug { "Board $boardId deleted" }
 	}

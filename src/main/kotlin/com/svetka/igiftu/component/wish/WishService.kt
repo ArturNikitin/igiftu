@@ -57,10 +57,8 @@ internal class WishService(
 	}
 
 	@Transactional
+	@ModificationPermissionRequired
 	override fun updateWish(user: UserInfo, requestWish: WishDto): WishDto {
-		if (!isOperationAllowed(user.id, user.username))
-			throw SecurityModificationException("Illegal modification attempt by user [${user.username}]")
-
 		val updatedWish = getWishIfExists(requestWish.id ?: 0L)
 			.also {
 				it.access = Access.valueOf(requestWish.access)
@@ -77,9 +75,8 @@ internal class WishService(
 	}
 
 	@Transactional
+	@ModificationPermissionRequired
 	override fun deleteWish(user: UserInfo, wishId: Long) {
-		if (!isOperationAllowed(user.id, user.username))
-			throw SecurityModificationException("Illegal modification attempt by user [${user.username}]")
 		getWishIfExists(wishId)
 			.also { wishRepository.deleteById(it.id!!) }
 	}

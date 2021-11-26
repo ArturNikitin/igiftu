@@ -66,7 +66,7 @@ class BoardController(
 		@RequestBody incomingBoard: BoardDto
 	): BoardDto {
 		log.info { "Received request to add wishes {${incomingBoard.wishes}} to board [$boardId] for user [$userId]" }
-		val board = boardComponent.addWishes(boardId, incomingBoard.wishes, principal.name)
+		val board = boardComponent.addWishes(boardId, incomingBoard.wishes, UserInfo(userId, principal.name))
 		log.info { "Finished request to add wishes {${incomingBoard.wishes}} to board [$boardId] for user [$userId]" }
 		return board
 	}
@@ -81,7 +81,7 @@ class BoardController(
 		@RequestBody incomingBoard: BoardDto
 	): BoardDto {
 		log.info { "Received request to add wishes {${incomingBoard.wishes}} to board [$boardId] for user [$userId]" }
-		val board = boardComponent.deleteWishes(boardId, incomingBoard.wishes, principal.name)
+		val board = boardComponent.deleteWishes(boardId, incomingBoard.wishes, UserInfo(userId, principal.name))
 		log.info { "Finished request to add wishes {${incomingBoard.wishes}} to board [$boardId] for user [$userId]" }
 		return board
 	}
@@ -95,7 +95,7 @@ class BoardController(
 		@PathVariable boardId: Long
 	) {
 		log.info { "Received request to delete board [$boardId] fro user [$userId]" }
-		boardComponent.deleteBoard(boardId, principal.name)
+		boardComponent.deleteBoard(boardId, UserInfo(userId, principal.name))
 		log.info { "Finished request to delete a board [$boardId] for user [$userId]" }
 	}
 }

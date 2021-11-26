@@ -12,3 +12,8 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
+
+#Logging
+logging:
+  level:
+    com.svetka.igiftu: debug
