@@ -26,9 +26,9 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 	): ResponseEntity<Any> {
 		val errors: MutableMap<String, String?> = HashMap()
 		ex.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
-//			val fieldName = (error as FieldError).field
+			val fieldName = (error as FieldError).field
 			val errorMessage = error.defaultMessage
-			errors["message"] = errorMessage
+			errors[fieldName] = errorMessage
 		})
 		return handleExceptionInternal(
 			ex, errors, HttpHeaders.EMPTY,

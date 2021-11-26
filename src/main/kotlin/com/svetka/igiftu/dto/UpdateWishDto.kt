@@ -1,30 +1,27 @@
 package com.svetka.igiftu.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.svetka.igiftu.entity.enums.Access
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class WishDto (
+data class UpdateWishDto(
 	@field:NotNull(message = "Поле Id должно пресутствовать в запросе")
-	var id: Long? = null,
+	val id: Long? = null,
 	@field:NotEmpty(message = "Поле name должно пресутствовать в запросе")
-	var name: String = "",
+	val name: String = "",
 	@field:NotNull(message = "Поле price должно пресутствовать в запросе")
-	var price: Double? = null,
+	val price: Double? = null,
 	@field:NotNull(message = "Поле access должно пресутствовать в запросе")
-	var access: String = Access.PUBLIC.name,
-	var createdDate: String? = null,
-	var lastModifiedDate: String? = null,
+	val access: String? = null,
 	@field:NotNull(message = "Поле isBooked должно пресутствовать в запросе")
-	var isBooked: Boolean = false,
+	val isBooked: Boolean? = null,
 	@field:NotNull(message = "Поле isCompleted должно пресутствовать в запросе")
-	var isCompleted: Boolean = false,
+	val isCompleted: Boolean? = null,
 	@field:NotNull(message = "Поле isAnalogPossible должно пресутствовать в запросе")
-	val isAnalogPossible: Boolean = true,
+	val isAnalogPossible: Boolean? = null,
 	val image: ImageDto? = null
-) : Content() {
+) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (javaClass != other?.javaClass) return false

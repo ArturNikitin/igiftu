@@ -3,10 +3,12 @@ package com.svetka.igiftu.controller
 import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
+import com.svetka.igiftu.dto.UpdateWishDto
 import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.service.ReaderManager
 import java.security.Principal
+import javax.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -57,18 +59,17 @@ class WishController(
 		return wish
 	}
 
-	@PutMapping("/{wishId}")
+	@PutMapping
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun updateWish(
 		@PathVariable userId: Long,
-		@PathVariable wishId: Long,
-		@RequestBody wishDto: WishDto,
+		@Valid @RequestBody wishDto: UpdateWishDto,
 		principal: Principal
 	): WishDto {
-		log.info { "Received request to update wish {$wishDto} for user {$userId} and data {$wishDto}" }
+		log.info { "Received request to update wish {${wishDto.id}} for user {$userId}" }
 		val wish = wishService.updateWish(UserInfo(userId, principal.name), wishDto)
-		log.info { "Finished request to update wish {$wishId} for user {$userId} and data {$wish}" }
+		log.info { "Finished request to update wish {${wishDto.id}} for user {$userId}" }
 		return wish
 	}
 

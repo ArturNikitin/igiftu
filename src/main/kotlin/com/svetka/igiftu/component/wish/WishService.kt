@@ -4,12 +4,12 @@ import com.svetka.igiftu.aop.ModificationPermissionRequired
 import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.ImageDto
+import com.svetka.igiftu.dto.UpdateWishDto
 import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
-import com.svetka.igiftu.exceptions.SecurityModificationException
 import com.svetka.igiftu.service.ImageService
 import java.time.LocalDateTime
 import javax.persistence.EntityNotFoundException
@@ -58,16 +58,16 @@ internal class WishService(
 
 	@Transactional
 	@ModificationPermissionRequired
-	override fun updateWish(user: UserInfo, requestWish: WishDto): WishDto {
-		val updatedWish = getWishIfExists(requestWish.id ?: 0L)
+	override fun updateWish(user: UserInfo, requestWish: UpdateWishDto): WishDto {
+		val updatedWish = getWishIfExists(requestWish.id!!)
 			.also {
-				it.access = Access.valueOf(requestWish.access)
+				it.access = Access.valueOf(requestWish.access!!)
 				it.name = requestWish.name
 				it.price = requestWish.price
 				it.lastModifiedDate = LocalDateTime.now()
-				it.isAnalogPossible = requestWish.isAnalogPossible
-				it.isBooked = requestWish.isBooked
-				it.isCompleted = requestWish.isCompleted
+				it.isAnalogPossible = requestWish.isAnalogPossible!!
+				it.isBooked = requestWish.isBooked!!
+				it.isCompleted = requestWish.isCompleted!!
 				it.image = requestWish.image?.let { image -> dealWithImage(image) }
 			}.let { wishRepository.save(it) }
 
