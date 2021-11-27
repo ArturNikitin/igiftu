@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import java.util.stream.Collectors
 import javax.crypto.SecretKey
+import javax.persistence.EntityNotFoundException
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -49,10 +50,10 @@ class JwtTokenVerifier(
 					null,
 					authoritySet
 				)
-				SecurityContextHolder.getContext().setAuthentication(authentication)
+				SecurityContextHolder.getContext().authentication = authentication
 				filterChain.doFilter(request, response)
 			} catch (e: JwtException) {
-				throw IllegalStateException(String.format("Token {%s} cannot be trusted", token))
+				throw IllegalStateException(String.format("Token cannot be trusted", token))
 			}
 		}
 	}

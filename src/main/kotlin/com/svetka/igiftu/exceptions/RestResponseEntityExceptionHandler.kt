@@ -30,6 +30,7 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 			val errorMessage = error.defaultMessage
 			errors[fieldName] = errorMessage
 		})
+		errors["message"] = "Какие-то поля отсутвтвуют или неккоректны"
 		return handleExceptionInternal(
 			ex, errors, HttpHeaders.EMPTY,
 			HttpStatus.BAD_REQUEST, request
@@ -46,6 +47,12 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 		value = [EntityExistsException::class]
 	)
 	fun handleEntityExists(ex: EntityExistsException, request: WebRequest) = prepareResponse(
+		ex, mapOf("message" to (ex.message ?: "")),
+		HttpStatus.NOT_FOUND, request
+	)
+
+	@ExceptionHandler(value = [IllegalStateException::class])
+	fun handleIllegalStateException(ex: IllegalStateException, request: WebRequest) = prepareResponse(
 		ex, mapOf("message" to (ex.message ?: "")),
 		HttpStatus.NOT_FOUND, request
 	)

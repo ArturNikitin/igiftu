@@ -1,12 +1,12 @@
 package com.svetka.igiftu.security
 
+import com.svetka.igiftu.security.jwt.SecurityExceptionHandlerFilter
 import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.JwtTokenVerifier
 import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
-import com.svetka.igiftu.security.service.facebook.FacebookConnectionSignup
 import com.svetka.igiftu.security.service.facebook.FacebookSignInAdapter
 import javax.crypto.SecretKey
-import org.apache.tomcat.util.file.ConfigurationSource
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,7 +27,7 @@ import org.springframework.social.connect.support.ConnectionFactoryRegistry
 import org.springframework.social.connect.web.ProviderSignInController
 import org.springframework.social.facebook.connect.FacebookConnectionFactory
 import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.servlet.HandlerExceptionResolver
 
 
 @Configuration
@@ -37,7 +37,9 @@ class SecurityConfig(
 	private val userDetailsService: UserDetailsService,
 	private val secretKey: SecretKey,
 	private val jwtConfig: JwtConfig,
-	private val facebookSignUp: ConnectionSignUp
+	private val facebookSignUp: ConnectionSignUp,
+	@Qualifier("handlerExceptionResolver")
+	private val resolver: HandlerExceptionResolver
 ) : WebSecurityConfigurerAdapter() {
 
 	@Value("\${spring.social.facebook.appId}")
@@ -58,9 +60,11 @@ class SecurityConfig(
 				allowedHeaders = listOf("*")
 			}
 		}
-			.and().csrf().disable().addFilter(
-			JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
-		)
+			.and().csrf().disable()
+			.addFilterBefore(SecurityExceptionHandlerFilter(resolver), JwtUsernameAndPasswordAuthenticationFilter::class.java)
+			.addFilter(
+				JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
+			)
 			.addFilterAfter(
 				JwtTokenVerifier(jwtConfig, secretKey),
 				JwtUsernameAndPasswordAuthenticationFilter::class.java
