@@ -6,13 +6,13 @@ import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dateTimeFormat
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.ImageDto
+import com.svetka.igiftu.dto.UpdateBoardDto
 import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.exceptions.SecurityCreationException
-import com.svetka.igiftu.exceptions.SecurityModificationException
 import com.svetka.igiftu.service.ImageService
 import java.time.LocalDateTime
 import javax.persistence.EntityNotFoundException
@@ -82,6 +82,17 @@ internal class BoardService(
 		getBoardIfExists(boardId)
 		boardRepository.deleteById(boardId)
 		logger.debug { "Board $boardId deleted" }
+	}
+
+	@Transactional
+	@ModificationPermissionRequired
+	override fun updateBoard(board: UpdateBoardDto, userInfo: UserInfo): BoardDto {
+		val updatedBoard = getBoardIfExists(board.id!!).apply {
+			name = board.name
+			lastModifiedDate = LocalDateTime.now()
+			image = board.image?.let { dealWithImage(board.image) }
+		}
+		return saveOrUpdateBoard(updatedBoard)
 	}
 
 	private fun getBoardIfExists(boardId: Long) =

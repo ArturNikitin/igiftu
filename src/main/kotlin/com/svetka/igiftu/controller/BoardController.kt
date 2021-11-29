@@ -3,9 +3,11 @@ package com.svetka.igiftu.controller
 import com.svetka.igiftu.component.board.BoardComponent
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PayloadDto
+import com.svetka.igiftu.dto.UpdateBoardDto
 import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.service.ReaderManager
 import java.security.Principal
+import javax.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus.ACCEPTED
 import org.springframework.http.HttpStatus.CREATED
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -48,12 +51,26 @@ class BoardController(
 	fun createBoard(
 		principal: Principal,
 		@PathVariable userId: Long,
-		@RequestBody incomingBoard: BoardDto
+		@Valid @RequestBody incomingBoard: BoardDto
 	): BoardDto {
 		log.info { "Receive request to create board for user [$userId] and data {$incomingBoard}" }
 		val createdBoard = boardComponent.createBoard(incomingBoard, UserInfo(userId, principal.name))
 		log.info { "Finished request to create board for user [$userId]" }
 		return createdBoard
+	}
+
+	@PutMapping
+	@ResponseStatus(ACCEPTED)
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+	fun updateBoard(
+		principal: Principal,
+		@PathVariable userId: Long,
+		@Valid @RequestBody incomingBoard: UpdateBoardDto
+	): BoardDto {
+		log.info { "Received request to update board {${incomingBoard.id}} for user [$userId]" }
+		val board = boardComponent.updateBoard(incomingBoard, UserInfo(userId, principal.name))
+		log.info { "Finished request to update board {${incomingBoard.id}} for user [$userId]" }
+		return board
 	}
 
 	@PatchMapping("/{boardId}/wishes")

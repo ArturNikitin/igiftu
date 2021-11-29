@@ -49,9 +49,9 @@ class WishController(
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	fun createWish(
+		principal: Principal,
 		@PathVariable userId: Long,
-		@RequestBody wishDto: WishDto,
-		principal: Principal
+		@Valid @RequestBody wishDto: WishDto
 	): Content {
 		log.info { "Received request to create wish for user {$userId} and data {$wishDto}" }
 		val wish = wishService.createWish(UserInfo(userId, principal.name), wishDto)
