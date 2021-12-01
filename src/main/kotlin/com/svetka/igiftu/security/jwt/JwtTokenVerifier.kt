@@ -53,7 +53,7 @@ class JwtTokenVerifier(
 				SecurityContextHolder.getContext().authentication = authentication
 				filterChain.doFilter(request, response)
 			} catch (e: JwtException) {
-				throw IllegalStateException(String.format("Token cannot be trusted", token))
+				throw IllegalStateException("Token cannot be trusted")
 			}
 		}
 	}

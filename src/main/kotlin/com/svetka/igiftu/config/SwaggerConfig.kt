@@ -2,6 +2,8 @@ package com.svetka.igiftu.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.util.ClassUtils
+import springfox.documentation.RequestHandler
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.service.ApiKey
@@ -21,7 +23,9 @@ class SwaggerConfig {
 			.securityContexts(listOf(securityContext()))
 			.securitySchemes(listOf(apiKey()))
 			.select()
-			.apis(RequestHandlerSelectors.basePackage("com.svetka.igiftu.controller"))
+			.apis { input: RequestHandler -> listOf("com.svetka.igiftu.controller", "org.springframework.social.connect.web")
+				.any { ClassUtils.getPackageName(input.declaringClass())
+					.startsWith(it) } }
 			.paths(PathSelectors.any())
 			.build()
 	}
@@ -35,7 +39,7 @@ class SwaggerConfig {
 
 	private fun defaultAuth(): List<SecurityReference> {
 		val authorizationScope = AuthorizationScope("global", "accessEverything")
-		val authorizationScopes: Array<AuthorizationScope?> = arrayOfNulls<AuthorizationScope>(1)
+		val authorizationScopes: Array<AuthorizationScope?> = arrayOfNulls(1)
 		authorizationScopes[0] = authorizationScope
 		return listOf(SecurityReference("Authorization", authorizationScopes))
 	}

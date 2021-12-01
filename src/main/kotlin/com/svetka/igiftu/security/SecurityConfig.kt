@@ -34,77 +34,86 @@ import org.springframework.web.servlet.HandlerExceptionResolver
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class SecurityConfig(
-	private val userDetailsService: UserDetailsService,
-	private val secretKey: SecretKey,
-	private val jwtConfig: JwtConfig,
-	private val facebookSignUp: ConnectionSignUp,
-	@Qualifier("handlerExceptionResolver")
-	private val resolver: HandlerExceptionResolver
+    private val userDetailsService: UserDetailsService,
+    private val secretKey: SecretKey,
+    private val jwtConfig: JwtConfig,
+    private val facebookSignUp: ConnectionSignUp,
+    @Qualifier("handlerExceptionResolver")
+    private val resolver: HandlerExceptionResolver
 ) : WebSecurityConfigurerAdapter() {
 
-	@Value("\${spring.social.facebook.appId}")
-	private lateinit var appId: String
+    @Value("\${spring.social.facebook.appId}")
+    private lateinit var appId: String
 
-	@Value("\${spring.social.facebook.appSecret}")
-	private lateinit var appSecret: String
+    @Value("\${spring.social.facebook.appSecret}")
+    private lateinit var appSecret: String
 
-	override fun configure(auth: AuthenticationManagerBuilder?) {
-		auth?.userDetailsService(userDetailsService)
-	}
+    override fun configure(auth: AuthenticationManagerBuilder?) {
+        auth?.userDetailsService(userDetailsService)
+    }
 
-	override fun configure(http: HttpSecurity) {
-		http.cors().configurationSource {
-			CorsConfiguration().apply {
-				allowedOrigins = listOf("http://localhost:3000")
-				allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
-				allowedHeaders = listOf("*")
-			}
-		}
-			.and().csrf().disable()
-			.addFilterBefore(SecurityExceptionHandlerFilter(resolver), JwtUsernameAndPasswordAuthenticationFilter::class.java)
-			.addFilter(
-				JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
-			)
-			.addFilterAfter(
-				JwtTokenVerifier(jwtConfig, secretKey),
-				JwtUsernameAndPasswordAuthenticationFilter::class.java
-			)
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and().authorizeRequests()
-			.antMatchers("/swagger-ui/**").permitAll()
-			.antMatchers("/swagger-resources/**").permitAll()
-			.antMatchers("/v2/api-docs**").permitAll()
-			.antMatchers("/login").permitAll()
-			.antMatchers("/registration").permitAll()
-			.antMatchers("/user/**").permitAll()
-			.antMatchers("/signin/**").permitAll()
-			.antMatchers("/api/**").hasRole("ADMIN")
-	}
+    override fun configure(http: HttpSecurity) {
+        http.cors().configurationSource {
+            CorsConfiguration().apply {
+                allowedOrigins = listOf("http://localhost:3000")
+                allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+                allowedHeaders = listOf("*")
+            }
+        }
+            .and()
+            .csrf().disable()
+            .addFilterBefore(
+                SecurityExceptionHandlerFilter(resolver),
+                JwtUsernameAndPasswordAuthenticationFilter::class.java
+            )
+            .addFilter(
+                jwtUsernameAndPasswordAuthenticationFilter()
+            )
+            .addFilterAfter(
+                JwtTokenVerifier(jwtConfig, secretKey),
+                JwtUsernameAndPasswordAuthenticationFilter::class.java
+            )
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and().authorizeRequests()
+            .antMatchers("/swagger-ui/**").permitAll()
+            .antMatchers("/swagger-resources/**").permitAll()
+            .antMatchers("/v2/api-docs**").permitAll()
+            .antMatchers("/login").permitAll()
+            .antMatchers("/user/login").authenticated()
+            .antMatchers("/registration").permitAll()
+            .antMatchers("/user/**").permitAll()
+            .antMatchers("/signin/**").permitAll()
+            .antMatchers("/api/**").hasRole("ADMIN")
+    }
 
-	@Bean
-	fun passwordEncoderBean(): PasswordEncoder {
-		return BCryptPasswordEncoder(8) // оптимальная сила по скорости вычисления и уровню шифрования
-	}
+    private fun jwtUsernameAndPasswordAuthenticationFilter() =
+        JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
+            .apply { this.setFilterProcessesUrl("/user/login") }
 
-	@Bean
-	fun providerSignInController(): ProviderSignInController {
-		val connectionFactoryLocator = connectionFactoryLocator()
-		val usersConnectionRepository = getUsersConnectionRepository(connectionFactoryLocator)
-		(usersConnectionRepository as InMemoryUsersConnectionRepository)
-			.setConnectionSignUp(facebookSignUp)
-		return ProviderSignInController(
-			connectionFactoryLocator,
-			usersConnectionRepository, FacebookSignInAdapter()
-		)
-	}
+    @Bean
+    fun passwordEncoderBean(): PasswordEncoder {
+        return BCryptPasswordEncoder(8) // оптимальная сила по скорости вычисления и уровню шифрования
+    }
 
-	private fun connectionFactoryLocator(): ConnectionFactoryLocator {
-		val registry = ConnectionFactoryRegistry()
-		registry.addConnectionFactory(FacebookConnectionFactory(appId, appSecret))
-		return registry
-	}
+    @Bean
+    fun providerSignInController(): ProviderSignInController {
+        val connectionFactoryLocator = connectionFactoryLocator()
+        val usersConnectionRepository = getUsersConnectionRepository(connectionFactoryLocator)
+        (usersConnectionRepository as InMemoryUsersConnectionRepository)
+            .setConnectionSignUp(facebookSignUp)
+        return ProviderSignInController(
+            connectionFactoryLocator,
+            usersConnectionRepository, FacebookSignInAdapter()
+        )
+    }
 
-	private fun getUsersConnectionRepository(connectionFactoryLocator: ConnectionFactoryLocator): UsersConnectionRepository {
-		return InMemoryUsersConnectionRepository(connectionFactoryLocator)
-	}
+    private fun connectionFactoryLocator(): ConnectionFactoryLocator {
+        val registry = ConnectionFactoryRegistry()
+        registry.addConnectionFactory(FacebookConnectionFactory(appId, appSecret))
+        return registry
+    }
+
+    private fun getUsersConnectionRepository(connectionFactoryLocator: ConnectionFactoryLocator): UsersConnectionRepository {
+        return InMemoryUsersConnectionRepository(connectionFactoryLocator)
+    }
 }

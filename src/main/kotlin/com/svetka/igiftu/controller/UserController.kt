@@ -10,6 +10,7 @@ import javax.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus.ACCEPTED
 import org.springframework.http.HttpStatus.CREATED
+import org.springframework.http.HttpStatus.OK
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -34,6 +35,10 @@ class UserController(
 		logger.info { "Finished request to getUser with data {$user}" }
 		return user
 	}
+
+	@PostMapping("/login")
+	@ResponseStatus(OK)
+	fun login(@RequestBody userCreds: UserCredentials) {}
 
 	@PutMapping("/{userId}")
 	@ResponseStatus(ACCEPTED)
