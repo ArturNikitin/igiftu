@@ -61,7 +61,7 @@ class TestContainer {
 		val user = "{\"email\" : \"$email\", \"password\": \"1234567\" }"
 
 		return mockMvc.perform(
-			post("/login")
+			post("/user/login")
 				.content(user)
 				.contentType(MediaType.APPLICATION_JSON)
 		).andReturn()
