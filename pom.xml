@@ -18,7 +18,7 @@
     <properties>
         <java.version>11</java.version>
         <kotlin.version>1.4.30</kotlin.version>
-        <testcontainers.version>1.15.1</testcontainers.version>
+        <testcontainers.version>1.16.2</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -245,14 +245,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-
-        <!--FOR TEST CONTAINER-->
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
