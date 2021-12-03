@@ -5,6 +5,7 @@ import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.JwtTokenVerifier
 import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
 import com.svetka.igiftu.security.service.facebook.FacebookSignInAdapter
+import java.security.SecureRandom
 import javax.crypto.SecretKey
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -92,7 +93,7 @@ class SecurityConfig(
 
     @Bean
     fun passwordEncoderBean(): PasswordEncoder {
-        return BCryptPasswordEncoder(8) // оптимальная сила по скорости вычисления и уровню шифрования
+        return BCryptPasswordEncoder(8, SecureRandom())
     }
 
     @Bean
