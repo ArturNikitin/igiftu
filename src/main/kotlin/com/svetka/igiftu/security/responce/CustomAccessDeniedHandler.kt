@@ -1,5 +1,6 @@
 package com.svetka.igiftu.security.responce
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.nio.charset.StandardCharsets
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -26,7 +27,10 @@ class CustomAccessDeniedHandler : AccessDeniedHandler {
         response.status = (HttpServletResponse.SC_FORBIDDEN)
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = StandardCharsets.UTF_8.toString()
-        response.writer.write("{\"error\": \"${exception.message}\", \"message\": \"Not enough permissions to access this data\"}")
+        response.writer.write(
+            ObjectMapper()
+                .writeValueAsString(Response(exception.message, "Not enough permissions to access this data"))
+        )
     }
 }
 
@@ -41,11 +45,19 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
     override fun commence(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        authenticationException: AuthenticationException
+        exception: AuthenticationException
     ) {
         response.status = (HttpServletResponse.SC_UNAUTHORIZED)
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = StandardCharsets.UTF_8.toString()
-        response.writer.write("{\"error\": \"${authenticationException.message}\", \"message\": \"You must authorize\"}")
+        response.writer.write(
+            ObjectMapper()
+                .writeValueAsString(Response(exception.message, "You must authorize"))
+        )
     }
 }
+
+data class Response(
+    val error: String?,
+    val message: String
+)

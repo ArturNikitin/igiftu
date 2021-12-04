@@ -14,6 +14,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
+import org.springframework.security.core.AuthenticationException
 
 const val PREFIX = "Bearer"
 const val EXPIRATION_TIME = 864000000 // 1 day
@@ -67,8 +68,25 @@ class JwtUsernameAndPasswordAuthenticationFilter(
         response.writer.write(ObjectMapper()
             .writeValueAsString(SuccessResponse("You have logged-in successfully", authResult.name)))
     }
+
+    override fun unsuccessfulAuthentication(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        failed: AuthenticationException
+    ) {
+        response.status = (HttpServletResponse.SC_UNAUTHORIZED)
+        response.contentType = MediaType.APPLICATION_JSON_VALUE
+        response.characterEncoding = StandardCharsets.UTF_8.toString()
+        response.writer.write(ObjectMapper()
+            .writeValueAsString(AuthFailedResponse(failed.message, "User doesn't exist or password is incorrect")))
+
+    }
 }
 
+data class AuthFailedResponse(
+    val error: String?,
+    val message: String
+)
 data class SuccessResponse(
     val message: String,
     val username: String,
