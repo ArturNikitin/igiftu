@@ -20,6 +20,8 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.ConnectionSignUp
 import org.springframework.social.connect.UsersConnectionRepository
@@ -40,7 +42,11 @@ class SecurityConfig(
     private val jwtConfig: JwtConfig,
     private val facebookSignUp: ConnectionSignUp,
     @Qualifier("handlerExceptionResolver")
-    private val resolver: HandlerExceptionResolver
+    private val resolver: HandlerExceptionResolver,
+    @Qualifier("customAccessDeniedHandler")
+    private val accessDeniedHandler: AccessDeniedHandler,
+    @Qualifier("customAuthenticationEntryPoint")
+    private val entryPoint: AuthenticationEntryPoint
 ) : WebSecurityConfigurerAdapter() {
 
     @Value("\${spring.social.facebook.appId}")
@@ -63,6 +69,10 @@ class SecurityConfig(
         }
             .and()
             .csrf().disable()
+            .exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler)
+            .authenticationEntryPoint(entryPoint)
+            .and()
             .addFilterBefore(
                 SecurityExceptionHandlerFilter(resolver),
                 JwtUsernameAndPasswordAuthenticationFilter::class.java
