@@ -52,7 +52,7 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
         response.characterEncoding = StandardCharsets.UTF_8.toString()
         response.writer.write(
             ObjectMapper()
-                .writeValueAsString(Response(exception.message, "You must authorize"))
+                .writeValueAsString(Response(exception.message, "You must authenticate"))
         )
     }
 }
