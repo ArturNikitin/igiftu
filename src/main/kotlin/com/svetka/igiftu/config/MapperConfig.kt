@@ -62,7 +62,12 @@ class MapperConfig(
 			return Board(
 				id = source.id,
 				createdDate = source.createdDate?.let { LocalDateTime.parse(source.createdDate, format) },
-				lastModifiedDate = source.lastModifiedDate?.let { LocalDateTime.parse(source.lastModifiedDate, format) },
+				lastModifiedDate = source.lastModifiedDate?.let {
+					LocalDateTime.parse(
+						source.lastModifiedDate,
+						format
+					)
+				},
 				name = source.name,
 				image = source.image?.let { Image(source.id, null, name = source.name) },
 				wishes = source.wishes.map { mapperFacade.map(it, Wish::class.java) }.toMutableSet()
@@ -112,7 +117,10 @@ class MapperConfig(
 				isBooked = source.isBooked,
 				isAnalogPossible = source.isAnalogPossible,
 				isCompleted = source.isCompleted,
-				image = source.image?.let { ImageDto.fill(it.name) }
+				buyingMyself = source.buyingMyself,
+				image = source.image?.let {
+					ImageDto.fill(it.name)
+				}
 			)
 		}
 
@@ -127,6 +135,9 @@ class MapperConfig(
 				lastModifiedDate = LocalDateTime.parse(source.lastModifiedDate, format),
 				name = source.name,
 				price = source.price,
+				isAnalogPossible = source.isAnalogPossible,
+				isBooked = source.isBooked,
+				buyingMyself = source.buyingMyself,
 				access = Access.valueOf(source.access),
 				image = source.image?.let { mapperFacade.map(it, Image::class.java) }
 			)

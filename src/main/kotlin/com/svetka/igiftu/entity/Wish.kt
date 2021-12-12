@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -53,8 +54,11 @@ class Wish(
 	@Enumerated(value = EnumType.STRING)
 	var access: Access = Access.PUBLIC,
 
-	@Column
-	var price: Double? = null,
+//	@Column
+//	var price: Double? = null,
+
+	@Embedded
+	var price: Price? = null,
 
 	@Column
 	var location: String? = null,
@@ -64,6 +68,9 @@ class Wish(
 
 	@Column
 	var link: String? = null,
+
+	@Column(name = "buying_myself")
+	var buyingMyself: Boolean = false,
 
 	@ManyToOne(cascade = [PERSIST], fetch = LAZY)
 	@JoinColumn(name = "user_id")

@@ -126,3 +126,13 @@ databaseChangeLog:
         - sqlFile:
             encoding: utf8
             path: db/sql/20211113_1521_CREATE_BOARDS_WISHES.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 2021112122000
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20211212_2000_ALTER_WISH_TABLE.sql

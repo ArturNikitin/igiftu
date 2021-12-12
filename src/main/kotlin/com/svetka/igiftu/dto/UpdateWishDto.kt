@@ -6,21 +6,23 @@ import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class UpdateWishDto(
-	@field:NotNull(message = "Поле Id должно пресутствовать в запросе")
+	@field:NotNull(message = "Поле Id должно присутствовать в запросе")
 	val id: Long? = null,
-	@field:NotEmpty(message = "Поле name должно пресутствовать в запросе")
+	@field:NotEmpty(message = "Поле name должно присутствовать в запросе")
 	val name: String = "",
-	@field:NotNull(message = "Поле price должно пресутствовать в запросе")
-	val price: Double? = null,
-	@field:NotNull(message = "Поле access должно пресутствовать в запросе")
+	@field:NotNull(message = "Поле access должно присутствовать в запросе")
 	val access: String? = null,
-	@field:NotNull(message = "Поле isBooked должно пресутствовать в запросе")
+	@field:NotNull(message = "Поле isBooked должно присутствовать в запросе")
 	val isBooked: Boolean? = null,
-	@field:NotNull(message = "Поле isCompleted должно пресутствовать в запросе")
+	@field:NotNull(message = "Поле isCompleted должно присутствовать в запросе")
 	val isCompleted: Boolean? = null,
-	@field:NotNull(message = "Поле isAnalogPossible должно пресутствовать в запросе")
+	@field:NotNull(message = "Поле isAnalogPossible должно присутствовать в запросе")
 	val isAnalogPossible: Boolean? = null,
-	val image: ImageDto? = null
+	val image: ImageDto? = null,
+	@field:NotNull(message = "поле price должно присутствовать в запросе")
+	val price: priceDto? = null,
+	@field:NotNull(message = "поле buyingMyself должно пристутствовать в запросу")
+	val buyingMyself: Boolean? = null
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
@@ -40,3 +42,8 @@ data class UpdateWishDto(
 		return result
 	}
 }
+
+data class priceDto(
+	val value: Double? = null,
+	val currencyCode: Int? = null
+)

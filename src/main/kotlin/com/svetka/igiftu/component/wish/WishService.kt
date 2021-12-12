@@ -8,6 +8,7 @@ import com.svetka.igiftu.dto.UpdateWishDto
 import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Image
+import com.svetka.igiftu.entity.Price
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.Access
 import com.svetka.igiftu.service.ImageService
@@ -60,10 +61,10 @@ internal class WishService(
 	@ModificationPermissionRequired
 	override fun updateWish(user: UserInfo, requestWish: UpdateWishDto): WishDto {
 		val updatedWish = getWishIfExists(requestWish.id!!)
-			.also {
+			.also { it ->
 				it.access = Access.valueOf(requestWish.access!!)
 				it.name = requestWish.name
-				it.price = requestWish.price
+				it.price = requestWish.price?.let { price -> Price(price.currencyCode, price.value) }
 				it.lastModifiedDate = LocalDateTime.now()
 				it.isAnalogPossible = requestWish.isAnalogPossible!!
 				it.isBooked = requestWish.isBooked!!
@@ -84,7 +85,7 @@ internal class WishService(
 	@Transactional
 	@ModificationPermissionRequired
 	override fun deleteWishes(user: UserInfo, wishes: Set<WishDto>) {
-		 wishes
+		wishes
 			.map { getWishIfExists(it.id!!) }
 			.onEach {
 				it.boards = mutableSetOf()
