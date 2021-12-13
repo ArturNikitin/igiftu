@@ -1,5 +1,6 @@
 package com.svetka.igiftu.controller
 
+import com.svetka.igiftu.component.board.BoardComponent
 import com.svetka.igiftu.component.wish.WishComponent
 import com.svetka.igiftu.dto.Content
 import com.svetka.igiftu.dto.PayloadDto
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 class WishController(
 	private val readerManager: ReaderManager,
 	private val wishService: WishComponent,
+	private val boardComponent: BoardComponent
 ) {
 
 	private val log = KotlinLogging.logger { }
@@ -55,6 +57,7 @@ class WishController(
 	): Content {
 		log.info { "Received request to create wish for user {$userId} and data {$wishDto}" }
 		val wish = wishService.createWish(UserInfo(userId, principal.name), wishDto)
+		wishDto.boardToAdd?.forEach { boardComponent.addWishes(it, setOf(wish), UserInfo(userId, principal.name)) }
 		log.info { "Finished request to create wish for user {$userId} and data {$wish}" }
 		return wish
 	}

@@ -13,4 +13,8 @@ class Price(
     var currencyCode: Int? = 0,
 
     var value: Double?
-)
+) {
+    override fun toString(): String {
+        return "Price(currencyCode=$currencyCode, value=$value)"
+    }
+}

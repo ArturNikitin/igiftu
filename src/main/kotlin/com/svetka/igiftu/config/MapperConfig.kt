@@ -120,7 +120,8 @@ class MapperConfig(
 				buyingMyself = source.buyingMyself,
 				image = source.image?.let {
 					ImageDto.fill(it.name)
-				}
+				},
+				boardToAdd = null
 			)
 		}
 

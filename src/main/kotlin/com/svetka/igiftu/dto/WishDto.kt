@@ -18,7 +18,8 @@ data class WishDto(
 	var isCompleted: Boolean = false,
 	val isAnalogPossible: Boolean = true,
 	val image: ImageDto? = null,
-	val buyingMyself: Boolean = false
+	val buyingMyself: Boolean = false,
+	val boardToAdd: Set<Long>? = null
 ) : Content() {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
