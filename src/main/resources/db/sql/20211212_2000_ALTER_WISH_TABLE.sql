@@ -1,3 +1,3 @@
 ALTER TABLE wishes
-    ADD COLUMN buying_myself BOOLEAN,
-    ADD COLUMN currency_code INTEGER
+    ADD COLUMN buying_myself BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN currency_code INTEGER NOT NULL DEFAULT 0
