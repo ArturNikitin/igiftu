@@ -90,7 +90,7 @@ class SecurityConfig(
 			.and().authorizeRequests()
 			.antMatchers("/swagger-ui/**").permitAll()
 			.antMatchers("/swagger-resources/**").permitAll()
-//            .antMatchers("/login/**").permitAll()
+            .antMatchers("/login/oauth2/**").permitAll()
 			.antMatchers("/user/login").authenticated()
 			.antMatchers("/registration").permitAll()
 			.antMatchers("/user/**").permitAll()
