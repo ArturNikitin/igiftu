@@ -37,6 +37,13 @@ spring:
     facebook:
       appId: 336219914276334
       appSecret: ${FACEBOOK_SECRET}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 60425418670-j34jkdku9jm34rnt2qe8q4toliiflb98.apps.googleusercontent.com
+            client-secret: ${GOOGLE_SECRET}
 
 #AWS
 aws:
