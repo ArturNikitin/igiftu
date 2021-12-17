@@ -47,6 +47,7 @@ class TestContainer {
 			registry.add("spring.security.oauth2.client.registration.google.client-id") {"1235"}
 			registry.add("spring.security.oauth2.client.registration.google.client-secret") {"1235"}
 			registry.add("redirect.front") {"1235"}
+			registry.add("redirect.backend") {"1235"}
 		}
 	}
 
