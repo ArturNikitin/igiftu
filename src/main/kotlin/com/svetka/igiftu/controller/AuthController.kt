@@ -28,7 +28,7 @@ class AuthController(
 	) {
 		logger.info { "Received request to sign in with {${oAuthUser.authorizedClientRegistrationId}}" }
 		val email = oAuthUser.principal.attributes["email"] ?: throw IllegalArgumentException("OAuth user must have an email")
-		val token = response.getHeader(HttpHeaders.AUTHORIZATION)
+		val token = response.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "")
 		val provider = response.getHeader("X-Provider")
 		val user = userComponent.processOAuth2SignInUser(UserProviderCredentials(email as String, provider))
 		logger.info { "Process user with id ${user.id}" }

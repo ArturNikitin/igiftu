@@ -88,7 +88,7 @@ class SecurityConfig(
 			.antMatchers("/v3/**").permitAll()
 
 			.antMatchers("/user/login").authenticated()
-			.antMatchers("/user/registration").permitAll()
+			.antMatchers("/user/**").permitAll()
 
 			.mvcMatchers("/auth/**").permitAll()
 			.anyRequest().authenticated()

@@ -4,7 +4,7 @@ import com.svetka.igiftu.security.jwt.EXPIRATION_TIME
 import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.PREFIX
 import io.jsonwebtoken.Jwts
-import java.lang.ClassCastException
+import io.jsonwebtoken.security.Keys
 import java.nio.charset.StandardCharsets
 import java.util.Date
 import javax.crypto.SecretKey
@@ -35,7 +35,7 @@ class OAuthHandleResponseFilter(
 				.claim("authorities", listOf(mapOf("authority" to "ROLE_USER")))
 				.setIssuedAt(Date())
 				.setExpiration(Date(System.currentTimeMillis() + EXPIRATION_TIME))
-				.signWith(secretKey)
+				.signWith(Keys.hmacShaKeyFor(jwtConfig.key.toByteArray()))
 				.compact()
 
 			response.status = (HttpServletResponse.SC_OK)
