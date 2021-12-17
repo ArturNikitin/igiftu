@@ -11,6 +11,3 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
-
-redirect:
-  backend: https://igiftudev-app.herokuapp.com

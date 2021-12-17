@@ -56,5 +56,5 @@ aws:
 
 redirect:
   front: ${OAUTH_REDIRECT}
-  backend: http://localhost:8081/signUp"
+  backend: https://igiftudev-app.herokuapp.com/signUp
 
