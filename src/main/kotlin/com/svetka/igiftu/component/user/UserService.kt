@@ -1,11 +1,9 @@
 package com.svetka.igiftu.component.user
 
-import com.svetka.igiftu.aop.ModificationPermissionRequired
 import com.svetka.igiftu.dto.BoardDto
 import com.svetka.igiftu.dto.PasswordDto
 import com.svetka.igiftu.dto.UserCredentials
 import com.svetka.igiftu.dto.UserDto
-import com.svetka.igiftu.dto.UserInfo
 import com.svetka.igiftu.dto.WishDto
 import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
@@ -13,6 +11,7 @@ import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.exceptions.SecurityModificationException
+import com.svetka.igiftu.security.oauth.UserProviderCredentials
 import com.svetka.igiftu.service.EmailService
 import com.svetka.igiftu.service.ImageService
 import com.svetka.igiftu.service.TokenService
@@ -83,7 +82,7 @@ class UserService(
 	@Transactional
 	override fun register(userCredentials: UserCredentials): UserDto {
 		logger.info { "Trying to register user with email ${userCredentials.email}" }
-		if (!exists(userCredentials)) {
+		if (!userExists(userCredentials.email)) {
 			val mappedUser = mapper.map(userCredentials, User::class.java).apply {
 				createdDate = LocalDateTime.now()
 				password = encoder.encode(this.password)
@@ -91,6 +90,7 @@ class UserService(
 				role = UserRoles.ROLE_USER
 				isAccountNonLocked = true
 				isEnabled = true
+				provider = "LOCAL"
 			}
 			CompletableFuture.supplyAsync { emailService.sendWelcomingEmail(mappedUser.email) }
 			logger.info { "Saving new user with email ${userCredentials.email}" }
@@ -98,6 +98,33 @@ class UserService(
 		} else {
 			logger.info { "User with email ${userCredentials.email} already exists" }
 			throw EntityExistsException("Пользователь с имейлом ${userCredentials.email} уже существует")
+		}
+	}
+
+	private fun registerOAuthUser(userCredentials: UserProviderCredentials): UserDto {
+		logger.info { "Trying to register user with email ${userCredentials.email}" }
+		val newUser = User(id = null, email = userCredentials.email).apply {
+			createdDate = LocalDateTime.now()
+			login = login ?: getLoginFromEmail()
+			role = UserRoles.ROLE_USER
+			isAccountNonLocked = true
+			isEnabled = true
+			provider = userCredentials.provider.toUpperCase()
+		}
+		CompletableFuture.supplyAsync { emailService.sendWelcomingEmail(newUser.email) }
+		logger.info { "Saving new user with email ${userCredentials.email}" }
+		return saveOrUpdateUser(newUser)
+	}
+
+	@Transactional
+	override fun processOAuth2SignInUser(userProviderCredentials: UserProviderCredentials): UserDto {
+		logger.info { "Processing OAuth2 user ${userProviderCredentials.email} from ${userProviderCredentials.provider}" }
+
+		val optionalUser = getUser(userProviderCredentials.email)
+		return if (optionalUser.isPresent) {
+			getUserDto(optionalUser.get())
+		} else {
+			registerOAuthUser(userProviderCredentials)
 		}
 	}
 
@@ -177,6 +204,8 @@ class UserService(
 		userRepo.findById(id)
 			.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
 
-	private fun exists(userCredentials: UserCredentials) =
-		userRepo.findUserByEmail(userCredentials.email).isPresent
+	private fun getUser(email: String) = userRepo.findUserByEmail(email)
+
+	private fun userExists(email: String) =
+		userRepo.findUserByEmail(email).isPresent
 }

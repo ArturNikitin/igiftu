@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import java.nio.charset.StandardCharsets
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import mu.KotlinLogging
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.AuthenticationException
@@ -42,11 +43,13 @@ class CustomAccessDeniedHandler : AccessDeniedHandler {
  * */
 @Component
 class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
+    private val log = KotlinLogging.logger {  }
     override fun commence(
         request: HttpServletRequest,
         response: HttpServletResponse,
         exception: AuthenticationException
     ) {
+        log.warn { exception }
         response.status = (HttpServletResponse.SC_UNAUTHORIZED)
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = StandardCharsets.UTF_8.toString()

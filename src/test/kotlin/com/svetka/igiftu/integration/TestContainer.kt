@@ -43,6 +43,10 @@ class TestContainer {
 			registry.add("aws.cred.pass") { "1234" }
 			registry.add("spring.mail.password") { "1234" }
 			registry.add("spring.social.facebook.appSecret") {"1235"}
+			registry.add("redirect.front") {"1235"}
+			registry.add("spring.security.oauth2.client.registration.google.client-id") {"1235"}
+			registry.add("spring.security.oauth2.client.registration.google.client-secret") {"1235"}
+			registry.add("redirect.front") {"1235"}
 		}
 	}
 

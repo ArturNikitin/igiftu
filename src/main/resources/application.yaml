@@ -44,10 +44,16 @@ spring:
           google:
             client-id: 60425418670-j34jkdku9jm34rnt2qe8q4toliiflb98.apps.googleusercontent.com
             client-secret: ${GOOGLE_SECRET}
+          facebook:
+            client-id: 336219914276334
+            client-secret: ${FACEBOOK_SECRET}
 
 #AWS
 aws:
   cred:
     key: ${AWS_KEY}
     pass: ${AWS_PASS}
+
+redirect:
+  front: ${OAUTH_REDIRECT}
 

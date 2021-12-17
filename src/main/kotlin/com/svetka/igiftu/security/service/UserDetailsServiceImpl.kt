@@ -15,6 +15,8 @@ class UserDetailsServiceImpl(
 		val user = userRepository.findUserByEmail(email).orElseThrow {
 			UsernameNotFoundException("User with email $email not found")
 		}
+//		TODO change error to show better message
+		if(user.provider != "LOCAL") throw SecurityException("Try to sigh in with ${user.provider}")
 
 //		todo in case of FACEBOOK
 		return MyUserDetails(user.email, user.password!!, user.role.toString())

@@ -41,6 +41,9 @@ class User(
 	@Enumerated(value = EnumType.STRING)
 	var registrationType: RegistrationTypes = RegistrationTypes.EMAIL,
 
+	@Column(name = "provider")
+	var provider: String = "LOCAL",
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = [ALL], mappedBy = "user")
 	val wishes: MutableList<Wish> = mutableListOf(),
 

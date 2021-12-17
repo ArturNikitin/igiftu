@@ -13,8 +13,11 @@ import javax.crypto.SecretKey
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import mu.KotlinLogging
 import org.springframework.http.MediaType
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 
 const val PREFIX = "Bearer"
 const val EXPIRATION_TIME = 864000000 // 1 day

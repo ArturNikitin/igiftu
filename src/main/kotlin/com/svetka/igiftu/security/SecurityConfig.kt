@@ -4,7 +4,8 @@ import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.JwtTokenVerifier
 import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
 import com.svetka.igiftu.security.jwt.SecurityExceptionHandlerFilter
-import com.svetka.igiftu.security.service.facebook.FacebookSignInAdapter
+import com.svetka.igiftu.security.oauth.CustomSimpleUrlAuthenticationSuccessHandler
+import com.svetka.igiftu.security.oauth.OAuthHandleResponseFilter
 import java.security.SecureRandom
 import javax.crypto.SecretKey
 import org.springframework.beans.factory.annotation.Qualifier
@@ -16,20 +17,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.access.AccessDeniedHandler
-import org.springframework.social.connect.ConnectionFactoryLocator
-import org.springframework.social.connect.ConnectionSignUp
-import org.springframework.social.connect.UsersConnectionRepository
-import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository
-import org.springframework.social.connect.support.ConnectionFactoryRegistry
-import org.springframework.social.connect.web.ProviderSignInController
-import org.springframework.social.facebook.connect.FacebookConnectionFactory
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.servlet.HandlerExceptionResolver
 
@@ -41,13 +34,13 @@ class SecurityConfig(
 	private val userDetailsService: UserDetailsService,
 	private val secretKey: SecretKey,
 	private val jwtConfig: JwtConfig,
-	private val facebookSignUp: ConnectionSignUp,
 	@Qualifier("handlerExceptionResolver")
 	private val resolver: HandlerExceptionResolver,
 	@Qualifier("customAccessDeniedHandler")
 	private val accessDeniedHandler: AccessDeniedHandler,
 	@Qualifier("customAuthenticationEntryPoint")
-	private val entryPoint: AuthenticationEntryPoint
+	private val entryPoint: AuthenticationEntryPoint,
+	private val onSuccess: CustomSimpleUrlAuthenticationSuccessHandler
 ) : WebSecurityConfigurerAdapter() {
 
 	@Value("\${spring.social.facebook.appId}")
@@ -61,13 +54,14 @@ class SecurityConfig(
 	}
 
 	override fun configure(http: HttpSecurity) {
-		http.cors().configurationSource {
-			CorsConfiguration().apply {
-				allowedOrigins = listOf("http://localhost:3000")
-				allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
-				allowedHeaders = listOf("*")
+		http
+			.cors().configurationSource {
+				CorsConfiguration().apply {
+					allowedOrigins = listOf("http://localhost:3000")
+					allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+					allowedHeaders = listOf("*")
+				}
 			}
-		}
 			.and()
 			.csrf().disable()
 			.exceptionHandling()
@@ -86,19 +80,25 @@ class SecurityConfig(
 				JwtTokenVerifier(jwtConfig, secretKey),
 				JwtUsernameAndPasswordAuthenticationFilter::class.java
 			)
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and().authorizeRequests()
+			.addFilterBefore(testFilter(), OAuth2LoginAuthenticationFilter::class.java)
+			.authorizeRequests()
+//				SWAGGER SHIT
 			.antMatchers("/swagger-ui/**").permitAll()
 			.antMatchers("/swagger-resources/**").permitAll()
 			.antMatchers("/v3/**").permitAll()
-            .antMatchers("/login/oauth2/**").permitAll()
+
 			.antMatchers("/user/login").authenticated()
-			.antMatchers("/registration").permitAll()
-			.antMatchers("/user/**").permitAll()
+			.antMatchers("/user/registration").permitAll()
+
 			.mvcMatchers("/auth/**").permitAll()
-			.antMatchers("/api/**").hasRole("ADMIN")
-			.anyRequest().authenticated().and().oauth2Login()
-			.authorizationEndpoint().baseUri("/auth")
+			.anyRequest().authenticated()
+
+			.and()
+			.oauth2Login()
+			.authorizationEndpoint()
+			.baseUri("/auth")
+			.and()
+			.successHandler(onSuccess)
 	}
 
 	private fun jwtUsernameAndPasswordAuthenticationFilter() =
@@ -107,30 +107,10 @@ class SecurityConfig(
 				this.setFilterProcessesUrl("/user/login")
 			}
 
+	private fun testFilter() = OAuthHandleResponseFilter(secretKey, jwtConfig)
+
 	@Bean
 	fun passwordEncoderBean(): PasswordEncoder {
 		return BCryptPasswordEncoder(8, SecureRandom())
-	}
-
-	@Bean
-	fun providerSignInController(): ProviderSignInController {
-		val connectionFactoryLocator = connectionFactoryLocator()
-		val usersConnectionRepository = getUsersConnectionRepository(connectionFactoryLocator)
-		(usersConnectionRepository as InMemoryUsersConnectionRepository)
-			.setConnectionSignUp(facebookSignUp)
-		return ProviderSignInController(
-			connectionFactoryLocator,
-			usersConnectionRepository, FacebookSignInAdapter()
-		)
-	}
-
-	private fun connectionFactoryLocator(): ConnectionFactoryLocator {
-		val registry = ConnectionFactoryRegistry()
-		registry.addConnectionFactory(FacebookConnectionFactory(appId, appSecret))
-		return registry
-	}
-
-	private fun getUsersConnectionRepository(connectionFactoryLocator: ConnectionFactoryLocator): UsersConnectionRepository {
-		return InMemoryUsersConnectionRepository(connectionFactoryLocator)
 	}
 }

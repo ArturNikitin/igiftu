@@ -136,3 +136,13 @@ databaseChangeLog:
         - sqlFile:
             encoding: utf8
             path: db/sql/20211212_2000_ALTER_WISH_TABLE.sql
+  - changeSet:
+      validCheckSum: ANY
+      id: 202117121537
+      author: ArturNikitin
+      preConditions:
+        - onFail: HALT
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: db/sql/20211217_1537_ALTERL_USER_TABLE.sql
