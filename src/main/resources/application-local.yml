@@ -17,3 +17,6 @@ spring:
 logging:
   level:
     com.svetka.igiftu: debug
+
+redirect:
+  backend: http://localhost:8081/signUp
