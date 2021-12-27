@@ -18,6 +18,9 @@ data class WishDto(
 	var isCompleted: Boolean = false,
 	val isAnalogPossible: Boolean = true,
 	val image: ImageDto? = null,
+	val location: String? = null,
+	val link: String? = null,
+	val details: String? = null,
 	val buyingMyself: Boolean = false,
 	val boardToAdd: Set<Long>? = null
 ) : Content() {

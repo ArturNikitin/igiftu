@@ -121,7 +121,10 @@ class MapperConfig(
 				image = source.image?.let {
 					ImageDto.fill(it.name)
 				},
-				boardToAdd = null
+				boardToAdd = null,
+				details = source.details,
+				location = source.location,
+				link = source.link
 			)
 		}
 
@@ -140,6 +143,9 @@ class MapperConfig(
 				isBooked = source.isBooked,
 				buyingMyself = source.buyingMyself,
 				access = Access.valueOf(source.access),
+				link = source.link,
+				details = source.details,
+				location = source.location,
 				image = source.image?.let { mapperFacade.map(it, Image::class.java) }
 			)
 		}

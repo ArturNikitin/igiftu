@@ -61,7 +61,7 @@ internal class WishService(
 	@ModificationPermissionRequired
 	override fun updateWish(user: UserInfo, requestWish: UpdateWishDto): WishDto {
 		val updatedWish = getWishIfExists(requestWish.id!!)
-			.also { it ->
+			.also {
 				it.access = Access.valueOf(requestWish.access!!)
 				it.name = requestWish.name
 				it.price = requestWish.price?.let { price -> Price(price.currencyCode, price.value) }
@@ -70,6 +70,9 @@ internal class WishService(
 				it.isBooked = requestWish.isBooked!!
 				it.isCompleted = requestWish.isCompleted!!
 				it.image = requestWish.image?.let { image -> dealWithImage(image) }
+				it.link = requestWish.link
+				it.details = requestWish.details
+				it.location = requestWish.location
 			}.let { wishRepository.save(it) }
 
 		return getWishDto(updatedWish)

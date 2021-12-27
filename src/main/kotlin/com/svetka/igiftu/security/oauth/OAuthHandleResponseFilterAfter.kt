@@ -5,6 +5,8 @@ import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.PREFIX
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import java.lang.ClassCastException
+import java.lang.NullPointerException
 import java.nio.charset.StandardCharsets
 import java.util.Date
 import javax.crypto.SecretKey
@@ -46,10 +48,14 @@ class OAuthHandleResponseFilter(
 				"$PREFIX $token"
 			)
 			response.addHeader("X-Provider", provider)
+		} catch (ignore: NullPointerException) {
+
 		} catch (ignore: ClassCastException) {
 
-		} catch (ex: Exception) {
+		}
+		catch (ex: Exception) {
 			log.error { ex.message }
+			throw ex
 		}
 		chain.doFilter(request, response)
 	}

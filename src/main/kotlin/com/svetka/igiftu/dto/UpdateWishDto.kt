@@ -21,6 +21,12 @@ data class UpdateWishDto(
 	val image: ImageDto? = null,
 	@field:NotNull(message = "поле price должно присутствовать в запросе")
 	val price: priceDto? = null,
+	@field:NotNull(message = "поле location должно присутствовать в запросе")
+	val location: String? = null,
+	@field:NotNull(message = "поле link должно присутствовать в запросе")
+	val link: String? = null,
+	@field:NotNull(message = "поле details должно присутствовать в запросе")
+	val details: String? = null,
 	@field:NotNull(message = "поле buyingMyself должно пристутствовать в запросу")
 	val buyingMyself: Boolean? = null
 ) {
