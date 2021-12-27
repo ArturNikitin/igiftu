@@ -11,7 +11,8 @@ import com.svetka.igiftu.security.oauth.UserProviderCredentials
 
 interface UserComponent {
 	fun isSameUser(userId: Long, username: String): Boolean
-	fun getUserById(id: Long): UserDto
+	fun findUser(id: Long): UserDto
+	fun findUser(email: String): UserDto
 	fun update(userDto: UserDto, username: String): UserDto
 	fun register(userCredentials: UserCredentials): UserDto
 	fun processOAuth2SignInUser(userProviderCredentials: UserProviderCredentials): UserDto

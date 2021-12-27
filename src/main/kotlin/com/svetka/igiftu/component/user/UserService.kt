@@ -42,17 +42,25 @@ class UserService(
 	}
 
 	@Transactional
-	override fun getUserById(id: Long): UserDto =
+	override fun findUser(id: Long): UserDto =
 		userRepo.findById(id)
-			.map { user ->
-				getUserDto(user)
-					.also {
-						it.boardAmount = user.boards.size
-						it.wishAmount = user.wishes.size
-					}
-			}
+			.map { processFoundUser(it) }
 			.orElseThrow { EntityNotFoundException("User with id $id was not found ") }
 			.apply { image?.content = imageService.getContent(image?.name!!) }
+
+	@Transactional
+	override fun findUser(email: String): UserDto {
+		return userRepo.findUserByEmail(email)
+			.map { processFoundUser(it) }
+			.orElseThrow { EntityNotFoundException("User with email $email was not found ") }
+			.apply { image?.content = imageService.getContent(image?.name!!) }
+	}
+
+	private fun processFoundUser(user: User): UserDto =
+		getUserDto(user).also {
+			it.boardAmount = user.boards.size
+			it.wishAmount = user.wishes.size
+		}
 
 	@Transactional
 	override fun update(userDto: UserDto, username: String): UserDto {

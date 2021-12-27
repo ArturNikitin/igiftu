@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
@@ -31,7 +32,15 @@ class UserController(
 	@GetMapping("/{userId}")
 	fun getUser(@PathVariable userId: Long): UserDto {
 		logger.info { "Received request to getUser [$userId]" }
-		val user = userService.getUserById(userId)
+		val user = userService.findUser(userId)
+		logger.info { "Finished request to getUser with data {$user}" }
+		return user
+	}
+
+	@GetMapping
+	fun getUserByEmail(@RequestParam("email") userEmail: String): UserDto {
+		logger.info { "received request to getUser [$userEmail]" }
+		val user = userService.findUser(userEmail)
 		logger.info { "Finished request to getUser with data {$user}" }
 		return user
 	}
