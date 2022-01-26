@@ -1,6 +1,8 @@
 package com.svetka.igiftu.security.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.svetka.igiftu.component.user.UserComponent
+import com.svetka.igiftu.component.user.UserService
 import io.jsonwebtoken.Jwts
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -14,10 +16,14 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.stereotype.Component
 
 const val PREFIX = "Bearer"
 const val EXPIRATION_TIME = 864000000 // 1 day
@@ -27,6 +33,8 @@ class JwtUsernameAndPasswordAuthenticationFilter(
     private val secretKey: SecretKey,
     private val jwtConfig: JwtConfig
 ) : UsernamePasswordAuthenticationFilter() {
+
+    var userService: UserComponent? = null
 
     override fun attemptAuthentication(
         request: HttpServletRequest?,
@@ -68,8 +76,10 @@ class JwtUsernameAndPasswordAuthenticationFilter(
         )
         response.addHeader("Access-Control-Expose-Headers", "Authorization")
 
+        val user = userService!!.findUser(authResult.name)
+
         response.writer.write(ObjectMapper()
-            .writeValueAsString(SuccessResponse("You have logged-in successfully", authResult.name)))
+            .writeValueAsString(LoggedInUser(user.id, user.email, user.role?: "")))
     }
 
     override fun unsuccessfulAuthentication(
@@ -93,6 +103,12 @@ data class AuthFailedResponse(
 data class SuccessResponse(
     val message: String,
     val username: String,
+)
+
+data class LoggedInUser(
+    val userId: Long,
+    val username: String,
+    val userRole: String
 )
 
 data class UserCredentials(

@@ -21,10 +21,12 @@ import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import ma.glasnost.orika.MapperFacade
 import mu.KotlinLogging
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+@Lazy
 @Service
 class UserService(
 	private val userRepo: UserRepository,

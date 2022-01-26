@@ -1,5 +1,6 @@
 package com.svetka.igiftu.security
 
+import com.svetka.igiftu.component.user.UserComponent
 import com.svetka.igiftu.security.jwt.JwtConfig
 import com.svetka.igiftu.security.jwt.JwtTokenVerifier
 import com.svetka.igiftu.security.jwt.JwtUsernameAndPasswordAuthenticationFilter
@@ -8,10 +9,12 @@ import com.svetka.igiftu.security.oauth.CustomSimpleUrlAuthenticationSuccessHand
 import com.svetka.igiftu.security.oauth.OAuthHandleResponseFilter
 import java.security.SecureRandom
 import javax.crypto.SecretKey
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -48,6 +51,10 @@ class SecurityConfig(
 
 	@Value("\${spring.social.facebook.appSecret}")
 	private lateinit var appSecret: String
+
+	@Lazy
+	@Autowired
+	private lateinit var userComponent: UserComponent
 
 	override fun configure(auth: AuthenticationManagerBuilder?) {
 		auth?.userDetailsService(userDetailsService)
@@ -105,6 +112,7 @@ class SecurityConfig(
 		JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig)
 			.apply {
 				this.setFilterProcessesUrl("/user/login")
+				this.userService = userComponent
 			}
 
 	private fun testFilter() = OAuthHandleResponseFilter(secretKey, jwtConfig)
