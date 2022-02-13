@@ -23,7 +23,7 @@ class MimeEmailService(
 	private val mailSender: JavaMailSender
 ) : EmailService {
 
-	@Value("\$web.host")
+	@Value("\${web.host}")
 	lateinit var host: String
 
 	private companion object {
