@@ -10,6 +10,7 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeBodyPart
 import javax.mail.internet.MimeMultipart
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Primary
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
@@ -21,6 +22,10 @@ private val logger = KotlinLogging.logger { }
 class MimeEmailService(
 	private val mailSender: JavaMailSender
 ) : EmailService {
+
+	@Value("\$web.host")
+	lateinit var host: String
+
 	private companion object {
 
 		@JvmStatic
@@ -52,7 +57,7 @@ class MimeEmailService(
 	override fun sendResetPasswordEmail(email: String, token: String) {
 		logger.info { "Preparing data to send email to $email" }
 
-		val linkToResetPassword = "http://localhost:8081/user/password/update?token=$token"
+		val linkToResetPassword = "$host/wishes?token=$token&email=$email"
 		val content = resetPasswordHtml
 		val updatedContent = content.replace("url/resetpassword", linkToResetPassword)
 

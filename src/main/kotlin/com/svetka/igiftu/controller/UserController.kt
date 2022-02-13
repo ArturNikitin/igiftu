@@ -87,6 +87,4 @@ class UserController(
 		userService.updatePassword(passwordDto)
 		return "Ваш пароль был успешно изменен"
 	}
-
-//	TODO get user by email oor login
 }

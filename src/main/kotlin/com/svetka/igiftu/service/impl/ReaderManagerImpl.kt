@@ -11,9 +11,10 @@ class ReaderManagerImpl(
 	private val boardComponent: UserComponent
 ) : ReaderManager {
 	override fun readWishesByUser(userId: Long, readerUsername: String?): PayloadDto {
+		val owner = readerUsername?.let { userService.isSameUser(userId, it) } ?: false
 		return PayloadDto(
-			readerUsername?.let { userService.isSameUser(userId, it) } ?: false,
-			userService.getWishes(userId)
+			owner,
+			userService.getWishes(userId, owner)
 		)
 	}
 

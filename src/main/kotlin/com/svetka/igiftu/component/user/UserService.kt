@@ -9,6 +9,7 @@ import com.svetka.igiftu.entity.Board
 import com.svetka.igiftu.entity.Image
 import com.svetka.igiftu.entity.User
 import com.svetka.igiftu.entity.Wish
+import com.svetka.igiftu.entity.enums.Access
 import com.svetka.igiftu.entity.enums.UserRoles
 import com.svetka.igiftu.exceptions.SecurityModificationException
 import com.svetka.igiftu.security.oauth.UserProviderCredentials
@@ -185,12 +186,14 @@ class UserService(
 	}
 
 	@Transactional
-	override fun getWishes(userId: Long): Set<WishDto> {
-		return getUserIfExists(userId)
+	override fun getWishes(userId: Long, owner: Boolean): Set<WishDto> {
+		val wishes = getUserIfExists(userId)
 			.wishes
 			.map { mapper.map(it, WishDto::class.java) }
 			.onEach { it.image?.apply { content = imageService.getContent(name ?: "") } }
 			.toSet()
+		if (!owner) return wishes.filter { Access.PUBLIC.name == it.access }.toSet()
+		return wishes
 	}
 
 	@Transactional
